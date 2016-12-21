@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="rdv" default="deploy">
+
+    <!-- =================================================================================================== -->
+    <!-- Properties, who are same in production and test mode.                                               -->
+    <!-- Add new rdv here in virtual host manner.                                                            -->
+    <!-- =================================================================================================== -->
+    <property name="musse.bib.path" value="musse.ub.uni-freiburg.de/bib" />
+    <property name="musse.pub.path" value="musse.ub.uni-freiburg.de/pub" />
+
+    <!-- Directories we like to copy -->
+    <property name="rdv.create.path" value="./create" />
+    <property name="rdv.css.path" value="./css" />
+    <property name="rdv.js.path" value="./js" />
+    <property name="rdv.php.path" value="./php" />
+    <property name="rdv.solr.path" value="./solr" />
+
+    <!-- =================================================================================================== -->
+    <!-- Target directory, where we copy the files to. Default is ./test                                     -->
+    <!-- Build script will ask you for a target directory, so this is not really necessary. But the IDE do   -->
+    <!-- not understand it and throws an error. So keep it here please.                                      -->
+    <!-- =================================================================================================== -->
+    <!-- <property name="target.path" value="./test"/> -->
+
+    <!-- Fileset for all css files -->
+    <fileset dir="${rdv.css.path}" id="cssfiles">
+        <include name="**"/>
+    </fileset>
+
+    <!-- Fileset for all js files -->
+    <fileset dir="${rdv.js.path}" id="jsfiles">
+        <include name="**"/>
+    </fileset>
+
+    <!-- Fileset for all php files -->
+    <fileset dir="${rdv.php.path}" id="phpfiles">
+        <include name="**"/>
+    </fileset>
+
+    <!-- Start here -->
+    <target name="deploy"
+            depends="get-env, get-rdv, set-rdv-path, set-backup-path, backup, purge, build-rdv"
+            description="Deploys the site to the web server and perform necessary build and upgrade tasks.">
+    </target>
+
+    <!-- Gets environement for action. This informations are needed for creating the target directory. -->
+    <target name="get-env" description="get the environement for action">
+        <!-- has target been set already? -->
+        <if>
+            <not>
+                <isset property="environment"/>
+            </not>
+            <then>
+                <!-- prompt the user to select from a list of supported environments -->
+                <input propertyName="environment" validArgs="test,prod" promptChar=":" message="Enter environment"/>
+            </then>
+        </if>
+        <!-- make sure the properties file for the environment exists -->
+        <available file="${environment}.properties" property="env_prop_exists" type="file"/>
+        <if>
+            <equals arg1="${env_prop_exists}" arg2="true"/>
+            <then>
+                <!-- parse the properties files -->
+                <property file="${environment}.properties"/>
+            </then>
+            <else>
+                <!-- die with an error message -->
+                <fail message="No properties file for selected environment exists (${environment}.properties)"/>
+            </else>
+        </if>
+    </target>
+
+    <!-- Asks user which rdv he like to deploy. -->
+    <target name="get-rdv">
+        <if>
+            <not>
+                <isset property="rdv"/>
+            </not>
+            <then>
+                <!-- prompt the user to select from a list of supported environments -->
+                <input propertyName="rdv" validArgs="musse_bib,musse_pub" promptChar=":" message="Enter RDV"/>
+            </then>
+        </if>
+    </target>
+
+    <!-- Depending on what the user choosed, set the target directories. -->
+    <target name="set-rdv-path">
+        <if>
+            <equals arg1="${rdv}" arg2="musse_bib"/>
+            <then>
+                <property name="rdv.path" value="${musse.bib.path}"/>
+                <property name="rdv.config.subdir" value="musse_bib"/>
+                <property name="rdv.config.path" value="./config/musse_bib" />
+            </then>
+        </if>
+        <if>
+            <equals arg1="${rdv}" arg2="musse_pub"/>
+            <then>
+                <property name="rdv.path" value="${musse.pub.path}"/>
+                <property name="rdv.config.subdir" value="musse_pub"/>
+                <property name="rdv.config.path" value="./config/musse_pub" />
+            </then>
+        </if>
+    </target>
+
+    <!-- Sets the backup path  -->
+    <target name="set-backup-path">
+        <property name="backup.path" value="./backup/${environment}"/>
+    </target>
+
+    <!-- Makes a backup of the current RDV before removing it -->
+    <target name="backup">
+        <copy todir="${backup.path}/${rdv.path}" verbose="true" includeemptydirs="true">
+            <fileset dir="${target.path}/${rdv.path}">
+                <include name="**" />
+            </fileset>
+        </copy>
+        <tstamp>
+            <format property="date" pattern="%d.%m.%Y" />
+        </tstamp>
+        <property name="file-name" value="${rdv}.${date}"/>
+        <tar destfile="./backup/${file-name}.tar" basedir="${backup.path}" compression="gzip"/>
+        <delete dir="${backup.path}" quiet="true"/>
+    </target>
+
+    <!-- Removes all files from target directory. -->
+    <target name="purge" description="Deletes the rdv completely.">
+        <delete dir="${target.path}/${rdv.path}" quiet="true"/>
+    </target>
+
+    <!-- Builds rdv by adding directories and copying the files using the filesets.-->
+    <target name="build-rdv">
+        <tstamp>
+            <format property="version" pattern="%d.%m.%Y" />
+        </tstamp>
+        <echo>
+            ${target.path}/${musse.bib.path}
+        </echo>
+
+        <!-- Fileset for all config files -->
+        <fileset dir="${rdv.config.path}" id="configfiles">
+            <include name="**"/>
+        </fileset>
+
+        <mkdir dir="${target.path}/${rdv.path}"/>
+        <mkdir dir="${target.path}/${rdv.path}/${rdv.css.path}"/>
+        <mkdir dir="${target.path}/${rdv.path}/${rdv.js.path}"/>
+        <mkdir dir="${target.path}/${rdv.path}/${rdv.php.path}"/>
+        <mkdir dir="${target.path}/${rdv.path}/${rdv.config.path}"/>
+
+        <!-- Copy css files -->
+        <copy todir="${target.path}/${rdv.path}/${rdv.css.path}">
+            <fileset refid="cssfiles"/>
+        </copy>
+
+        <!-- Copy Javascript files -->
+        <copy todir="${target.path}/${rdv.path}/${rdv.js.path}">
+            <fileset refid="jsfiles"/>
+        </copy>
+
+        <!-- Copy php files -->
+        <copy todir="${target.path}/${rdv.path}/${rdv.php.path}">
+            <fileset refid="phpfiles"/>
+        </copy>
+
+        <!-- Copy configuration files -->
+        <copy todir="${target.path}/${rdv.path}/${rdv.config.path}">
+            <fileset refid="configfiles"/>
+        </copy>
+
+        <!-- Copy app.php.dist file and replace tokens. -->
+        <copy file="./config/app.php.dist"
+              tofile="${target.path}/${rdv.path}/config/app.php"
+              overwrite="true">
+                <filterchain>
+                    <replacetokens begintoken="%%" endtoken="%%">
+                        <token key="rdv" value="${rdv}"/>
+                        <token key="solr-port" value="8080"/>
+                        <token key="debug-query" value="false"/>
+                        <token key="version" value="${version}"/>
+                    </replacetokens>
+                </filterchain>
+        </copy>
+
+        <!-- Copy index.php files -->
+        <copy file="./index.php"
+              tofile="${target.path}/${rdv.path}/index.php"
+              overwrite="true"/>
+    </target>
+
+    <!-- Prints informations about how to use the build script -->
+    <target name="help">
+        <echo>
+            ----------------------------
+            Deploys Research Data Viewer
+            ----------------------------
+
+            This build script builds a RDV (Research Data Viewer) of your choice. Just call "phing" and the rest
+            will be done automaticaly. Bevore replacing the RDV the build script will make a backup of the RDV.
+            You will find the backup under ./backup/test and ./backup/prod (depending on which environment you choosed).
+
+            A) phing [deploy] : deploys selected rdv
+
+            Optional: You can call this build script by setting the target and the rdv. If not set, the build script
+                      will prompt you for the target and the rdv. So, do not worry to much about the parameter fields.
+
+            ------
+            Which property file sould we use?
+
+            There are two property files prod.properties and test.properties. Depending on what you select, the build
+            script will load the test evironment (test.properties) or the production environment (prod.properties)
+            file.
+            .
+            -Dtarget=[test, prod]
+            test: deploys the iss in the test folder
+            prod: deploys the iss in production folder
+
+            Setting the parameter target in the command line will turn off the user prompt in the deploying procedure!
+
+            ------
+            Which RDV would you like to deploy?
+
+            -Drdv=[musse_bib, musse_pub]
+            musse_bib: deploys musse.ub.uni-freiburg.de/bib
+            musse_pub: deploys musse.ub.uni-freiburg.de/pub
+
+            Setting the parameter rdv in the command line will turn off the user prompt in the deploying procedure!
+
+
+            B) phing help : this here
+
+            ------------
+            Prerequistes
+            ------------
+
+            To run the build script you need to install phing (https://www.phing.info/). Install phing via PEAR or
+            composer. Some of linux distributions (Ubunut, Debian, SuSE) offers also precompiled packages.
+
+            -----------
+            Programming
+            -----------
+
+            Author:      Franck Borel  - franck.borel@ub.uni-freiburg.de
+            Version:     1.0
+            Last change: 24.04.2016
+            Licence:     CC-BY
+        </echo>
+    </target>
+
+</project>

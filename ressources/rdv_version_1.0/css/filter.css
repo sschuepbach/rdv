@@ -1,0 +1,35 @@
+#filters {
+    margin-top:                 16px;
+    background-color:           white;
+    width:                      100%;
+}
+#filters div[data-filter_field] {
+    padding: 15px;
+}
+div[data-func="filter_search"] {
+    background-repeat:          no-repeat;
+    cursor:                     pointer;
+    padding:                    3px 5px 3px 26px;
+    border:                     1px solid grey;
+    background-position:        5px center;
+    width: 71px;
+    display: inline-block;
+}
+
+div[data-func="filter_search"] + div[data-func="filter_search"] {
+    margin-left: 10px;
+}
+
+div[data-func="filter_search"] + div[data-func="filter_search"] {
+    margin-top:                 -1px;
+}
+div[data-func="filter_search"]:hover {
+    background-image:           url("images/tick_op.png");
+}
+div[data-selected="true"], div[data-selected="true"]:hover {
+    background-image:           url("images/tick.png");
+    background-color: rgb(191, 234, 191);
+}
+div[data-filter_field] h3 {
+    margin-bottom:              7px;
+}

@@ -1,0 +1,225 @@
+#results {
+    margin-top:                 16px;
+    position:                   relative;
+}
+#hide_search {
+    display: inline-block;
+    top: 3px;
+    background-color: #D7EAF7;
+    color: black;
+    padding-left: 5px;
+    padding-right: 5px;
+    cursor: pointer;
+    line-height: 19px;
+    position: absolute;
+    left: 335px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#hide_search:hover {
+    background-color: #B6D6EC;
+}
+.invisible .search_visible {
+    display: none;
+}
+.search_invisible {
+    display: none;
+}
+.invisible .search_invisible {
+    display: inline-block;
+}
+#results.invisible_search_block {
+    height: 100%;
+}
+
+#small_result {
+    display:                    inline-block;
+    margin-left:                3px;
+    text-align:                 left;
+    width:                      35px;
+}
+#result .pagination {
+    position:                   absolute;
+    right:                      6px;
+    top:                        5px;
+}
+.pagination div {
+    background-color:           white;
+    border-radius:              4px 4px 4px 4px;
+    -moz-border-radius:         4px 4px 4px 4px;
+    -webkit-border-radius:      4px 4px 4px 4px;
+    display:                    inline-block;
+    font-weight:                bold;
+    line-height:                14px;
+    padding-left:               3px;
+    padding-right:              3px;
+    text-align:                 center;
+    width:                      32px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+.pagination div.clickable {
+    background-color: #D7EAF7;
+}
+
+.pagination div.clickable:hover {
+    background-color: #B6D6EC;
+}
+.pagination .currentPage {
+    width:                      65px;
+}
+.prev, .currentPage, .next {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.table_header {
+    height:                     24px;
+    display:                    table;
+    border-collapse:            collapse;
+}
+.table_body div.no_border {
+    background-color:           rgb(215, 234, 247);
+    border-top:                 medium none;
+}
+.table_body div.more, .table_body div.remember {
+    background-position:        50% 50%;
+    background-repeat:          no-repeat;
+    cursor:                     pointer;
+}
+div[data-func="more"], div[data-func="remember"] {
+    background-color:           rgb(215, 234, 247);
+    background-image:           url("images/open.png");
+}
+div.closed.more, div.closed.remember {
+    background-color:           white;
+    background-image:           url("images/closed.png");
+}
+div.more {
+    width:                      40px;
+}
+div.remember {
+    width:                      55px;
+}
+div[data-field] {
+    background-image:           url("images/sort.png");
+    background-origin:          content-box;
+    -webkit-background-origin:  content-box;
+    background-position:        right center;
+    background-repeat:          no-repeat;
+    cursor:                     pointer;
+}
+div.sort_asc {
+    background-image:           url("images/sort_asc.png");
+}
+div.sort_desc {
+    background-image:           url("images/sort_desc.png");
+}
+.sort_td {
+    background-color: rgb(215, 234, 247);
+}
+.table_body div.more:hover, .table_body div.remember:hover {
+    background-color:           rgb(215, 234, 247);
+}
+.more.loadingData {
+    background-image:           url("images/loading.gif");
+}
+.no_results {
+    font-size:                  13px;
+    font-weight:                bold;
+    margin-bottom:              5px;
+}
+.table_body > div:first-child > div {
+    /* height:                     35px; */
+    border-top:                 medium none;
+}
+.table_body > div > div {
+    height: 35px;
+}
+
+.table_header > div {
+    font-weight:                bold;
+    display:                    table-cell;
+    border:                     1px solid grey;
+    padding:                    3px;
+    vertical-align: middle;
+    text-align: center;
+}
+.table_header div.scrolly {
+    /*overflow-y:                 scroll;*/
+    padding:                    0px;
+    border:                     0px none;
+    visibility:                 hidden;
+}
+.table_body {
+    /*overflow-y:                 scroll;*/
+    border-collapse:            collapse;
+}
+.table_body > div {
+    display:                    table-row;
+}
+.table_body div[data-id] > div, .addInfo div {
+    border-bottom:              1px solid grey;
+    border-right:               1px solid grey;
+    border-left:                1px solid grey;
+    vertical-align:             middle;
+    display:                    table-cell;
+    padding:                    3px;
+}
+div.addInfo {
+    display:                    block;
+}
+div.addInfo .add_content {
+    border-width:               medium 1px 1px medium;
+    border-style:               none solid solid none;
+    border-color:               -moz-use-text-color grey grey -moz-use-text-color;
+    -moz-border-top-colors:     none;
+    -moz-border-right-colors:   none;
+    -moz-border-bottom-colors:  none;
+    -moz-border-left-colors:    none;
+    border-image:               none;
+    -moz-border-image:          none;
+    -webkit-border-image:       none;
+    width:                      857px;
+}
+div.addInfo label {
+    width:                      150px;
+}
+div.addInfo span {
+    vertical-align:             text-top;
+    display:                    inline-block;
+    width: 680px;
+}
+div.addInfo .no_border {
+    border-bottom:              1px solid grey;
+}
+.external_link, .opac_link {
+    background-image: url("images/link.png");
+    background-repeat: no-repeat;
+    background-position: center left 2px;
+    font-weight: bold;
+    display: inline-block;
+    border: 1px solid grey;
+    padding-left: 20px;
+    background-position-x: 2px;
+    text-decoration: none;
+    background-position-y: center;
+    height: 25px;
+    line-height: 25px;
+    padding-right: 5px;
+}
+.external_link:hover, .opac_link:hover {
+    background-color: rgb(215, 234, 247);
+}
+.opac_link {
+    margin-bottom: 5px;
+}
+div.addInfo span.v_m {
+    vertical-align: middle;
+}

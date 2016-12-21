@@ -1,0 +1,134 @@
+#facets {
+    display:                    inline-block;
+    margin-left:                14px;
+    width:                      533px;
+    height:                     230px;
+}
+#facets .tabs_body {
+    background-color:           white;
+    height:                     204px;
+}
+.unselected_facets {
+    overflow-y:                 scroll;
+    padding-left:               5px;
+    display:                    inline-block;
+    vertical-align:             top;
+    padding-top:                5px;
+    width:                      305px;
+    padding-right:              5px;
+    height:                     204px;
+}
+.summary {
+    padding-left:               5px;
+    display:                    inline-block;
+    padding-right:              5px;
+    padding-top:                5px;
+    overflow:                   hidden;
+    width:                      225px;
+    height:                     204px;
+}
+div.summary div.entry {
+    width:                      219px;
+    display:                    inline-block;
+}
+div.summary div.entry span {
+    position:                   relative;
+    top:                        -2px;
+    left:                       3px;
+    vertical-align:             text-top;
+    display:                    inline-block;
+    padding-left:               2px;
+    padding-right:              2px;
+}
+.include {
+    background-color:           rgb(202, 230, 201);
+}
+.exclude {
+    background-color:           rgb(227, 134, 157);
+}
+span[name="facetValue"] {
+    min-height:                 20px;
+    width:                      226px;
+    line-height:                20px;
+    display:                    inline-block;
+}
+span[name="facetCount"] {
+    text-align:                 right;
+    display:                    inline-block;
+    min-height:                 20px;
+    width:                      40px;
+    line-height:                20px;
+    vertical-align:             top;
+}
+.line {
+    padding:                    0pt 3px 1px;
+    border:                     1px solid white;
+    display:                    inline-block;
+}
+.line:hover {
+    background-color:           rgb(215, 234, 247);
+    border:                     1px solid grey;
+}
+.facet_value {
+    display:                    inline-block;
+    padding-left:               3px;
+    padding-right:              3px;
+    position:                   relative;
+    top:                        -2px;
+    vertical-align:             text-top;
+    width:                      190px;
+}
+.select_facets {
+    display:                    inline-block;
+    vertical-align:             top;
+    width:                      299px;
+}
+.summary_facets {
+    display:                    inline-block;
+    width:                      232px;
+}
+.remove_all {
+    padding-left:               5px;
+    visibility:                 hidden;
+    padding-bottom:             5px;
+    padding-top:                8px;
+}
+.func_facet {
+    padding-top:                7px;
+    padding-bottom:             6px;
+    padding-left:               5px;
+}
+.empty:after {
+    content:                    "ohne";
+    font-style:                 italic;
+}
+.addFacet, .removeFacet {
+    cursor:                     pointer;
+    border:                     1px solid white;
+    margin-right:               0px;
+    padding:                    0px 3px 1px;
+}
+.addFacet:hover, .removeFacet:hover {
+    background-color:           rgb(215, 234, 247);
+    border:                     1px solid grey;
+}
+.facet_minus {
+    background-image:           url("images/minus.png");
+    width:                      16px;
+    height:                     16px;
+    margin-right:               0pt;
+    display:                    inline-block;
+    position:                   relative;
+    top:                        2px;
+    visibility:                 hidden;
+}
+.removeFacet:hover .facet_minus, .line:hover .facet_minus {
+    visibility:                 visible;
+}
+.toggle_include {
+    height:                     22px;
+    line-height:                20px;
+}
+.facet_left {
+    width:                      200px;
+}
