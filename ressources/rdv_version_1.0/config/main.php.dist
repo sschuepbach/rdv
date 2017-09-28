@@ -1,0 +1,6 @@
+<?php
+
+$projectName = "%%rdv%%";
+$solrPort = "%%solr-port%%";
+$debugQuery = "%%debug-query%%";
+$version = "%%version%%";

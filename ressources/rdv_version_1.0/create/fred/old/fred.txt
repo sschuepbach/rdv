@@ -1,0 +1,434 @@
+SPEKAER_ID; TEXTS; FREELOCCODE; AREA; COUNTY; LOC; SPEAKER_AGE; SPEAKER_DOB; SPEAKER_DECADE; SPEKAER_SEX; REC_DATE; REC_DECADE; EEXTENT; R
+HebMMcl ; HEB_001 ; Heb Skye Balmaquien ; Heb ; Skye ; Balmaquien ; 64 ;  ;  ; f ;  ;  ; 3320
+Heb18 ; HEB_001 ; Heb Skye Balmaquien ; Heb ; Skye ; Balmaquien ; 67 ;  ;  ; m ;  ;  ; 1900
+Heb21 ; HEB_002 ; Heb Skye Staffin ; Heb ; Skye ; Staffin ; 11 ;  ;  ; f ;  ;  ; 119
+Heb22 ; HEB_002 ; Heb Skye Staffin ; Heb ; Skye ; Staffin ; 11 ;  ;  ; m ;  ;  ; 489
+Heb23 ; HEB_003 ; Heb Skye Staffin ; Heb ; Skye ; Staffin ; 11 ;  ;  ; f ;  ;  ; 55
+Heb24 ; HEB_003 ; Heb Skye Staffin ; Heb ; Skye ; Staffin ; 11 ;  ;  ; m ;  ;  ; 528
+Heb42 ; HEB_004 ; Heb Skye Portree ; Heb ; Skye ; Portree ; 8 ;  ;  ; f ;  ;  ; 210
+Heb43 ; HEB_004 ; Heb Skye Portree ; Heb ; Skye ; Portree ; 8 ;  ;  ; m ;  ;  ; 95
+HebNN ; HEB_005 ; Heb Skye  ; Heb ; Skye ;  ;  ;  ;  ; m ;  ;  ; 541
+Heb53 ; HEB_006 ; Heb   ; Heb ;  ;  ;  ;  ;  ; m ;  ;  ; 4097
+Heb54 ; HEB_006 ; Heb   ; Heb ;  ;  ;  ;  ;  ; m ;  ;  ; 2960
+Heb57 ; HEB_007,HEB_008 ; Heb North_Uist  ; Heb ; North_Uist ;  ; 77 ;  ;  ;  ;  ;  ; 7152
+Heb2 ; HEB_009 ; Heb Skye Portree ; Heb ; Skye ; Portree ; 15 ;  ;  ; f ;  ;  ; 1111
+Heb3 ; HEB_010 ; Heb Skye Struan ; Heb ; Skye ; Struan ; 17 ;  ;  ; f ;  ;  ; 3249
+Heb7 ; HEB_011 ; Heb Skye North_Duntulm ; Heb ; Skye ; North_Duntulm ; 65 ;  ;  ; m ;  ;  ; 4631
+Heb8 ; HEB_012 ; Heb Skye Portree ; Heb ; Skye ; Portree ; 15 ;  ;  ; f ;  ;  ; 1568
+Heb9 ; HEB_013 ; Heb Skye Portree ; Heb ; Skye ; Portree ; 17 ;  ;  ; f ;  ;  ; 1656
+Heb12 ; HEB_014 ; Heb   ; Heb ;  ;  ; 75 ;  ;  ; f ;  ;  ; 2390
+Heb014unknown ; HEB_014 ; Heb   ; Heb ;  ;  ;  ;  ;  ;  ;  ;  ; 104
+Heb14 ; HEB_015 ; Heb Skye  ; Heb ; Skye ;  ; 50 ;  ;  ; m ;  ;  ; 8906
+Heb16 ; HEB_016 ; Heb Skye Portree_Kingsburgh ; Heb ; Skye ; Portree_Kingsburgh ; 90 ;  ;  ; f ;  ;  ; 2874
+Heb016unknown ; HEB_016 ; Heb Skye Portree_Kingsburgh ; Heb ; Skye ; Portree_Kingsburgh ;  ;  ;  ; f ;  ;  ; 7
+Heb016husband ; HEB_016 ; Heb Skye Portree_Kingsburgh ; Heb ; Skye ; Portree_Kingsburgh ;  ;  ;  ; m ;  ;  ; 15
+Heb19 ; HEB_017 ; Heb Skye Bornaskitaig ; Heb ; Skye ; Bornaskitaig ; 90 ;  ;  ; f ;  ;  ; 3970
+Heb25 ; HEB_018 ; Heb South_Uist Staffin_Clachan ; Heb ; South_Uist ; Staffin_Clachan ; 81 ;  ;  ; m ;  ;  ; 14320
+Heb26 ; HEB_019 ; Heb Skye Balmaquien ; Heb ; Skye ; Balmaquien ; 40 ;  ;  ;  ;  ;  ; 1980
+Heb37 ; HEB_020 ; Heb Skye Portree_Staffin ; Heb ; Skye ; Portree_Staffin ; 10 ;  ;  ; f ;  ;  ; 1070
+Heb38 ; HEB_021 ; Heb  Maliger ; Heb ;  ; Maliger ; 45 ;  ;  ; f ;  ;  ; 5097
+Heb39 ; HEB_022 ; Heb   ; Heb ;  ;  ;  ;  ;  ; m ;  ;  ; 3359
+Heb022unknown ; HEB_022 ; Heb   ; Heb ;  ;  ;  ;  ;  ; f ;  ;  ; 13
+Heb022wife ; HEB_022 ; Heb   ; Heb ;  ;  ;  ;  ;  ; f ;  ;  ; 3
+Heb41 ; HEB_023 ; Heb Skye Portree_Staffin ; Heb ; Skye ; Portree_Staffin ; 16 ;  ;  ; m ;  ;  ; 2137
+Heb44 ; HEB_024 ; Heb Skye Stenscholl ; Heb ; Skye ; Stenscholl ; 45 ;  ;  ; m ;  ;  ; 4118
+Heb51 ; HEB_025 ; Heb Skye  ; Heb ; Skye ;  ;  ;  ;  ; m ;  ;  ; 7300
+Heb52 ; HEB_026 ; Heb   ; Heb ;  ;  ;  ;  ;  ;  ;  ;  ; 554
+Heb56 ; HEB_027 ; Heb North_Uist Clachan ; Heb ; North_Uist ; Clachan ; 47 ;  ;  ; f ;  ;  ; 2516
+Heb58 ; HEB_028 ; Heb North_Uist  ; Heb ; North_Uist ;  ; 27 ;  ;  ;  ;  ;  ; 3127
+Heb59 ; HEB_029 ; Heb North_Uist Locheport ; Heb ; North_Uist ; Locheport ; 37 ;  ;  ; m ;  ;  ; 1460
+Heb60 ; HEB_030 ; Heb   ; Heb ;  ;  ;  ;  ;  ; m ;  ;  ; 4911
+Heb62 ; HEB_031 ; Heb   ; Heb ;  ;  ;  ;  ;  ;  ;  ;  ; 5335
+Heb63 ; HEB_032 ; Heb South_Uist  ; Heb ; South_Uist ;  ; 77 ;  ;  ; f ;  ;  ; 8829
+Heb64 ; HEB_033 ; Heb   ; Heb ;  ;  ;  ;  ;  ; f ;  ;  ; 3452
+Heb033unknown ; HEB_033 ; Heb   ; Heb ;  ;  ;  ;  ;  ;  ;  ;  ; 455
+Heb67 ; HEB_034 ; Heb South_Uist Howbeg ; Heb ; South_Uist ; Howbeg ; 19 ;  ;  ; f ;  ;  ; 4289
+Heb68 ; HEB_035 ; Heb South_Uist Howbeg ; Heb ; South_Uist ; Howbeg ; 68 ;  ;  ; f ;  ;  ; 2653
+Heb76 ; HEB_036 ; Heb South_Uist Iochdar ; Heb ; South_Uist ; Iochdar ; 68 ;  ;  ; f ;  ;  ; 2655
+Heb77 ; HEB_037 ; Heb North_Uist  ; Heb ; North_Uist ;  ; 11 ;  ;  ; f ;  ;  ; 4008
+Heb72 ; HEB_038 ; Heb Benbecula Hacklett ; Heb ; Benbecula ; Hacklett ; 15 ;  ;  ; m ;  ;  ; 2123
+Heb73 ; HEB_039 ; Heb Berneray Innes ; Heb ; Berneray ; Innes ; 6 ;  ;  ; m ;  ;  ; 927
+Heb74 ; HEB_040 ; Heb South_Uist Loch_Carnan ; Heb ; South_Uist ; Loch_Carnan ; 66 ;  ;  ; f ;  ;  ; 4426
+Heb78 ; HEB_041 ; Heb Carinish Claddach ; Heb ; Carinish ; Claddach ; 62 ;  ;  ; m ;  ;  ; 1522
+Heb79 ; HEB_041 ; Heb Carinish Claddach ; Heb ; Carinish ; Claddach ;  ;  ;  ;  ;  ;  ; 267
+Heb80 ; HEB_041 ; Heb Carinish Claddach ; Heb ; Carinish ; Claddach ;  ;  ;  ;  ;  ;  ; 9
+IomBK ; IOM_001 ; MAN Isle_of_Man Laxey ; MAN ; Isle_of_Man ; Laxey ; 85 ; 1895 ; 189 ; m ; 1980 ;  ; 5822
+IomRC ; IOM_002 ; MAN Isle_of_Man Ramsey ; MAN ; Isle_of_Man ; Ramsey ; 77 ; 1894 ; 189 ; m ; 1971 ; 198 ; 4639
+LeiA ; Lei_001 ; Mid Leicestershire  ; Mid ; Leicestershire ;  ;  ;  ;  ; m ;  ; 197 ; 1038
+LeiB ; Lei_001 ; Mid Leicestershire  ; Mid ; Leicestershire ;  ;  ;  ;  ; m ;  ; 197 ; 1392
+Lei2 ; LEI_002 ; Mid Leicestershire Caldwell ; Mid ; Leicestershire ; Caldwell ;  ; 1903 ; 190 ; m ;  ; 197 ; 5883
+NotA103 ; NTT_001 ; mid Nottinghamshire Nottingham ; mid ; Nottinghamshire ; Nottingham ; 85 ; 1899 ; 189 ; m ; 1984 ; 197 ; 5684
+NotA25 ; NTT_002 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 85 ; 1897 ; 189 ; m ; 1982 ; 198 ; 11252
+NotA30 ; NTT_003 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 81 ; 1902 ; 190 ; m ; 1983 ; 198 ; 9263
+NotA40 ; NTT_004 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 66 ; 1917 ; 191 ; m ; 1983 ; 198 ; 4967
+NotA52 ; NTT_005 ; Mid Nottinghamshire Southwell ; Mid ; Nottinghamshire ; Southwell ; 85 ; 1898 ; 189 ; m ; 1983 ; 198 ; 11918
+NotA58 ; NTT_006 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 81 ; 1902 ; 190 ; f ; 1983 ; 198 ; 14384
+NotA65 ; NTT_007 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 86 ; 1897 ; 189 ; f ; 1983 ; 198 ; 7004
+NotA71 ; NTT_008 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 81 ; 1902 ; 190 ; m ; 1983 ; 198 ; 5527
+NotA80 ; NTT_009 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 78 ; 1906 ; 190 ; f ; 1984 ; 198 ; 8622
+NotA85 ; NTT_010 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 72 ; 1912 ; 191 ; f ; 1984 ; 198 ; 9421
+NotA99 ; NTT_011 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 91 ; 1893 ; 189 ; m ; 1984 ; 198 ; 9172
+ALI ; NTT_012 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ; 78 ; 1906 ; 190 ; f ; 1984 ; 198 ; 8441
+NotA8 ; NTT_013 ; Mid Nottinghamshire Nottingham ; Mid ; Nottinghamshire ; Nottingham ;  ; 1908 ; 190 ; m ;  ; 198 ; 13260
+A15 ; NTT_014 ; Mid Nottinghamshire  ; Mid ; Nottinghamshire ;  ; 71 ; 1911 ; 191 ; m ; 1982 ; 198 ; 15695
+A109 ; NTT_015 ; Mid Nottinghamshire Lambley ; Mid ; Nottinghamshire ; Lambley ;  ; 1912 ; 191 ; m ;  ; 198 ; 10486
+A109w ; NTT_015 ; Mid Nottinghamshire Lambley ; Mid ; Nottinghamshire ; Lambley ;  ; 1912 ; 191 ; f ;  ; 198 ; 1396
+NotA48 ; NTT_016 ; mid Nottinghamshire Nottingham ; mid ; Nottinghamshire ; Nottingham ;  ; 1884 ; 188 ; m ;  ; 198 ; 14459
+IBMrsA ; SAL_001 ; Mid Shropshire Coalport ; Mid ; Shropshire ; Coalport ; 76 ; 1902 ; 190 ; f ; 1978 ;  ; 764
+IBBB ; SAL_002,SAL_003 ; Mid Shropshire Coalport ; Mid ; Shropshire ; Coalport ; 86 ; 1889 ; 188 ; m ; 1975 ; 197 ; 6587
+IBWB ; SAL_004 ; Mid Shropshire Coalbrookdale ; Mid ; Shropshire ; Coalbrookdale ; 78 ; 1906 ; 190 ; m ; 1984 ; 197 ; 4790
+IBCB ; SAL_005 ; Mid Shropshire Dawley ; Mid ; Shropshire ; Dawley ; 88 ; 1893 ; 189 ; m ; 1981 ; 198 ; 2605
+IBNB ; SAL_006 ; Mid Shropshire Dawley ; Mid ; Shropshire ; Dawley ; 83 ; 1901 ; 190 ; m ; 1984 ; 198 ; 4982
+IBIB ; SAL_007 ; Mid Shropshire Broseley ; Mid ; Shropshire ; Broseley ;  ;  ;  ; f ; 1991 ; 198 ; 1897
+IBJ ; SAL_007 ; Mid Shropshire Broseley ; Mid ; Shropshire ; Broseley ;  ;  ;  ;  ; 1991 ; 198 ; 24
+NBall ; SAL_007 ; Mid Shropshire Broseley ; Mid ; Shropshire ; Broseley ;  ;  ;  ;  ; 1991 ; 198 ; 5
+IBAB ; SAL_008 ; Mid Shropshire Dawley ; Mid ; Shropshire ; Dawley ;  ;  ;  ; m ; 1988 ; 199 ; 4971
+IBGB ; SAL_009 ; Mid Shropshire Madeley ; Mid ; Shropshire ; Madeley ; 91 ; 1902 ; 190 ; m ; 1993 ; 198 ; 2941
+IBLB ; SAL_010 ; Mid Shropshire Madeley ; Mid ; Shropshire ; Madeley ; 81 ; 1913 ; 191 ; f ; 1994 ; 199 ; 1501
+IBBeBo ; SAL_011 ; Mid Shropshire Wellington ; Mid ; Shropshire ; Wellington ; 91 ; 1903 ; 190 ; m ; 1994 ; 199 ; 7416
+IBPB ; SAL_012 ; Mid Shropshire Shifnal ; Mid ; Shropshire ; Shifnal ; 88 ; 1907 ; 190 ; f ; 1995 ; 199 ; 1768
+IBFB ; SAL_013 ; Mid Shropshire Dawley ; Mid ; Shropshire ; Dawley ; 74 ; 1914 ; 191 ; m ; 1988 ; 199 ; 5851
+IBWiBr ; SAL_014,SAL_015 ; Mid Shropshire Telford ; Mid ; Shropshire ; Telford ; 99 ; 1886 ; 188 ; m ; 1985 ; 198 ; 8430
+IBED ; SAL_016 ; Mid Shropshire Coalport ; Mid ; Shropshire ; Coalport ; 72 ; 1903 ; 190 ; m ; 1975 ; 198 ; 2831
+IBAD ; SAL_017,SAL_018 ; Mid Shropshire  ; Mid ; Shropshire ;  ; 85 ; 1901 ; 190 ; m ; 1986 ; 197 ; 10532
+IBJD ; SAL_019 ; Mid Shropshire Ketley ; Mid ; Shropshire ; Ketley ; 69 ; 1916 ; 191 ; m ; 1985 ; 198 ; 4677
+IBErDi ; SAL_020 ; Mid Shropshire Madley ; Mid ; Shropshire ; Madley ; 82 ; 1901 ; 190 ; m ; 1983 ; 198 ; 6927
+IBCD ; SAL_021 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 77 ; 1907 ; 190 ; m ; 1983 ; 198 ; 3931
+IBMrsD ; SAL_022 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 81 ; 1894 ; 189 ; f ; 1975 ; 198 ; 1262
+IBME ; SAL_023 ; Mid Shropshire Oakengates ; Mid ; Shropshire ; Oakengates ; 76 ; 1906 ; 190 ; m ; 1982 ; 197 ; 15201
+IBLE ; SAL_024,SAL_025 ; Mid Shropshire Craigside ; Mid ; Shropshire ; Craigside ; 89 ; 1895 ; 189 ; m ; 1984 ; 198 ; 10477
+IBCE ; SAL_026 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 78 ; 1914 ; 191 ; m ; 1992 ; 198 ; 6301
+IBFF ; SAL_027 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ;  ;  ;  ; m ; 1982 ; 199 ; 4196
+IBMrsF ; SAL_028 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 89 ; 1890 ; 189 ; f ; 1979 ; 198 ; 1769
+IBSH ; SAL_029 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 79 ; 1908 ; 190 ; m ; 1987 ; 197 ; 1984
+IBAnBa ; SAL_029 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 76 ; 1911 ; 191 ; f ; 1987 ; 197 ; 3396
+IBAL ; SAL_030 ; Mid Shropshire Coalport ; Mid ; Shropshire ; Coalport ; 77 ; 1902 ; 190 ; m ; 1979 ; 198 ; 4366
+IBGL ; SAL_031 ; Mid Shropshire Dawley ; Mid ; Shropshire ; Dawley ; 85 ; 1906 ; 190 ; f ; 1991 ; 197 ; 5665
+IBGJ ; SAL_032 ; Mid Shropshire Madeley ; Mid ; Shropshire ; Madeley ; 83 ; 1899 ; 189 ; m ; 1982 ; 199 ; 4706
+IBTJ ; SAL_033 ; Mid Shropshire Telford ; Mid ; Shropshire ; Telford ; 82 ; 1901 ; 190 ; m ; 1983 ; 198 ; 4289
+IBCH ; SAL_034 ; Mid Shropshire Wellington ; Mid ; Shropshire ; Wellington ; 89 ; 1893 ; 189 ; m ; 1982 ; 198 ; 3332
+IBRH ; SAL_035 ; Mid Shropshire Ironbridge ; Mid ; Shropshire ; Ironbridge ; 79 ; 1901 ; 190 ; m ; 1980 ; 198 ; 1925
+IBBM ; SAL_036 ; Mid Shropshire Broseley ; Mid ; Shropshire ; Broseley ;  ;  ;  ; m ; 1979 ; 198 ; 6775
+IBHP ; SAL_037 ; Mid Shropshire Madeley ; Mid ; Shropshire ; Madeley ; 69 ; 1915 ; 191 ; m ; 1984 ; 197 ; 3436
+IBJP ; SAL_038 ; Mid Shropshire Lawley ; Mid ; Shropshire ; Lawley ; 73 ; 1906 ; 190 ; m ; 1979 ; 198 ; 6142
+IBEP ; SAL_039 ; Mid Shropshire Farley ; Mid ; Shropshire ; Farley ; 81 ; 1905 ; 190 ; m ; 1986 ; 197 ; 5528
+Wal128LG ; WAR_001 ; Mid Warwickshire Walsall ; Mid ; Warwickshire ; Walsall ;  ;  ;  ; m ;  ; 198 ; 8176
+WAR001unknown ; WAR_001 ; Mid Warwickshire Walsall ; Mid ; Warwickshire ; Walsall ;  ;  ;  ;  ;  ; 198 ; 
+DurML ; DUR_001 ; N Durham Birtley ; N ; Durham ; Birtley ;  ;  ; 191 ; m ;  ;  ; 9094
+DurNB ; DUR_002 ; N Durham Hartlepool ; N ; Durham ; Hartlepool ; 77 ; 1908 ; 190 ; m ; 1985 ; 198 ; 7927
+DurEL ; DUR_003 ; N Durham Hartlepool ; N ; Durham ; Hartlepool ;  ; 1897 ; 189 ; f ;  ; 198 ; 9595
+LanD1B ; LAN_001 ; N Lancashire Barrow ; N ; Lancashire ; Barrow ; 76 ; 1899 ; 189 ; f ; 1975 ; 198 ; 11426
+LAN002 ; LAN_002 ; N Lancashire Barrow ; N ; Lancashire ; Barrow ; 83 ; 1892 ; 189 ; f ; 1975 ; 197 ; 9347
+thirdperson ; LAN_002 ; N Lancashire Barrow ; N ; Lancashire ; Barrow ;  ;  ;  ; f ; 1975 ; 197 ; 
+Lang1p ; LAN_003 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 76 ; 1903 ; 190 ; m ; 1979 ; 197 ; 9453
+LanW1P ; LAN_004 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 80 ; 1899 ; 189 ; f ; 1979 ; 197 ; 9015
+LanC5P ; LAN_005 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 61 ; 1919 ; 191 ; f ; 1980 ; 197 ; 10763
+LanD1P ; LAN_006 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 71 ; 1908 ; 190 ; f ; 1979 ; 198 ; 10100
+LanF1P ; LAN_007 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 73 ; 1906 ; 190 ; m ; 1979 ; 197 ; 8594
+LanT3P ; LAN_008 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 93 ; 1886 ; 188 ; m ; 1979 ; 197 ; 10203
+LanH1P ; LAN_009 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 67 ; 1911 ; 191 ; f ; 1978 ; 197 ; 11122
+H3L ; LAN_010 ; N Lancashire Preston ; N ; Lancashire ; Preston ; 71 ; 1904 ; 190 ; m ; 1975 ; 197 ; 9688
+MH3L ; LAN_010 ; N Lancashire Preston ; N ; Lancashire ; Preston ;  ;  ;  ; f ; 1975 ; 197 ; 27
+LanMJ ; LAN_011 ; N Lancashire Crompton ; N ; Lancashire ; Crompton ; 47 ; 1930 ; 193 ; f ; 1977 ; 197 ; 13679
+LanEG ; LAN_012 ; N Lancashire Prescott ; N ; Lancashire ; Prescott ; 71 ; 1906 ; 190 ; m ; 1977 ; 197 ; 28001
+LanPK ; LAN_013 ; N Lancashire Prescott ; N ; Lancashire ; Prescott ; 62 ; 1914 ; 191 ; m ; 1976 ; 197 ; 727
+LanCD ; LAN_014 ; N Lancashire Huyton ; N ; Lancashire ; Huyton ; 63 ; 1913 ; 191 ; m ; 1976 ; 197 ; 54
+WigMWH ; LAN_015 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 56 ; 1926 ; 192 ; m ; 1982 ; 197 ; 6634
+WigMS ; LAN_016 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 82 ; 1899 ; 189 ; f ; 1981 ; 198 ; 4283
+WigMB ; LAN_017 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 78 ; 1904 ; 190 ; f ; 1982 ; 198 ; 3055
+WigPS ; LAN_018 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 35 ; 1946 ; 194 ; f ; 1981 ; 198 ; 926
+WigHT ; LAN_019 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 37 ; 1945 ; 194 ; m ; 1982 ; 198 ; 6267
+WigM ; LAN_019 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ;  ;  ;  ; f ; 1982 ; 198 ; 59
+WigWHJ ; LAN_020 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 76 ; 1906 ; 190 ; m ; 1982 ; 198 ; 14958
+WigJH ; LAN_021 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 53 ; 1929 ; 192 ; m ; 1982 ; 198 ; 615
+WigGRB ; LAN_022 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 56 ; 1925 ; 192 ; f ; 1981 ; 198 ; 7764
+WigWO ; LAN_023 ; N Lancashire Wigan ; N ; Lancashire ; Wigan ; 73 ; 1909 ; 190 ; m ; 1982 ; 198 ; 8807
+NblWL ; NBL_001 ; N Northumberland Cammerse ; N ; Northumberland ; Cammerse ; 80 ; 1891 ; 189 ; m ; 1971 ; 198 ; 395
+NblMN ; NBL_003 ; N Northumberland Choppington ; N ; Northumberland ; Choppington ; 83 ; 1890 ; 189 ; f ; 1973 ; 197 ; 7885
+NblJB ; NBL_006 ; N Northumberland Fenwick_Steads ; N ; Northumberland ; Fenwick_Steads ;  ;  ; 189 ; f ; 1975 ; 197 ; 8491
+NblAR ; NBL_007 ; N Northumberland Swarland ; N ; Northumberland ; Swarland ; 83 ; 1891 ; 189 ; m ; 1974 ; 197 ; 8502
+NblAn ; NBL_007 ; N Northumberland Swarland ; N ; Northumberland ; Swarland ;  ;  ;  ; f ; 1974 ; 197 ; 36
+NblGS ; NBL_008 ; N Northumberland Fenwick_Steads ; N ; Northumberland ; Fenwick_Steads ;  ;  ;  ;  ; 1974 ; 197 ; 3215
+WesAD ; WES_001 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 84 ; 1896 ; 189 ; f ; 1980 ; 197 ; 10252
+WesAE ; WES_002 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 76 ; 1905 ; 190 ; m ; 1981 ; 198 ; 4650
+WesAQ ; WES_003 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 84 ; 1898 ; 189 ; m ; 1982 ; 198 ; 4538
+WesAY ; WES_004 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 79 ; 1905 ; 190 ; m ; 1984 ; 198 ; 7514
+WesBE ; WES_005 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 74 ; 1910 ; 191 ; m ; 1984 ; 198 ; 11022
+WesBL ; WES_006 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 84 ; 1901 ; 190 ; f ; 1985 ; 198 ; 3051
+WesBP ; WES_007 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 73 ; 1912 ; 191 ; f ; 1985 ; 198 ; 4749
+WesBR ; WES_008 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 78 ; 1908 ; 190 ; m ; 1986 ; 198 ; 10527
+WesBX ; WES_009 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 79 ; 1907 ; 190 ; m ; 1986 ; 198 ; 5618
+WesCB ; WES_010 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 73 ; 1914 ; 191 ; m ; 1987 ; 198 ; 7862
+WesCE ; WES_011 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 85 ; 1902 ; 190 ; m ; 1987 ; 198 ; 1927
+WesCEa ; WES_011 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ;  ;  ; 192 ; m ; 1987 ; 198 ; 1263
+WesCU ; WES_012 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 90 ; 1899 ; 189 ; f ; 1989 ; 198 ; 6211
+WesCY ; WES_013 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 85 ; 1904 ; 190 ; f ; 1989 ; 198 ; 3191
+WesDA ; WES_014 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ;  ;  ;  ; m ; 1989 ; 198 ; 5473
+WesDB ; WES_015 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 83 ; 1906 ; 190 ; f ; 1989 ; 198 ; 5464
+WesDT ; WES_016 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 80 ; 1911 ; 191 ; f ; 1991 ; 198 ; 13473
+WesDX ; WES_017 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 81 ; 1910 ; 191 ; m ; 1991 ; 199 ; 22800
+WesAnon ; WES_017 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ;  ;  ;  ; f ; 1991 ; 199 ; 20
+WesHN ; WES_018 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 77 ; 1922 ; 192 ; m ; 1999 ; 199 ; 5064
+WesJN ; WES_018 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ;  ;  ;  ; f ; 1999 ; 199 ; 105
+WesZb ; WES_019 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 70 ; 1910 ; 191 ; m ; 1980 ; 199 ; 11876
+WesZs ; WES_019 ; N Westmorland Ambleside ; N ; Westmorland ; Ambleside ; 82 ; 1898 ; 189 ; f ; 1980 ; 199 ; 3083
+YksWF ; YKS_001 ; N Yorkshire Middlesbrough ; N ; Yorkshire ; Middlesbrough ;  ; 1910 ; 191 ; m ;  ; 198 ; 10012
+YksJV ; YKS_002 ; N Yorkshire Middlesbrough ; N ; Yorkshire ; Middlesbrough ;  ; 1899 ; 189 ; m ;  ; 198 ; 9439
+YksSL ; YKS_003 ; N Yorkshire Guisborough ; N ; Yorkshire ; Guisborough ;  ; 1912 ; 191 ; m ;  ; 198 ; 11899
+YksEH ; YKS_004 ; N Yorkshire Guisborough ; N ; Yorkshire ; Guisborough ;  ;  ;  ; f ;  ; 198 ; 1803
+YksGR ; YKS_005 ; N Yorkshire Guisborough ; N ; Yorkshire ; Guisborough ;  ;  ; 190 ; m ;  ; 198 ; 2954
+YksHS ; YKS_006 ; N Yorkshire Hinderwell ; N ; Yorkshire ; Hinderwell ;  ; 1910 ; 191 ; m ;  ; 198 ; 7200
+YksML ; YKS_007 ; N Yorkshire Middlesbrough ; N ; Yorkshire ; Middlesbrough ;  ; 1900 ; 190 ; m ;  ; 198 ; 11322
+YksMW ; YKS_008 ; N Yorkshire Redcar ; N ; Yorkshire ; Redcar ;  ; 1900 ; 190 ; f ;  ; 198 ; 9697
+YksWG ; YKS_009 ; N Yorkshire Loftus ; N ; Yorkshire ; Loftus ; 80 ;  ; 190 ; m ;  ; 198 ; 5277
+YksMG ; YKS_009 ; N Yorkshire Loftus ; N ; Yorkshire ; Loftus ;  ;  ;  ; f ;  ; 198 ; 363
+Yks_10 ; YKS_010 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ; 85 ; 1899 ; 189 ; m ; 1984 ; 198 ; 9574
+YksBR ; YKS_011 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ;  ;  ;  ; m ;  ; 198 ; 3686
+YksJS ; YKS_011 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ;  ;  ;  ; m ;  ; 198 ; 1407
+YksMR ; YKS_011 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ;  ; 1912 ; 191 ; f ;  ; 198 ; 2531
+YksAnon ; YKS_011 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ;  ;  ;  ;  ;  ; 198 ; 282
+IntHb ; YKS_011 ; N Yorkshire Hebden_Bridge ; N ; Yorkshire ; Hebden_Bridge ;  ;  ;  ; m ;  ; 198 ; 
+InvWR ; INV_001 ; SCH Inverness-shire Inverness ; SCH ; Inverness-shire ; Inverness ; 45 ; 1952 ; 195 ; m ;  ; 198 ; 3126
+RocAM ; ROC_001 ; SCH Ross_and_Cromarty Aultbea ; SCH ; Ross_and_Cromarty ; Aultbea ; 81 ; 1901 ; 190 ; f ; 1982 ;  ; 5685
+RocPN ; ROC_002 ; SCH Ross_and_Cromarty Hill_of_Fearn ; SCH ; Ross_and_Cromarty ; Hill_of_Fearn ; 79 ; 1921 ; 192 ; m ; 2000 ; 198 ; 4446
+SutDS ; SUT_001 ; SCH Sutherland Terryside ; SCH ; Sutherland ; Terryside ; 69 ; 1914 ; 191 ; m ; 1983 ; 200 ; 163
+SutGM ; SUT_002 ; SCH Sutherland Boulstoer ; SCH ; Sutherland ; Boulstoer ; 61 ; 1922 ; 192 ; m ; 1983 ; 198 ; 3809
+SutGMcK ; SUT_003 ; SCH Sutherland Durness ; SCH ; Sutherland ; Durness ; 82 ; 1901 ; 190 ; m ; 1983 ; 198 ; 3194
+SutTR ; SUT_004 ; SCH Sutherland Assynt ; SCH ; Sutherland ; Assynt ; 54 ; 1929 ; 192 ; m ; 1983 ; 198 ; 3449
+AnsJT ; ANS_001 ; SCL Angus Kirkton ; SCL ; Angus ; Kirkton ; 75 ; 1918 ; 191 ; m ; 1993 ; 198 ; 5698
+AnsAN ; ANS_001 ; SCL Angus Kirkton ; SCL ; Angus ; Kirkton ;  ;  ;  ;  ; 1993 ; 198 ; 
+AnsBS ; ANS_002 ; SCL Angus Forfar ; SCL ; Angus ; Forfar ; 81 ; 1919 ; 191 ; m ; 2000 ; 199 ; 1686
+AnsWB ; ANS_003 ; SCL Angus Forfar ; SCL ; Angus ; Forfar ; 100 ; 1896 ; 189 ; m ; 1996 ; 200 ; 6315
+AnsLC ; ANS_004 ; SCL Angus Arbroath ; SCL ; Angus ; Arbroath ; 65 ; 1928 ; 192 ; m ; 1993 ; 199 ; 2103
+AnsJL ; ANS_004 ; SCL Angus Arbroath ; SCL ; Angus ; Arbroath ;  ;  ; 192 ; m ; 1993 ; 199 ; 1973
+BanJS ; BAN_001 ; SCL Banffshire Keith ; SCL ; Banffshire ; Keith ; 76 ; 1914 ; 191 ; f ; 1990 ; 199 ; 5452
+DfsWH ; DFS_001 ; SCL Dumfriesshire Mickle_Kirkland ; SCL ; Dumfriesshire ; Mickle_Kirkland ; 72 ; 1910 ; 191 ; m ; 1982 ; 199 ; 9269
+DfsAN ; DFS_001 ; SCL Dumfriesshire Mickle_Kirkland ; SCL ; Dumfriesshire ; Mickle_Kirkland ;  ;  ;  ; f ; 1982 ; 199 ; 13
+ElnCD ; ELN_001 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 15 ;  ;  ; f ;  ; 198 ; 603
+ElnKR ; ELN_001 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 15 ;  ;  ; m ;  ; 198 ; 611
+ElnAS ; ELN_002,ELN_003,ELN_014 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; f ;  ; 197 ; 1985
+ElnAC ; ELN_002,ELN_014 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; m ;  ; 197 ; 4050
+ElnGB ; ELN_003 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 15 ;  ;  ; m ;  ; 197 ; 657
+ElnLS ; ELN_004,ELN_007,ELN_009 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 18 ;  ;  ; f ;  ; 197 ; 5595
+ElnAB ; ELN_004,ELN_007,ELN_008,ELN_009 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; f ;  ; 197 ; 7627
+ElnAG ; ELN_005,ELN_012 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; m ;  ; 197 ; 2242
+ElnML ; ELN_005,ELN_012 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 18 ;  ;  ; f ;  ; 197 ; 1733
+ElnEL ; ELN_006,ELN_011 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; f ;  ; 197 ; 2933
+ElnMS ; ELN_008 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 18 ;  ;  ; f ;  ; 197 ; 2359
+ElnIB ; ELN_010,ELN_011 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ; 17 ;  ;  ; m ;  ; 197 ; 2698
+ElnSH ; ELN_013 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; f ;  ; 197 ; 444
+ElnTR ; ELN_013 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; m ;  ; 197 ; 340
+EdbBK ; ELN_015 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; m ;  ; 197 ; 1425
+EdbIL ; ELN_015 ; SCL East_Lothian Tranent ; SCL ; East_Lothian ; Tranent ;  ;  ;  ; m ;  ; 197 ; 832
+FifPS ; FIF_001 ; SCL Fife Anstruther ; SCL ; Fife ; Anstruther ; 69 ; 1914 ; 191 ; m ; 1983 ;  ; 3465
+KcdRS ; KCD_001 ; SCL Kincardineshire Gourdon ; SCL ; Kincardineshire ; Gourdon ; 71 ; 1924 ; 192 ; m ; 1995 ; 198 ; 5426
+KcdES ; KCD_001 ; SCL Kincardineshire Gourdon ; SCL ; Kincardineshire ; Gourdon ;  ;  ;  ; f ; 1995 ; 198 ; 1666
+KrsWS ; KRS_001 ; SCL Kinross-shire Crook-o-Devon ; SCL ; Kinross-shire ; Crook-o-Devon ; 69 ; 1917 ; 191 ; m ; 1986 ; 199 ; 2218
+LksGH ; LKS_001 ; SCL Lanarkshire Symington ; SCL ; Lanarkshire ; Symington ; 75 ; 1910 ; 191 ; m ; 1985 ; 198 ; 3599
+MlnRS ; MLN_001 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; m ;  ; 198 ; 2049
+MlnCM ; MLN_002 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; f ;  ; 197 ; 1857
+MlnAnon ; MLN_002 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ;  ;  ; 197 ; 118
+MlnAA ; MLN_003 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ; 1907 ; 190 ; m ;  ; 197 ; 1796
+Mln2Anon ; MLN_003 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; f ;  ; 197 ; 50
+MlnSM ; MLN_004 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; f ;  ; 197 ; 389
+MlnDM ; MLN_004 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; m ;  ; 197 ; 1717
+MlnJM ; MLN_005 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; f ;  ; 197 ; 3299
+MlnRH ; MLN_006 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ;  ;  ; m ;  ; 197 ; 6042
+MlnJH ; MLN_007 ; SCL Midlothian Edinburgh ; SCL ; Midlothian ; Edinburgh ;  ; 1919 ; 191 ; m ;  ; 197 ; 12850
+PeeJP ; PEE_001 ; SCL Peebleshire West_Linton ; SCL ; Peebleshire ; West_Linton ; 33 ; 1952 ; 195 ; m ; 1985 ; 197 ; 2185
+PeeMT ; PEE_002 ; SCL Peebleshire Nether_Urd ; SCL ; Peebleshire ; Nether_Urd ; 79 ; 1905 ; 190 ; f ; 1984 ; 198 ; 12399
+PerSS ; PER_001 ; SCL Perthshire Perth ; SCL ; Perthshire ; Perth ; 84 ; 1902 ; 190 ; m ; 1986 ; 198 ; 3713
+PerTJ ; PER_002 ; SCL Perthshire Abernethy ; SCL ; Perthshire ; Abernethy ;  ;  ;  ; m ; 1986 ; 198 ; 2219
+PerAB ; PER_003 ; SCL Perthshire Perth ; SCL ; Perthshire ; Perth ; 80 ; 1913 ; 191 ; m ; 1993 ; 198 ; 8362
+PerHK ; PER_004 ; SCL Perthshire Perth ; SCL ; Perthshire ; Perth ; 73 ; 1913 ; 191 ; m ; 1986 ; 199 ; 4721
+PerWM ; PER_005 ; SCL Perthshire Crieff ; SCL ; Perthshire ; Crieff ;  ; 1893 ; 189 ; m ;  ; 198 ; 67
+PerWG ; PER_005 ; SCL Perthshire Crieff ; SCL ; Perthshire ; Crieff ;  ;  ;  ; m ;  ; 198 ; 1463
+SelJB ; SEL_001 ; SCL Selkirkshire Selkirk ; SCL ; Selkirkshire ; Selkirk ; 82 ; 1902 ; 190 ; m ; 1984 ; 198 ; 4357
+SelJM ; SEL_002 ; SCL Selkirkshire Ettrick ; SCL ; Selkirkshire ; Ettrick ; 59 ; 1926 ; 192 ; m ; 1985 ; 198 ; 2883
+SelAN ; SEL_003 ; SCL Selkirkshire Yarrow ; SCL ; Selkirkshire ; Yarrow ;  ; 1931 ; 193 ; m ;  ; 198 ; 1792
+WlnTW ; WLN_001 ; SCL West_Lothian Falkirk ; SCL ; West_Lothian ; Falkirk ; 60 ; 1927 ; 192 ; m ; 1987 ; 198 ; 1789
+WlnMO ; WLN_002 ; SCL West_Lothian Falkirk ; SCL ; West_Lothian ; Falkirk ;  ;  ;  ; f ; 1984 ; 198 ; 1961
+WlnMD ; WLN_003,WLN_004 ; SCL West_Lothian Falkirk ; SCL ; West_Lothian ; Falkirk ; 83 ; 1908 ; 190 ; f ; 1991 ; 198 ; 8980
+WlnES ; WLN_005,WLN_006 ; SCL West_Lothian Falkirk ; SCL ; West_Lothian ; Falkirk ; 57 ; 1931 ; 193 ; m ; 1988 ; 199 ; 3879
+JC ; KEN_001 ; SE Kent Whitstable ; SE ; Kent ; Whitstable ; 89 ; 1886 ; 188 ; m ; 1975 ; 198 ; 9505
+FK ; KEN_002 ; SE Kent Faversham ; SE ; Kent ; Faversham ; 88 ; 1887 ; 188 ; m ; 1975 ; 197 ; 13899
+HM ; KEN_003 ; SE Kent Faversham ; SE ; Kent ; Faversham ; 85 ; 1890 ; 189 ; m ; 1975 ; 197 ; 42253
+KentPB ; KEN_004,KEN_010,KEN_011 ; SE Kent Tenterden ; SE ; Kent ; Tenterden ; 87 ; 1889 ; 188 ; m ; 1976 ; 197 ; 42301
+KentTAD ; KEN_005 ; SE Kent Sheerness ; SE ; Kent ; Sheerness ; 86 ; 1890 ; 189 ; m ; 1976 ; 197 ; 10491
+WS ; KEN_006 ; SE Kent Sittingbourne ; SE ; Kent ; Sittingbourne ; 84 ; 1892 ; 189 ; m ; 1976 ; 197 ; 11954
+KentEDG ; KEN_007 ; SE Kent Lydd ; SE ; Kent ; Lydd ; 81 ; 1895 ; 189 ; m ; 1976 ; 197 ; 13795
+WG ; KEN_007 ; SE Kent Lydd ; SE ; Kent ; Lydd ;  ;  ;  ; f ; 1976 ; 197 ; 586
+KentSPR ; KEN_008 ; SE Kent Lydd ; SE ; Kent ; Lydd ; 83 ; 1893 ; 189 ; m ; 1976 ; 197 ; 17588
+KentAW1 ; KEN_009 ; SE Kent Faversham ; SE ; Kent ; Faversham ; 81 ; 1894 ; 189 ; m ; 1975 ; 197 ; 12085
+CA ; LND_001 ; SE London London_North ; SE ; London ; London_North ; 61 ; 1917 ; 191 ; m ; 1978 ; 197 ; 17121
+EB ; LND_002 ; SE London London_North ; SE ; London ; London_North ; 56 ; 1926 ; 192 ; f ; 1982 ; 197 ; 15286
+BHu ; LND_002 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ; m ; 1982 ; 197 ; 512
+FM ; LND_003 ; SE London London_North ; SE ; London ; London_North ; 67 ; 1914 ; 191 ; f ; 1981 ; 198 ; 13978
+JG ; LND_004 ; SE London London_North ; SE ; London ; London_North ; 66 ; 1916 ; 191 ; m ; 1982 ; 198 ; 15371
+D ; LND_004,SOM_030 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ; f ; 1982 ; 198 ; 340
+DG ; LND_004 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ; f ; 1982 ; 198 ; 40
+DL ; LND_004 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ; f ; 1982 ; 198 ; 380
+CG ; LND_004 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ;  ; 1982 ; 198 ; 514
+LA ; LND_005 ; SE London London_North ; SE ; London ; London_North ; 80 ; 1901 ; 190 ; f ; 1981 ; 198 ; 12554
+DA ; LND_005 ; SE London London_North ; SE ; London ; London_North ;  ;  ;  ; f ; 1981 ; 198 ; 
+GA ; LND_006,LND_007 ; SE London Poplar-London_Port ; SE ; London ; Poplar-London_Port ; 61 ; 1924 ; 192 ; m ; 1985 ; 198 ; 30898
+MdxCG ; MDX_001 ; SE Middlesex Pinner ; SE ; Middlesex ; Pinner ; 79 ; 1897 ; 189 ; m ; 1976 ; 198 ; 13691
+CP ; MDX_002 ; SE Middlesex Pinner ; SE ; Middlesex ; Pinner ; 70 ; 1905 ; 190 ; m ; 1975 ; 197 ; 17389
+AnnieShort ; SFK_001 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ;  ;  ;  ; f ;  ; 197 ; 9906
+EAA1 ; SFK_002 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 74 ; 1902 ; 190 ; m ; 1976 ;  ; 7690
+EF1 ; SFK_003 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 79 ; 1898 ; 189 ; m ; 1977 ; 197 ; 8058
+ELF ; SFK_004 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 71 ; 1905 ; 190 ; m ; 1976 ; 197 ; 12222
+HED ; SFK_005 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 77 ; 1900 ; 190 ; m ; 1977 ; 197 ; 14808
+EJM ; SFK_006 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 80 ; 1896 ; 189 ; m ; 1976 ; 197 ; 7383
+RR1 ; SFK_007 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 70 ; 1906 ; 190 ; m ; 1976 ; 197 ; 8367
+REK ; SFK_008 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 92 ; 1884 ; 188 ; m ; 1976 ; 197 ; 2078
+JR1 ; SFK_009,SFK_027 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 50 ; 1926 ; 192 ; m ; 1976 ; 197 ; 12023
+GCS ; SFK_010 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 73 ; 1903 ; 190 ; m ; 1976 ; 197 ; 7774
+JRS ; SFK_011 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 85 ; 1891 ; 189 ; m ; 1976 ; 197 ; 10072
+WT ; SFK_012,SFK_036 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 68 ; 1908 ; 190 ; m ; 1976 ; 197 ; 17349
+HJT1 ; SFK_013 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 72 ; 1904 ; 190 ; m ; 1976 ; 197 ; 8865
+SufEAA2 ; SFK_014 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 74 ; 1902 ; 190 ;  ; 1978 ; 197 ; 8851
+SufEAA3 ; SFK_015 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 75 ; 1902 ; 190 ; m ; 1977 ; 197 ; 7930
+SufEAA4 ; SFK_016 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 75 ; 1902 ; 190 ; m ; 1977 ; 197 ; 8424
+SufHFJE ; SFK_017 ; SE Suffolk Yarmouth ; SE ; Suffolk ; Yarmouth ; 67 ; 1912 ; 191 ; m ; 1979 ; 197 ; 8054
+SufEF2 ; SFK_018 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 79 ; 1898 ; 189 ; m ; 1977 ; 197 ; 7636
+EJF ; SFK_019 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 64 ; 1912 ; 191 ; m ; 1976 ; 197 ; 4033
+SufGFK ; SFK_020 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 74 ; 1907 ; 190 ; m ; 1981 ; 197 ; 7192
+SufHED2 ; SFK_021 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 78 ; 1900 ; 190 ; m ; 1978 ; 198 ; 6678
+SufHED3 ; SFK_022 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 77 ; 1900 ; 190 ; m ; 1978 ; 197 ; 6676
+SufHED4 ; SFK_023 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 78 ; 1900 ; 190 ; m ; 1978 ; 197 ; 6518
+SufWEJ1 ; SFK_024,SFK_025,SFK_026 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 73 ; 1906 ; 190 ; m ; 1978 ; 197 ; 22627
+SufHJT2 ; SFK_028,SFK_029 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 73 ; 1904 ; 190 ; m ; 1977 ; 197 ; 17245
+SufGCS2 ; SFK_030,SFK_033 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 75 ; 1903 ; 190 ; m ; 1978 ; 198 ; 14530
+SufHED5 ; SFK_031 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 80 ; 1900 ; 190 ; m ; 1980 ; 197 ; 7177
+SufWCG1 ; SFK_032 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 67 ; 1909 ; 190 ; m ; 1976 ; 198 ; 10052
+SufSMW ; SFK_034 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 79 ; 1900 ; 190 ; m ; 1979 ; 198 ; 8459
+SufEAA5 ; SFK_035,SFK_038 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 78 ; 1902 ; 190 ; m ; 1980 ; 197 ; 15725
+HJWC ; SFK_037 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 74 ; 1902 ; 190 ; m ; 1976 ; 197 ; 9928
+SufEQU ; SFK_039 ; SE Suffolk Lowestoft ; SE ; Suffolk ; Lowestoft ; 72 ; 1911 ; 191 ; m ; 1983 ;  ; 8084
+CAVA_DB ; CON_001 ; SW Cornwall Churchtown ; SW ; Cornwall ; Churchtown ;  ; 1895 ; 189 ; m ;  ; 198 ; 3036
+CAVA_HJ ; CON_002 ; SW Cornwall Carnelloe ; SW ; Cornwall ; Carnelloe ;  ;  ;  ; f ;  ; 198 ; 4058
+CAVA_PV ; CON_003 ; SW Cornwall St._Ives ; SW ; Cornwall ; St._Ives ; 86 ; 1892 ; 189 ; m ; 1978 ; 198 ; 5684
+Inf ; CON_003 ; SW Cornwall St._Ives ; SW ; Cornwall ; St._Ives ;  ;  ;  ;  ; 1978 ; 198 ; 
+CAVA_TC ; CON_004 ; SW Cornwall St._Ives ; SW ; Cornwall ; St._Ives ;  ;  ;  ; m ;  ; 197 ; 1831
+CAVA_WJB ; CON_005 ; SW Cornwall Gurnards_Head ; SW ; Cornwall ; Gurnards_Head ; 74 ; 1904 ; 190 ; m ; 1978 ; 198 ; 7597
+CAVA_WW ; CON_006 ; SW Cornwall Pendeen ; SW ; Cornwall ; Pendeen ;  ;  ; 190 ; m ; 1979 ; 197 ; 4905
+CW ; CON_006 ; SW Cornwall Pendeen ; SW ; Cornwall ; Pendeen ;  ;  ;  ; f ; 1979 ; 197 ; 3
+ICS_JE ; CON_007 ; SW Cornwall St._Just ; SW ; Cornwall ; St._Just ; 59 ; 1920 ; 192 ; m ; 1979 ; 197 ; 10857
+ICS_JP ; CON_008 ; SW Cornwall Heamoor ; SW ; Cornwall ; Heamoor ;  ;  ;  ; m ; 1979 ; 197 ; 9298
+ICS_EW ; CON_009 ; SW Cornwall Ludgvan ; SW ; Cornwall ; Ludgvan ; 66 ; 1914 ; 191 ; m ; 1980 ; 197 ; 6739
+ICS_MW ; CON_009 ; SW Cornwall Ludgvan ; SW ; Cornwall ; Ludgvan ; 68 ; 1912 ; 191 ; f ; 1980 ; 197 ; 2662
+ICS_RM ; CON_010 ; SW Cornwall Gulval ; SW ; Cornwall ; Gulval ; 70 ; 1910 ; 191 ; m ; 1980 ; 198 ; 8630
+CorJLN ; CON_011 ; SW Cornwall Sennen ; SW ; Cornwall ; Sennen ; 69 ; 1910 ; 191 ; m ; 1979 ; 198 ; 37078
+CorPO ; CON_012 ; SW Cornwall Nancledra ; SW ; Cornwall ; Nancledra ; 64 ; 1915 ; 191 ; m ; 1979 ; 197 ; 396
+TCA_RA ; DEV_001 ; SW Devon Blackawton ; SW ; Devon ; Blackawton ; 76 ; 1909 ; 190 ; m ; 1985 ; 197 ; 10229
+unknown ; DEV_001 ; SW Devon Blackawton ; SW ; Devon ; Blackawton ;  ;  ;  ; f ; 1985 ; 197 ; 
+TCA_GB ; DEV_002 ; SW Devon Galmpton ; SW ; Devon ; Galmpton ;  ; 1900 ; 190 ; m ;  ; 198 ; 5591
+TCA_EC ; DEV_003 ; SW Devon Brixham ; SW ; Devon ; Brixham ;  ;  ;  ; f ;  ; 198 ; 4891
+TCA_C ; DEV_003 ; SW Devon Brixham ; SW ; Devon ; Brixham ;  ;  ;  ; m ;  ; 198 ; 1723
+TCA_SC ; DEV_004 ; SW Devon Totnes ; SW ; Devon ; Totnes ;  ;  ;  ; m ; 1985 ; 198 ; 4728
+DEV004anonymous ; DEV_004 ; SW Devon Totnes ; SW ; Devon ; Totnes ;  ;  ;  ;  ; 1985 ; 198 ; 52
+TCA_FP ; DEV_005 ; SW Devon Totnes ; SW ; Devon ; Totnes ; 82 ; 1902 ; 190 ; m ; 1984 ; 198 ; 10978
+TCA_GR ; DEV_006 ; SW Devon Dartmouth ; SW ; Devon ; Dartmouth ; 83 ; 1901 ; 190 ; m ; 1984 ; 198 ; 7521
+TCA_EA ; DEV_007 ; SW Devon Totnes ; SW ; Devon ; Totnes ; 93 ; 1892 ; 189 ; f ; 1985 ; 198 ; 8955
+TCA_FK ; DEV_008 ; SW Devon Totnes ; SW ; Devon ; Totnes ;  ; 1910 ; 191 ; m ;  ; 198 ; 8384
+TCA_K ; DEV_008 ; SW Devon Totnes ; SW ; Devon ; Totnes ;  ;  ;  ; f ;  ; 198 ; 4163
+TCA_WH ; DEV_009 ; SW Devon Totnes ; SW ; Devon ; Totnes ; 79 ; 1906 ; 190 ; m ; 1985 ;  ; 11368
+TCA_WC ; DEV_010 ; SW Devon Buckfast ; SW ; Devon ; Buckfast ;  ; 1913 ; 191 ; f ;  ; 198 ; 9666
+TCA_PR ; DEV_011 ; SW Devon Blackawton ; SW ; Devon ; Blackawton ; 87 ; 1898 ; 189 ; m ; 1985 ;  ; 3722
+TCA_DR ; DEV_011 ; SW Devon Blackawton ; SW ; Devon ; Blackawton ;  ;  ;  ; f ; 1985 ;  ; 501
+FP ; OXF_001 ; SW Oxfordshire Leafield ; SW ; Oxfordshire ; Leafield ; 81 ; 1891 ; 189 ; m ; 1972 ; 198 ; 3503
+BF ; OXF_001 ; SW Oxfordshire Leafield ; SW ; Oxfordshire ; Leafield ; 73 ; 1899 ; 189 ; m ; 1972 ; 198 ; 2984
+GW ; OXF_002 ; SW Oxfordshire Leafield ; SW ; Oxfordshire ; Leafield ; 102 ; 1877 ; 187 ; m ; 1979 ; 197 ; 7023
+XW ; OXF_002 ; SW Oxfordshire Leafield ; SW ; Oxfordshire ; Leafield ;  ;  ;  ; f ; 1979 ; 197 ; 590
+SRLM_HR ; SOM_001 ; SW Somerset West_Stoughton ; SW ; Somerset ; West_Stoughton ;  ;  ;  ; m ; 1983 ; 197 ; 5447
+SRLM_PG ; SOM_002 ; SW Somerset  ; SW ; Somerset ;  ;  ;  ;  ; m ; 1983 ; 198 ; 3574
+SRLM_B ; SOM_003 ; SW Somerset Babcary ; SW ; Somerset ; Babcary ; 86 ; 1897 ; 189 ; m ; 1983 ; 198 ; 3662
+SRLM_CK ; SOM_004 ; SW Somerset North_Burrowbridge ; SW ; Somerset ; North_Burrowbridge ; 71 ; 1916 ; 191 ; m ; 1987 ; 198 ; 4983
+SRLM_RF ; SOM_005 ; SW Somerset Street ; SW ; Somerset ; Street ; 76 ; 1905 ; 190 ; m ; 1981 ; 198 ; 7543
+SRLM_AW ; SOM_006 ; SW Somerset Sunnyside ; SW ; Somerset ; Sunnyside ; 89 ; 1894 ; 189 ; m ; 1982 ; 198 ; 4274
+SRLM_PT ; SOM_007 ; SW Somerset Evercreech ; SW ; Somerset ; Evercreech ; 82 ; 1898 ; 189 ; m ; 1980 ; 198 ; 6321
+wife ; SOM_007 ; SW Somerset Evercreech ; SW ; Somerset ; Evercreech ;  ;  ;  ; f ; 1980 ; 198 ; 88
+SRLM_CH ; SOM_008 ; SW Somerset Petherton ; SW ; Somerset ; Petherton ; 86 ; 1904 ; 190 ; m ; 1990 ; 198 ; 5499
+SRLM_ES ; SOM_008,SOM_036 ; SW Somerset Petherton ; SW ; Somerset ; Petherton ;  ;  ;  ;  ; 1990 ; 198 ; 3565
+SRLM_CA ; SOM_009 ; SW Somerset Horton ; SW ; Somerset ; Horton ; 75 ; 1916 ; 191 ; m ; 1991 ; 199 ; 10652
+SRLM_WB ; SOM_010,SOM_011 ; SW Somerset Compton_Dundon ; SW ; Somerset ; Compton_Dundon ; 76 ; 1904 ; 190 ; m ; 1980 ; 199 ; 24872
+SRLM_SH ; SOM_012 ; SW Somerset Buckleigh ; SW ; Somerset ; Buckleigh ; 68 ; 1927 ; 192 ; m ; 1995 ; 198 ; 6345
+SRLM_GG ; SOM_013 ; SW Somerset Yeovil ; SW ; Somerset ; Yeovil ; 78 ; 1918 ; 191 ; m ; 1996 ; 199 ; 4597
+SRLM_RM ; SOM_014 ; SW Somerset Barton_St._David ; SW ; Somerset ; Barton_St._David ; 78 ; 1902 ; 190 ; m ; 1980 ; 199 ; 10531
+M ; SOM_014 ; SW Somerset Barton_St._David ; SW ; Somerset ; Barton_St._David ; 78 ; 1902 ; 190 ; f ; 1980 ; 199 ; 
+SRLM_HH ; SOM_015 ; SW Somerset Hatch_Beauchamp ; SW ; Somerset ; Hatch_Beauchamp ; 84 ; 1889 ; 188 ; m ; 1973 ; 198 ; 2697
+SRLM_WP ; SOM_016 ; SW Somerset Stoke_St._Gregory ; SW ; Somerset ; Stoke_St._Gregory ; 89 ; 1884 ; 188 ; m ; 1973 ; 197 ; 3135
+SRLM_LD ; SOM_017 ; SW Somerset Baltonsborough ; SW ; Somerset ; Baltonsborough ; 85 ; 1888 ; 188 ; m ; 1973 ; 197 ; 3277
+SRLM_AB ; SOM_018 ; SW Somerset Fivehead ; SW ; Somerset ; Fivehead ; 72 ; 1901 ; 190 ; m ; 1973 ; 197 ; 2852
+SRLM_W ; SOM_019 ; SW Somerset Coley ; SW ; Somerset ; Coley ;  ;  ;  ; m ; 1973 ; 197 ; 11318
+SRLM_AE ; SOM_020 ; SW Somerset Moorwood_Oakhill ; SW ; Somerset ; Moorwood_Oakhill ; 86 ; 1892 ; 189 ; m ; 1978 ; 197 ; 3402
+SRLM_R ; SOM_021 ; SW Somerset Ashwick ; SW ; Somerset ; Ashwick ;  ;  ;  ; m ; 1978 ; 197 ; 6976
+SRLM_T ; SOM_022 ; SW Somerset Churchingfold_Beaminster ; SW ; Somerset ; Churchingfold_Beaminster ;  ;  ;  ; m ; 1968 ; 197 ; 1345
+SRLM_S ; SOM_022 ; SW Somerset Churchingfold_Beaminster ; SW ; Somerset ; Churchingfold_Beaminster ;  ;  ;  ; m ; 1968 ; 197 ; 1252
+SRLM_M ; SOM_023 ; SW Somerset Wedmore ; SW ; Somerset ; Wedmore ;  ;  ;  ; f ; 1983 ; 196 ; 931
+SRLM_CM ; SOM_023 ; SW Somerset Wedmore ; SW ; Somerset ; Wedmore ;  ;  ;  ; m ; 1983 ; 196 ; 754
+SRLM_HM ; SOM_024 ; SW Somerset North_Bridgwater ; SW ; Somerset ; North_Bridgwater ; 81 ; 1902 ; 190 ; m ; 1983 ; 198 ; 4132
+SRLM_CJ ; SOM_025 ; SW Somerset  ; SW ; Somerset ;  ;  ;  ;  ; m ; 1983 ; 198 ; 1066
+SRLM_HC ; SOM_026 ; SW Somerset North_Curry ; SW ; Somerset ; North_Curry ; 71 ; 1912 ; 191 ; m ; 1983 ; 198 ; 1578
+SRLM_TP ; SOM_027 ; SW Somerset Kingston_Seymour ; SW ; Somerset ; Kingston_Seymour ; 81 ; 1904 ; 190 ; m ; 1985 ; 198 ; 1525
+SRLM_GP ; SOM_027 ; SW Somerset Kingston_Seymour ; SW ; Somerset ; Kingston_Seymour ;  ;  ;  ; f ; 1985 ; 198 ; 1549
+SRLM_WT ; SOM_028 ; SW Somerset Bridgwater ; SW ; Somerset ; Bridgwater ; 87 ; 1897 ; 189 ; m ; 1984 ; 198 ; 14014
+SRLM_JA ; SOM_029 ; SW Somerset Evercreech ; SW ; Somerset ; Evercreech ; 70 ; 1915 ; 191 ; m ; 1985 ; 198 ; 6716
+SRLM_HW ; SOM_030 ; SW Somerset Henley ; SW ; Somerset ; Henley ; 88 ; 1897 ; 189 ; m ; 1985 ; 198 ; 4455
+W ; SOM_030 ; SW Somerset Henley ; SW ; Somerset ; Henley ;  ;  ;  ;  ; 1985 ; 198 ; 396
+SRLM_Y ; SOM_031 ; SW Somerset Galhampton ; SW ; Somerset ; Galhampton ; 83 ; 1894 ; 189 ; m ; 1981 ; 198 ; 5632
+SRLM_HG ; SOM_032 ; SW Somerset Butleigh ; SW ; Somerset ; Butleigh ; 82 ; 1904 ; 190 ; m ; 1986 ; 198 ; 8869
+SRLM_EC ; SOM_033 ; SW Somerset Glastonbury ; SW ; Somerset ; Glastonbury ; 72 ; 1923 ; 192 ; m ; 1995 ; 198 ; 8016
+SRLM_EW ; SOM_034 ; SW Somerset North_Petherton ; SW ; Somerset ; North_Petherton ; 83 ; 1910 ; 191 ; f ; 1993 ; 199 ; 2971
+SRLM_SC ; SOM_035 ; SW Somerset Glastonbury ; SW ; Somerset ; Glastonbury ; 80 ; 1914 ; 191 ; m ; 1994 ; 199 ; 3523
+TrbrGR ; WIL_001 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 85 ; 1907 ; 190 ; m ; 1992 ; 198 ; 12107
+TrbrJH ; WIL_002 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 58 ; 1934 ; 193 ; f ; 1992 ; 199 ; 5967
+TrbrJS ; WIL_003 ; SW Wiltshire Westbury ; SW ; Wiltshire ; Westbury ;  ;  ;  ; m ; 1987 ; 199 ; 9254
+TrbrDP ; WIL_004 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 80 ; 1912 ; 191 ; m ; 1992 ; 198 ; 7834
+TrbrCS ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 91 ; 1901 ; 190 ; m ; 1992 ; 199 ; 7984
+TrbrViv ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 97
+TrbrD1 ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 1911
+TrbrD2 ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 109
+TrbrCN ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ;  ; 1992 ; 199 ; 5
+TrbrLW ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 57
+TrbrDH ; WIL_005 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ;  ; 1992 ; 199 ; 11
+TrbrGSR ; WIL_006 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 66 ; 1926 ; 192 ; m ; 1992 ; 199 ; 7662
+TrbrBJ ; WIL_007 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; m ; 1992 ; 199 ; 3938
+TrbrKJ ; WIL_007 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 52 ; 1940 ; 194 ; f ; 1992 ; 199 ; 1709
+TrbrRCC ; WIL_008 ; SW Wiltshire Westbury ; SW ; Wiltshire ; Westbury ; 71 ; 1922 ; 192 ; m ; 1993 ; 199 ; 12930
+WflsFP ; WIL_009 ; SW Wiltshire Enford ; SW ; Wiltshire ; Enford ;  ; 1914 ; 191 ; m ;  ; 199 ; 4048
+Y ; WIL_009 ; SW Wiltshire Enford ; SW ; Wiltshire ; Enford ;  ;  ;  ; f ;  ; 199 ; 219
+WflsWGP ; WIL_010 ; SW Wiltshire Urchfont ; SW ; Wiltshire ; Urchfont ;  ;  ; 189 ; m ; 1982 ;  ; 4507
+WflsWH ; WIL_011 ; SW Wiltshire Edington ; SW ; Wiltshire ; Edington ; 86 ; 1900 ; 190 ; m ;  ; 198 ; 3183
+WflsGW ; WIL_011 ; SW Wiltshire Edington ; SW ; Wiltshire ; Edington ;  ;  ;  ; m ;  ; 198 ; 1387
+WflsEF ; WIL_012 ; SW Wiltshire Donhead_St._Andrew ; SW ; Wiltshire ; Donhead_St._Andrew ; 93 ; 1890 ; 189 ; f ; 1983 ; 198 ; 2503
+TrbrVL ; WIL_013 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 78 ; 1914 ; 191 ; f ; 1992 ; 198 ; 1093
+TrbrGHG ; WIL_014 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 79 ; 1913 ; 191 ; m ; 1992 ; 199 ; 4269
+TrbrEGC ; WIL_015,WIL_016 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 83 ; 1909 ; 190 ; m ; 1992 ; 199 ; 15065
+TrbrAH ; WIL_017 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 4952
+TrbrQD ; WIL_017 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 4432
+TrbrBC ; WIL_017 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ;  ;  ;  ; f ; 1992 ; 199 ; 867
+TrbrDC ; WIL_018 ; SW Wiltshire Melksham ; SW ; Wiltshire ; Melksham ;  ; 1909 ; 190 ; f ; 1982 ; 199 ; 11881
+ML ; WIL_018 ; SW Wiltshire Melksham ; SW ; Wiltshire ; Melksham ;  ;  ;  ;  ; 1982 ; 199 ; 62
+Jack ; WIL_018 ; SW Wiltshire Melksham ; SW ; Wiltshire ; Melksham ;  ;  ;  ; m ; 1982 ; 199 ; 183
+TrbrKM ; WIL_019 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 92 ; 1901 ; 190 ; f ; 1993 ; 198 ; 5208
+TrbrRS ; WIL_020,WIL_021 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 79 ; 1914 ; 191 ; m ; 1993 ; 199 ; 2710
+TrbrS ; WIL_021 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 73 ; 1920 ; 192 ; f ; 1993 ; 199 ; 1151
+TrbrFC ; WIL_022 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 71 ; 1923 ; 192 ; m ; 1994 ; 199 ; 17690
+TrbrJC ; WIL_022 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 61 ; 1933 ; 193 ; f ; 1994 ; 199 ; 6445
+TrbrAS ; WIL_023 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 81 ; 1913 ; 191 ; f ; 1994 ; 199 ; 8061
+TrbrIS ; WIL_024 ; SW Wiltshire Trowbridge ; SW ; Wiltshire ; Trowbridge ; 74 ; 1920 ; 192 ; m ; 1994 ; 199 ; 4973
+AL ; DEN_001 ; Wal Denbighshire Conwy ; Wal ; Denbighshire ; Conwy ;  ;  ; 189 ; f ;  ; 199 ; 5562
+GwyBV ; DEN_002 ; Wal Denbighshire  ; Wal ; Denbighshire ;  ;  ; 1904 ; 190 ; m ;  ;  ; 7218
+GwyHHJ ; DEN_003 ; Wal Denbighshire  ; Wal ; Denbighshire ;  ;  ;  ;  ; m ;  ;  ; 8057
+GwyME ; DEN_003 ; Wal Denbighshire  ; Wal ; Denbighshire ;  ;  ;  ;  ; m ;  ;  ; 513
+GwyWL ; DEN_003 ; Wal Denbighshire  ; Wal ; Denbighshire ;  ;  ; 1912 ; 191 ; m ;  ;  ; 2272
+GwyR ; DEN_004 ; Wal Denbighshire  ; Wal ; Denbighshire ;  ; 87 ;  ;  ; f ;  ;  ; 13662
+CwmWTC ; GLA_001 ; Wal Glamorganshire Cwmfelin ; Wal ; Glamorganshire ; Cwmfelin ; 89 ; 1884 ; 188 ; m ; 1973 ;  ; 6755
+BedHT ; GLA_002 ; Wal Glamorganshire Bedlinog ; Wal ; Glamorganshire ; Bedlinog ; 78 ; 1896 ; 189 ; m ; 1974 ; 197 ; 8463
+SwanBE ; GLA_003 ; Wal Glamorganshire Swansea ; Wal ; Glamorganshire ; Swansea ; 87 ; 1886 ; 188 ; m ; 1973 ; 197 ; 7896
+WalWTA ; GLA_004 ; Wal Glamorgan Bishopston ; Wal ; Glamorgan ; Bishopston ;  ;  ;  ; m ; 1975 ; 197 ; 5505
+WalDJN ; GLA_005 ; Wal Glamorgan Plasmarl ; Wal ; Glamorgan ; Plasmarl ; 81 ; 1895 ; 189 ; m ; 1976 ; 197 ; 8712
+WalDTC ; GLA_006 ; Wal Glamorgan Townhill ; Wal ; Glamorgan ; Townhill ; 77 ; 1899 ; 189 ; m ; 1976 ; 197 ; 5469
+WalJSD ; GLA_007 ; Wal Glamorgan Pontardulais ; Wal ; Glamorgan ; Pontardulais ; 78 ; 1898 ; 189 ; m ; 1976 ; 197 ; 8671

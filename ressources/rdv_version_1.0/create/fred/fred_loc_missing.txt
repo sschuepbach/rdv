@@ -1,0 +1,35 @@
+##unfindable locations in FRED
+# listed location > found location/substitute
+#substitute locations are either the island/county's major town or a location in the estimated area around the missing location
+
+south uist, staffin clachan > clachan
+
+maliger, hebrides >  portree
+
+howbeg (apparently some stone age settlement!), hebrides > howmore
+
+innes, bernerey, hebrides > bernerey
+
+claddach, carinish > carinish
+
+caldwell, leicestershire > chadwell
+
+craigside, shropshire > somewhere around Pant/Knockin/Oswestry
+
+cammerse, northumberland > morpeth
+
+mickle kirkland, highlands > kirkland
+
+yarmouth, suffolk > great yarmouth, norfolk
+
+carnelloe (apparently some cliffs near Zennor, Cornwall) > Zennor
+
+petherton, somerset > south petherton (north petherton also exists but is very close)
+
+buckleigh, somerset > taunton
+
+churchingfold beaminster > beaminster
+
+
+
+

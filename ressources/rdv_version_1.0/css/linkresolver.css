@@ -1,0 +1,46 @@
+.lr {
+    margin: 10px;
+    border-bottom: 1px solid grey;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.holding {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.holding:first-child {
+    margin-bottom: 10px;
+}
+.tg h2, .holding h2 {
+    font-size: 13px;
+    margin: 0;
+}
+.add_second_td span {
+    display: inline-block;
+    text-align: justify;
+    vertical-align: text-top;
+}
+.t_ezb_yellow, .t_ezb_red, .t_ezb_green {
+    background-image: url("images/ezb_yellow.gif");
+    display: inline-block;
+    height: 14px;
+    margin-right: 2px;
+    vertical-align: text-top;
+    width: 42px;
+}
+.t_ezb_green {
+    background-image: url("images/ezb_green.gif");
+}
+.t_ezb_red {
+    background-image: url("images/ezb_red.gif");
+}
+.t_link {
+    margin-left: 3px;
+}
+.t_link a {
+    background-image: url("images/link.png");
+    color: transparent;
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+}
