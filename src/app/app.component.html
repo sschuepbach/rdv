@@ -1,3 +1,249 @@
-<h1>
-  {{title}}
-</h1>
+<div class="container mt-3">
+
+  <!-- <pre>{{queryFormat | json}}</pre> -->
+
+  <!-- Form als aeusserstes Element der Suche -->
+  <form [formGroup]="searchForm">
+
+    <!-- Button "Neue Suche" -->
+    <button class="btn btn-default btn-sm" (click)="resetSearch()">Neue Suche</button>
+
+
+
+    <!-- Suchfelder -->
+    <div class="mt-3">
+      <div class="input-group searchfieldrow" *ngFor="let field of queryFormat.searchFields | objectKeys">
+
+        <!-- Auswahl des Suchfeldes (Freitext, Titel, Person,...) -->
+        <div class="input-group-btn">
+          <select class="btn btn-sm" [formControlName]="'selectSearchField_' + field" #selectSearchField (change)="updateSearchField(field, selectSearchField.value)">
+      <option *ngFor="let option of searchFieldOpts" [value]="option[0]">{{option[1]}}</option>
+          </select>
+        </div>
+
+        <!-- Suchfeld -->
+        <input class="form-control form-control-sm" tpye="text" #searchField (keyup)="searchComplex(field, searchField.value)" [formControlName]="field"
+          placeholder="Suchbegriff einfeben">
+      </div>
+    </div>
+
+    <!-- Zeile aus Treffer-Anzahl, Select Treffer pro Seite, Pagination -->
+    <div class="d-flex justify-content-start flex-wrap mt-3">
+
+      <!-- Treffer-Anzahl -->
+      <div class="mr-2 mb-2 mr-2 d-flex align-items-center">
+        <span class="badge badge-primary"> {{count}}</span>
+        <span class="ml-1">Treffer</span>
+      </div>
+
+      <!-- Block: Select Treffer pro Seite + Pagination -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between flex-auto">
+
+        <!-- Select Treffer pro Seite -->
+        <div class="form-inline mr-2 mb-2">
+
+          <!-- Select: Rows -->
+          <select class="form-control form-control-sm" id="rows" formControlName="rows" #rowSelect (change)="setRows(rowSelect.value)">
+        <option *ngFor="let rowOpt of rowOpts" [value]="rowOpt">{{rowOpt}}</option>
+      </select>
+
+          <!-- Label: Treffer pro Seite -->
+          <label class="form-label ml-2 d-flex justify-content-center" for="rows">Treffer pro Seite</label>
+        </div>
+
+        <!-- Paging fuer Treffertabelle -->
+        <div class="btn-group btn-group-sm mb-2" role="group" aria-label="Small button group">
+          <button class="btn btn-outline-secondary" (click)="updateStart('first')" [disabled]="queryFormat.queryParams.start == 0"><<</button>
+          <button class="btn btn-outline-secondary" (click)="updateStart(-1)" [disabled]="queryFormat.queryParams.start == 0"><</button>
+          <div class="row-count">{{ page}} / {{pages}}</div>
+          <button class="btn btn-outline-secondary" (click)="updateStart(1)" [disabled]="page == pages">></button>
+          <button class="btn btn-outline-secondary" (click)="updateStart('last')" [disabled]="page == pages">>></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treffertabelle -->
+    <table class="table table-bordered table-sm mt-2">
+      <!-- Tabellenheader -->
+      <thead>
+        <tr class="d-flex">
+          <th class="col-sm-2 col-lg-1 text-center">Info</th>
+          <th class="col-sm-2 col-lg-1 text-center" (click)="sortTable('id_int')" [ngClass]="sortBy('id_int')">ID</th>
+          <th class="col-sm-3 col-lg-4 text-center" (click)="sortTable('person_sort_string')" [ngClass]="sortBy('person_sort_string')">Person</th>
+          <th class="col-sm-3 col-lg-5 text-center" (click)="sortTable('ti_sort_string')" [ngClass]="sortBy('ti_sort_string')">Title</th>
+          <th class="col-sm-2 col-lg-1 text-center" (click)="sortTable('py_string')" [ngClass]="sortBy('py_string')">Jahr</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <!-- Tabellenzeilen -->
+        <ng-container *ngFor="let doc of docs">
+
+          <!-- 1. Zeile mit Hauptinfos -->
+          <tr class="d-flex">
+            <!-- Wenn zusaetzliche Infos geoeffnet sind, diese Zelle fuer beiden Zeilen verwenden -> besser sichtbar, dass naechste Zeile zu diesem Eintrag gehoert -->
+            <td class="col-sm-2 col-lg-1 text-center" [attr.rowspan]="detailDataArray[doc.id]?.visible ? 2 : 1"><button (click)=getFullData(doc.id)>Info</button></td>
+            <td class="col-sm-2 col-lg-1 text-center">{{doc.id}}</td>
+            <td class="col-sm-3 col-lg-4">
+              <ng-container *ngFor="let person of doc.person_all_string, last as isLast">
+                {{person}}
+                <br *ngIf="!isLast">
+              </ng-container>
+            </td>
+            <td class="col-sm-3 col-lg-5">
+              {{doc.ti_all_string[0]}}
+            </td>
+            <td class="col-sm-2 col-lg-1 text-center">{{doc.py_string}}</td>
+          </tr>
+
+          <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
+          <tr *ngIf="detailDataArray[doc.id]?.visible">
+
+            <!-- 1 grosse Zelle fuer Inhalt, n-1 Zellen colspan, da 1. Zelle von oberer tr kommt -->
+            <td colspan="4">
+
+              <ul>
+                <ng-container *ngFor="let keyword of detailDataArray[doc.id]?.data.keyword_all_string; first as isFirst">
+                  <h2 *ngIf="isFirst">Schlagwörter</h2>
+                  <li>
+                    {{keyword}}
+                  </li>
+                </ng-container>
+              </ul>
+
+              <ul>
+                <ng-container *ngFor="let source of detailDataArray[doc.id]?.data.source_title_all_string; first as isFirst">
+                  <h2 *ngIf="isFirst">Quelle</h2>
+                  <li>
+                    {{source}}
+                  </li>
+                </ng-container>
+              </ul>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h3>Auswählbare Facettenwerte</h3>
+
+    <!-- Liste der Facettenwerte pro Facetten -->
+    <ul>
+
+      <!-- Ueber Facettenfelder gehen -->
+      <li *ngFor="let key of queryFormat.facetFields | objectKeys">
+
+        Facette {{key}}
+
+        <!-- Liste der Facettenwerte dieser Facette -->
+        <ul>
+          <ng-container *ngFor="let value of facets[queryFormat.facetFields[key].field]">
+
+            <!-- bereits ausgewaehlt Facetten Werte nicht anzeigen -->
+            <li *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1">
+
+              <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
+              <button (click)="selectFacet(key, value[0])">Add</button> {{value[0]}} - {{value[1]}}
+            </li>
+          </ng-container>
+        </ul>
+      </li>
+    </ul>
+
+    <hr>
+
+    <h3>Ausgewählte Facettenwerte</h3>
+
+    <!-- Liste der ausgewaehlten Facettenwerte pro Facette -->
+    <ul>
+
+      <!-- Ueber Facettenfelder gehen -->
+      <li *ngFor="let key of queryFormat.facetFields | objectKeys">
+
+        Facette {{key}}
+
+        <!-- Liste der Facettenwerte dieser Facette -->
+        <ul>
+
+          <!-- Ueber Werte der Facetten gehen -->
+          <li *ngFor="let facetVal of queryFormat.facetFields[key].values">
+
+            <!-- ausgeaehlten Wert anzeigen und Loeschbutton anbieten -->
+            <button (click)="removeFacet(key, facetVal)">remove</button> {{facetVal}}
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+    <!-- Range Elemente (Jahr, Anzahl Seiten,...) -->
+    <div *ngFor="let key of rangeData | objectKeys">
+
+      <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
+      <label>
+                {{getMissingCount(key)}} Einträge ohne {{rangeData[key].prefix}} anzeigen
+                <input type="checkbox" [formControlName]="'showMissing_' + key" #showMissingValue (change)="updateRangeMissing(key, showMissingValue.checked)">
+            </label>
+
+      <!-- Chart -->
+      <div>
+        <canvas baseChart [chartType]="'bar'" [datasets]="rangeData[key].chartData" [labels]="rangeData[key].chartLabels" [options]="rangeData[key].chartOptions"
+          [legend]="false">
+        </canvas>
+      </div>
+
+      <!-- Vorhang ueber Chart -->
+      <div class="curtain_div">
+        <div class="curtain_container">
+          <div class="curtain" style="background-color: rgba(10, 10, 10, .3); left: 0px" [style.width]="rangeData[key].curtainLeft"></div>
+          <div class="curtain" style="background-color: rgba(10, 10, 10, .3); right: 0px" [style.width]="rangeData[key].curtainRight"></div>
+        </div>
+      </div>
+
+      <!-- Slider -->
+      <div class="rangeslider_div">
+        <ion-range-slider #sliderElement [id]="key" type="double" [min]="rangeData[key].min" [from]="rangeData[key].from" [to]="rangeData[key].to"
+          [max]="rangeData[key].max" grid="true" grid_num="10" [prefix]="rangeData[key].prefix" prettify_enabled="false" hide_min_max="true"
+          (onChange)="updateSlider($event, key)"></ion-range-slider>
+      </div>
+    </div>
+
+    <!-- UserQuery speichern -->
+    <div class="input-group">
+
+      <!-- "UserQuery speichern" Textfeld fuer Name -->
+      <input class="form-control" [formControl]="saveQuery" type="text" #saveQueryInput placeholder="Name der Suche">
+
+      <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
+      <div class="input-group-btn">
+        <button class="btn btn-default" [disabled]="saveQuery.invalid" (click)="saveUserQuery(saveQueryInput.value)">Suche speichern</button>
+      </div>
+    </div>
+
+    <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
+    <div *ngIf="saveQuery.errors">
+      <h3>Fehler:</h3>
+      <div *ngIf="saveQuery.errors.uniqueQueryName">Name muss eindeutig seind</div>
+      <div *ngIf="saveQuery.errors.required">Name ist Pflichtfeld</div>
+      <div *ngIf="saveQuery.errors.minlength">Mindestlänge {{saveQuery.errors.minlength.requiredLength}}</div>
+    </div>
+
+    <!-- Liste der gespeicherten UserQueries -->
+    <h3>Gespeicherte Anfragen</h3>
+    <ul>
+      <li *ngFor="let savedQuery of savedQueries; index as i">
+
+        <!-- "UserQuery laden" Button -->
+        <button (click)="loadUserQuery(i)">Anfrage laden</button>
+
+        <!-- Name der UserQuery -->
+        {{savedQuery.name}}
+
+        <!-- "UserQuery loeschen" Button -->
+        <button (click)="deleteUserQuery(i)">Anfrage löschen</button>
+      </li>
+    </ul>
+  </form>
+</div>
