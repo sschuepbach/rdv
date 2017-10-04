@@ -54,10 +54,104 @@ th {
     border-color: #ccc;
 }
 
-/* Breite der Tabellen-Spalten bleiben gleich */
-td {
-    word-break: break-word;
+.mh-table-row:nth-child(2n - 1) {
+    background: #ddd;
 }
+
+@media (min-width: 576px) {
+
+.mh-table-row:last-child > div:last-child > div {
+    border-bottom: 1px solid grey;
+}
+
+.mh-table-row:last-child > div:last-child > div:last-child {
+    border-bottom-right-radius: 3px;
+}
+
+ .mh-table-row:last-child > div:last-child > div:first-child {
+    border-bottom-left-radius: 3px;
+    border-left: 1px solid grey;
+}
+
+.mh-table-header > div:last-child {
+    border-right: 1px solid grey;
+    border-top-right-radius: 3px;
+}
+
+.mh-table-header > div:first-child {
+    border-left: 1px solid grey;
+    border-top-left-radius: 3px;
+}
+
+.mh-table-header > div {
+    word-break: break-word;
+    border-top: 1px solid grey;
+    border-left: 1px solid grey;
+}
+
+.mh-table-row > .mh-table-row-main > div {
+    word-break: break-word;
+    border-top: 1px solid grey;
+    border-left: 1px solid grey;
+}
+
+.mh-table-row > .mh-table-row-main > div:last-child {
+      border-right: 1px solid grey;
+}
+
+.mh-table-row > .mh-table-row-info {
+    border-top: 1px solid grey;
+    border-left: 1px solid grey;
+    border-right: 1px solid grey;
+}
+
+.mh-table-row:last-child > .mh-table-row-info {
+    border-left: none;
+}
+
+.mh-table-view > .mh-table-row:last-child > div:last-child {
+    border-bottom-right-radius: 3px;
+}
+}
+
+@media (max-width: 575px) {
+.mh-table-header > div {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    border-left: 1px solid grey;
+}
+
+.mh-table-header > div:first-child {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;  
+}
+
+.mh-table-header > div:last-child {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-right: 1px solid grey;
+}
+
+.mh-table-row {
+    border: 1px solid grey;
+    border-radius: 3px;
+    margin-top: 20px;
+}
+}
+
+.mh-table-row > div > div > label {
+    width: 140px;
+}
+
+.mh-table-row > div > div > label:after {
+    content: ''
+}
+
+
+/* Breite der Tabellen-Spalten bleiben gleich
+@media .mh-table-view > .mh-table-row > div {
+    border-right: 1px solid green; 
+}*/
 
 /* Sortierpfeil nach oben */
 .sort_asc::after {

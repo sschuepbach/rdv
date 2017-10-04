@@ -1,4 +1,4 @@
-import { Component, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
+import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener } from '@angular/core';
 
 //Solr Service
 import { SolrSearchService } from "app/solr-search.service";
@@ -9,9 +9,6 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
 import { Observable } from "rxjs/Observable";
 import { BehaviorSubject } from "rxjs/BehaviorSubject";
-
-//Cookie
-import { CookieService } from 'ngx-cookie';
 
 //Forms
 import { FormBuilder } from "@angular/forms";
@@ -55,7 +52,14 @@ function uniqueQueryNameValidator(savedQueries: SavedQueryFormat[]) {
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnloadHander(event) {
+    localStorage.setItem("userQuery", JSON.stringify(this.queryFormat));
+    localStorage.setItem("savedUserQueries", JSON.stringify(this.savedQueries));
+  }
 
   //Variable fuer SliderElemente -> bei Reset zuruecksetzen
   @ViewChildren('sliderElement') sliderElement: QueryList<IonRangeSliderComponent>;
@@ -123,19 +127,19 @@ export class AppComponent {
   detailDataArray: any[] = [];
 
   //SolrSearchService injenten
-  constructor(private solrSearchService: SolrSearchService, private _cookieService: CookieService, private _fb: FormBuilder) { }
+  constructor(private solrSearchService: SolrSearchService, private _fb: FormBuilder) { }
 
   //Component-Init
   ngOnInit() {
 
-    //gespeicherte Suchanfrage aus Cookie laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
-    let cookieUserQueries = this._cookieService.get("userQueries");
+    //gespeicherte Suchanfrage aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
+    let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
 
-    //wenn gespeicherte Suchen aus Cookies geladen wurden
-    if (cookieUserQueries) {
+    //wenn gespeicherte Suchen aus localstorage geladen wurden
+    if (localStorageSavedUserQueries) {
 
-      //gespeicherte Suchen aus Cookie holen
-      this.savedQueries = JSON.parse(cookieUserQueries);
+      //gespeicherte Suchen aus localstorage holen
+      this.savedQueries = JSON.parse(localStorageSavedUserQueries);
     }
 
     //Reactive Forms fuer Suchfelder und Suche speichern
@@ -144,20 +148,20 @@ export class AppComponent {
     //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
     this.setRangeData();
 
-    //letzte Suche aus Cookie laden
-    let cookieQueryFormat = this._cookieService.get("queryFormat");
+    //letzte Suche aus localstorage laden
+    let localStorageUserQuery = localStorage.getItem("userQuery");
 
-    //Wenn Suchanfrage aus Cookie geladen wurde
-    if (cookieQueryFormat) {
+    //Wenn Suchanfrage aus localstorage geladen wurde
+    if (localStorageUserQuery) {
 
       //Anfrage-Format laden
-      this.queryFormat = JSON.parse(cookieQueryFormat);
+      this.queryFormat = JSON.parse(localStorageUserQuery);
 
       //Input-Felder in Template setzen
       this.setFormInputValues();
     }
 
-    //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus Cookie geladen werden)
+    //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus localstorage geladen werden)
     this.complexSearchTerms = new BehaviorSubject<QueryFormat>(this.queryFormat);
 
     //Suche anmelden: Bei Aenderungen des Suchfeld-BehaviorSubjekts searchTerms
@@ -166,13 +170,6 @@ export class AppComponent {
       //TODO debounce + distinct
       //Term an Suchanfrage weiterleiten -> Ergebnis wird in Docs gespeichert
       .switchMap((query: QueryFormat) => this.solrSearchService.getSolrDataComplex(query))
-
-    //Wenn sich Behavior-Subject aaendert
-    this.complexSearchTerms.subscribe(queryFormat => {
-
-      //Anfrage-Objekt in Cookie speichern
-      this._cookieService.put("queryFormat", JSON.stringify(queryFormat));
-    });
 
     //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
     this.results.subscribe(results => {
@@ -224,8 +221,8 @@ export class AppComponent {
       this.searchForm.addControl('showMissing_' + key, new FormControl());
     }
 
-    //Input fuer "Suche speichern". Name = Pflichtfeld und muss eindeutig sein
-    this.saveQuery = new FormControl('Meine Suche', [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.savedQueries)]);
+    //Input fuer "Suche speichern". Name = Pflichtfeld und muss eindeutig sein, "Meine Suche2"
+    this.saveQuery = new FormControl('Meine Suche ' + (this.savedQueries.length + 1), [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.savedQueries)]);
   }
 
   //Bei Suche in Eingabefeld
@@ -347,11 +344,8 @@ export class AppComponent {
     //Objekt in Array einfuegen
     this.savedQueries.push(userQuery);
 
-    //Namensfeld fuer Nutzerabfrage mit Standard-Wert belegen
-    this.saveQuery.setValue('Meine Suche');
-
-    //aktuelle Liste der Nutzer-Anfragen in Cookie speichrn
-    this.updateSavedUserQueriesCookie();
+    //Namensfeld fuer Nutzerabfrage mit Standard-Wert belegen ("Meine Suche2")
+    this.saveQuery.setValue('Meine Suche ' + (this.savedQueries.length + 1));
   }
 
   //Nutzeranfrage laden
@@ -375,16 +369,6 @@ export class AppComponent {
 
     //Suchanfrage an passender Stelle loeschen
     this.savedQueries.splice(index, 1);
-
-    //aktuelle Liste der Nutzer-Anfragen in Cookie speichrn
-    this.updateSavedUserQueriesCookie();
-  }
-
-  //Cookie der gespeicherten Nutzeranfragen anpassen
-  updateSavedUserQueriesCookie() {
-
-    //Anfrage-Objekt in Cookie speichern
-    this._cookieService.put("userQueries", JSON.stringify(this.savedQueries));
   }
 
   //Anzahl der Treffer in Suche anpassen

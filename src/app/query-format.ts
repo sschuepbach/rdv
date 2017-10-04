@@ -11,8 +11,7 @@ export class QueryFormat {
         "search3": {
             "value": "",
             "field": "person_all_text"
-        },
-
+        }
     };
 
     facetFields = {
