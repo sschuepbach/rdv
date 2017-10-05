@@ -17,11 +17,13 @@ export class QueryFormat {
     facetFields = {
         "doctype": {
             "values": [],
-            "field": "doctype_string"
+            "field": "doctype_string",
+            "label": "Dokumenttyp"
         },
         "language": {
             "values": [],
-            "field": "language_all_facet"
+            "field": "language_all_facet",
+            "label": "Sprache"
         }
     };
 
@@ -32,7 +34,7 @@ export class QueryFormat {
             "to": 2017,
             "max": 2017,
             "field": "py_int",
-            "prefix": "Jahr ",
+            "label": "Jahr",
             "showMissingValues": true
         },
         "pages": {
@@ -41,7 +43,7 @@ export class QueryFormat {
             "to": 20,
             "max": 20,
             "field": "pages_int",
-            "prefix": "Seitenanzahl ",
+            "label": "Seitenanzahl",
             "showMissingValues": true
         }
     };

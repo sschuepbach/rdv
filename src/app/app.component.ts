@@ -55,6 +55,39 @@ function uniqueQueryNameValidator(savedQueries: SavedQueryFormat[]) {
 export class AppComponent implements OnInit {
 
 
+  view: any[] = [300, 400];
+
+  // options
+  showXAxis = true;
+  showYAxis = true;
+  gradient = false;
+  showLegend = true;
+  showXAxisLabel = true;
+  xAxisLabel = 'Country';
+  showYAxisLabel = true;
+  yAxisLabel = 'Population';
+
+  colorScheme = {
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+  };
+
+  single = [
+    {
+      "name": "Germany",
+      "value": 12
+    },
+    {
+      "name": "USA",
+      "value": 16
+    },
+    {
+      "name": "France",
+      "value": 4
+    }
+  ];
+
+
+
   @HostListener('window:beforeunload', ['$event'])
   beforeUnloadHander(event) {
     localStorage.setItem("userQuery", JSON.stringify(this.queryFormat));
@@ -483,7 +516,7 @@ export class AppComponent implements OnInit {
       this.rangeData[key].chartLabels = labelArray;
 
       //Prefix fuer Slider
-      this.rangeData[key].prefix = this.queryFormat.rangeFields[key].prefix;
+      this.rangeData[key].label = this.queryFormat.rangeFields[key].label;
 
       //Chart Optionen
       this.rangeData[key].chartOptions = {
@@ -599,6 +632,21 @@ export class AppComponent implements OnInit {
 
     //Wert in queryFormat speichern
     this.queryFormat.searchFields[field].field = value;
+
+    this.single = [
+      {
+        "name": "Germany",
+        "value": 30
+      },
+      {
+        "name": "USA",
+        "value": 2
+      },
+      {
+        "name": "France",
+        "value": 13
+      }
+    ];
 
     //Suche starten
     this.complexSearchTerms.next(this.queryFormat);

@@ -9,106 +9,148 @@
     <div class="d-flex flex-column flex-md-row no-gutters">
 
       <!-- Suchfelder + Ranges, vertikale Flexbox -->
-      <div class="col-xs-auto col-md p-2 mr333-md-2 mb-2 mb-md-0 d-flex flex-column justify-content-between no-gutters" style="border: 1px solid grey; border-radius:3px; margin-right: 20px;">
+      <div class="col-md p-2 mr-md-2 mb-2 mb-md-0 d-flex flex-column justify-content-between no-gutters"
+           style="border: 1px solid grey; border-radius:3px; margin-right: 20px;">
 
         <!-- Suchfelder (oben) -->
         <div>
-          <div class="input-group searchfieldrow" *ngFor="let field of queryFormat.searchFields | objectKeys">
+          <div class="input-group searchfieldrow"
+               *ngFor="let field of queryFormat.searchFields | objectKeys">
 
             <!-- Auswahl des Suchfeldes (Freitext, Titel, Person,...) -->
             <div class="input-group-btn">
-              <select class="btn btn-sm" [formControlName]="'selectSearchField_' + field" #selectSearchField (change)="updateSearchField(field, selectSearchField.value)">
+              <select class="btn btn-sm"
+                      [formControlName]="'selectSearchField_' + field"
+                      #selectSearchField
+                      (change)="updateSearchField(field, selectSearchField.value)">
         <option *ngFor="let option of searchFieldOpts" [value]="option[0]">{{option[1]}}</option>
             </select>
             </div>
 
             <!-- Suchfeld -->
-            <input class="form-control form-control-sm" tpye="text" #searchField (keyup)="searchComplex(field, searchField.value)" [formControlName]="field"
-              placeholder="Suchbegriff eingeben">
-          </div>
-        </div>
-
-        <!-- Ranges (unten) -->
-        <div class="d-flex flex-column no-gutters col-auto mt-3">
-
-          <!-- DIV-Container fuer Tab-Links -->
-          <div class="nav nav-pills" id="pills-tab" role="tablist">
-
-            <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-            <a *ngFor="let key of rangeData | objectKeys; first as first" class="nav-link p-0 text-center col-2" [class.active]="first"
-              id="v-pills-{{key}}-tab" data-toggle="pill" href="#v-pills-{{key}}" role="tab" attr.aria-controls="v-pills-{{key}}"
-              attr.aria-expanded="true">{{key}}</a>
-          </div>
-
-          <!-- DIV-Container fuer Tab-Inhalte -->
-          <div class="tab-content" id="v-pills-tabContent">
-
-            <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
-            <div *ngFor="let key of rangeData | objectKeys; first as first" class="tab-pane p-2 list-group" [class.active]="first" id="v-pills-{{key}}"
-              role="tabpanel" attr.aria-labelledby="v-pills-{{key}}-tab">
-
-              <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
-              <label>
-                            {{getMissingCount(key)}} Einträge ohne {{rangeData[key].prefix}} anzeigen
-                            <input type="checkbox" [formControlName]="'showMissing_' + key" #showMissingValue (change)="updateRangeMissing(key, showMissingValue.checked)">
-                        </label>
-
-              <!-- Chart -->
-              <div style="display: none;">
-                <canvas baseChart [chartType]="'bar'" [datasets]="rangeData[key].chartData" [labels]="rangeData[key].chartLabels" [options]="rangeData[key].chartOptions"
-                  [legend]="false">
-                </canvas>
-              </div>
-
-              <!-- Vorhang ueber Chart -->
-              <div class="curtain_div">
-                <div class="curtain_container">
-                  <div class="curtain" style="background-color: rgba(10, 10, 10, .3); left: 0px" [style.width]="rangeData[key].curtainLeft"></div>
-                  <div class="curtain" style="background-color: rgba(10, 10, 10, .3); right: 0px" [style.width]="rangeData[key].curtainRight"></div>
-                </div>
-              </div>
-
-              <!-- Slider -->
-              <div class="rangeslider_div">
-                <ion-range-slider #sliderElement [id]="key" type="double" [min]="rangeData[key].min" [from]="rangeData[key].from" [to]="rangeData[key].to"
-                  [max]="rangeData[key].max" grid="true" grid_num="10" [prefix]="rangeData[key].prefix" prettify_enabled="false"
-                  hide_min_max="true" (onChange)="updateSlider($event, key)"></ion-range-slider>
-              </div>
-            </div>
+            <input class="form-control form-control-sm"
+                   tpye="text"
+                   #searchField
+                   (keyup)="searchComplex(field, searchField.value)"
+                   [formControlName]="field"
+                   placeholder="Suchbegriff eingeben">
           </div>
         </div>
       </div>
 
       <!-- Facettenbereich als Tabs (Pills) -->
-      <div class="d-flex no-gutters col-xs-auto col-md" style="height: 300px; border: 1px solid grey; border-top-left-radius:3px; border-bottom-left-radius: 3px">
+      <div class="d-flex flex-column p-2 col-md"
+           style="border: 1px solid grey; border-radius:3px;">
 
         <!-- DIV-Container fuer Tab-Links -->
-        <div class="col-4 nav flex-column nav-pills p-2" id="v-pills-tab" role="tablist">
+        <nav class="nav nav-pills"
+             id="facet-pills-tab"
+             role="tablist">
+
+          <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
+          <a *ngFor="let key of rangeData | objectKeys; first as first"
+             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             [class.active]="first"
+             id="facet-pills-{{key}}-tab"
+             data-toggle="pill"
+             href="#facet-pills-{{key}}"
+             role="tab"
+             attr.aria-controls="facet-pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.rangeFields[key].label}}</a>
 
           <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-          <a *ngFor="let key of queryFormat.facetFields | objectKeys; first as first" class="nav-link p-0 text-center" [class.active]="first"
-            id="v-pills-{{key}}-tab" data-toggle="pill" href="#v-pills-{{key}}" role="tab" attr.aria-controls="v-pills-{{key}}"
-            attr.aria-expanded="true">{{key}}</a>
-        </div>
+          <a *ngFor="let key of queryFormat.facetFields | objectKeys"
+             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             id="facet-pills-{{key}}-tab"
+             data-toggle="pill"
+             href="#facet-pills-{{key}}"
+             role="tab"
+             attr.aria-controls="pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.facetFields[key].label}}</a>
+        </nav>
 
         <!-- DIV-Container fuer Tab-Inhalte -->
-        <div class="tab-content col-8" id="v-pills-tabContent">
+        <div style="height: 300px; overflow-y: scroll;"
+             class="tab-content mt-2"
+             id="facet-pills-tabContent">
+
+          <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
+          <div *ngFor="let key of rangeData | objectKeys; first as first"
+               [class.active]="first"
+               class="tab-pane p-2 list-group"
+               id="facet-pills-{{key}}"
+               role="tabpanel"
+               attr.aria-labelledby="facet-pills-{{key}}-tab">
+
+            <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
+            <label>
+              <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
+                               <input type="checkbox"
+                                 [formControlName]="'showMissing_' + key" 
+                                 #showMissingValue (change)="updateRangeMissing(key, showMissingValue.checked)">
+                             </label>
+
+            <!-- Chart -->
+            <div style="height: 180px;">
+              <canvas baseChart
+                      [chartType]="'bar'"
+                      [datasets]="rangeData[key].chartData"
+                      [labels]="rangeData[key].chartLabels"
+                      [options]="rangeData[key].chartOptions"
+                      [legend]="false">
+              </canvas>
+            </div>
+
+            <!-- Vorhang ueber Chart -->
+            <div class="curtain_div">
+              <div class="curtain_container">
+                <div class="curtain"
+                     style="background-color: rgba(10, 10, 10, .3); left: 0px"
+                     [style.width]="rangeData[key].curtainLeft"></div>
+                <div class="curtain"
+                     style="background-color: rgba(10, 10, 10, .3); right: 0px"
+                     [style.width]="rangeData[key].curtainRight"></div>
+              </div>
+            </div>
+
+            <!-- Slider -->
+            <div class="rangeslider_div">
+              <ion-range-slider #sliderElement
+                                [id]="key"
+                                type="double"
+                                [min]="rangeData[key].min"
+                                [from]="rangeData[key].from"
+                                [to]="rangeData[key].to"
+                                [max]="rangeData[key].max"
+                                grid="true"
+                                grid_num="10"
+                                [prefix]="rangeData[key].label + ' '"
+                                prettify_enabled="false"
+                                hide_min_max="true"
+                                (onChange)="updateSlider($event, key)"></ion-range-slider>
+            </div>
+          </div>
 
           <!-- DIV pro Facette fuer Facettenwerte -->
-          <div *ngFor="let key of queryFormat.facetFields | objectKeys; first as first" class="tab-pane p-2 list-group" [class.active]="first"
-            id="v-pills-{{key}}" style="height: 298px; max-height: 298px; overflow-y: scroll; " role="tabpanel" attr.aria-labelledby="v-pills-{{key}}-tab">
+          <div *ngFor="let key of queryFormat.facetFields | objectKeys"
+               class="tab-pane list-group"
+               id="facet-pills-{{key}}"
+               role="tabpanel"
+               attr.aria-labelledby="facet-pills-{{key}}-tab">
 
             <!-- Liste der Facettenwerte dieser Facette -->
             <ng-container *ngFor="let value of facets[queryFormat.facetFields[key].field]">
 
               <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
-              <button *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1" (click)="selectFacet(key, value[0])" type="button"
-                class="list-group-item list-group-item-action p-1">
-                  <span class="justify-content-between align-items-center d-flex">
-                    <span style="word-break: break-word">{{value[0]}}</span>
-                    <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
-                  </span>
-                </button>
+              <button *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
+                      (click)="selectFacet(key, value[0])"
+                      type="button"
+                      class="list-group-item list-group-item-action p-1">
+                       <span class="justify-content-between align-items-center d-flex">
+                         <span style="word-break: break-word">{{value[0]}}</span>
+                         <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
+                       </span>
+                     </button>
             </ng-container>
           </div>
         </div>
@@ -116,7 +158,8 @@
     </div>
 
     <!-- Button "Neue Suche" -->
-    <button class="btn btn-default btn-sm" (click)="resetSearch()">Neue Suche</button>
+    <button class="btn btn-default btn-sm"
+            (click)="resetSearch()">Neue Suche</button>
 
     <!-- Zeile aus Treffer-Anzahl, Select Treffer pro Seite, Pagination -->
     <div class="d-flex justify-content-start flex-wrap mt-3">
@@ -134,21 +177,36 @@
         <div class="form-inline mr-2 mb-2">
 
           <!-- Select: Rows -->
-          <select class="form-control form-control-sm" id="rows" formControlName="rows" #rowSelect (change)="setRows(rowSelect.value)">
+          <select class="form-control form-control-sm"
+                  id="rows"
+                  formControlName="rows"
+                  #rowSelect
+                  (change)="setRows(rowSelect.value)">
         <option *ngFor="let rowOpt of rowOpts" [value]="rowOpt">{{rowOpt}}</option>
       </select>
 
           <!-- Label: Treffer pro Seite -->
-          <label class="form-label ml-2 d-flex justify-content-center" for="rows">Treffer pro Seite</label>
+          <label class="form-label ml-2 d-flex justify-content-center"
+                 for="rows">Treffer pro Seite</label>
         </div>
 
         <!-- Paging fuer Treffertabelle -->
-        <div class="btn-group btn-group-sm mb-2" role="group" aria-label="Small button group">
-          <button class="btn btn-outline-secondary" (click)="updateStart('first')" [disabled]="queryFormat.queryParams.start == 0"><<</button>
-          <button class="btn btn-outline-secondary" (click)="updateStart(-1)" [disabled]="queryFormat.queryParams.start == 0"><</button>
+        <div class="btn-group btn-group-sm mb-2"
+             role="group"
+             aria-label="Small button group">
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart('first')"
+                  [disabled]="queryFormat.queryParams.start == 0"><<</button>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart(-1)"
+                  [disabled]="queryFormat.queryParams.start == 0"><</button>
           <div class="row-count">{{ page}} / {{pages}}</div>
-          <button class="btn btn-outline-secondary" (click)="updateStart(1)" [disabled]="page == pages">></button>
-          <button class="btn btn-outline-secondary" (click)="updateStart('last')" [disabled]="page == pages">>></button>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart(1)"
+                  [disabled]="page == pages">></button>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart('last')"
+                  [disabled]="page == pages">>></button>
         </div>
       </div>
     </div>
@@ -158,17 +216,27 @@
 
       <!-- Tabellenheader -->
       <div class="d-flex mh-table-header font-weight-bold">
-        <div class="col-sm-2 col-lg-1 text-sm-center" (click)="sortTable('id_int')" [ngClass]="sortBy('id_int')">ID</div>
-        <div class="col-sm-4 col-lg-5 text-sm-center" (click)="sortTable('person_sort_string')" [ngClass]="sortBy('person_sort_string')">Person</div>
-        <div class="col-sm-4 col-lg-5 text-sm-center" (click)="sortTable('ti_sort_string')" [ngClass]="sortBy('ti_sort_string')">Title</div>
-        <div class="col-sm-2 col-lg-1 text-sm-center" (click)="sortTable('py_string')" [ngClass]="sortBy('py_string')">Jahr</div>
+        <div class="col-sm-2 col-lg-1 text-sm-center"
+             (click)="sortTable('id_int')"
+             [ngClass]="sortBy('id_int')">ID</div>
+        <div class="col-sm-4 col-lg-5 text-sm-center"
+             (click)="sortTable('person_sort_string')"
+             [ngClass]="sortBy('person_sort_string')">Person</div>
+        <div class="col-sm-4 col-lg-5 text-sm-center"
+             (click)="sortTable('ti_sort_string')"
+             [ngClass]="sortBy('ti_sort_string')">Title</div>
+        <div class="col-sm-2 col-lg-1 text-sm-center"
+             (click)="sortTable('py_string')"
+             [ngClass]="sortBy('py_string')">Jahr</div>
       </div>
 
       <!-- Tabellenzeilen -->
-      <div class="mh-table-row" *ngFor="let doc of docs">
+      <div class="mh-table-row"
+           *ngFor="let doc of docs">
 
         <!-- 1. Zeile mit Hauptinfos -->
-        <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters" (click)="getFullData(doc.id)">
+        <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters"
+             (click)="getFullData(doc.id)">
           <div class="col-sm-2 col-lg-1 text-sm-center d-flex">
             <label class="d-sm-none font-weight-bold text-right">ID</label>
             <span class="col">{{doc.id}}</span>
@@ -193,7 +261,8 @@
         </div>
 
         <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
-        <div class="mh-table-row-info no-gutters" *ngIf="detailDataArray[doc.id]?.visible">
+        <div class="mh-table-row-info no-gutters"
+             *ngIf="detailDataArray[doc.id]?.visible">
 
           <!-- 1 grosse Zelle fuer Inhalt, -->
           <div class="col-12 d-flex">
@@ -248,11 +317,17 @@
     <div class="input-group">
 
       <!-- "UserQuery speichern" Textfeld fuer Name -->
-      <input class="form-control" [formControl]="saveQuery" type="text" #saveQueryInput placeholder="Name der Suche">
+      <input class="form-control"
+             [formControl]="saveQuery"
+             type="text"
+             #saveQueryInput
+             placeholder="Name der Suche">
 
       <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
       <div class="input-group-btn">
-        <button class="btn btn-default" [disabled]="saveQuery.invalid" (click)="saveUserQuery(saveQueryInput.value)">Suche speichern</button>
+        <button class="btn btn-default"
+                [disabled]="saveQuery.invalid"
+                (click)="saveUserQuery(saveQueryInput.value)">Suche speichern</button>
       </div>
     </div>
 
