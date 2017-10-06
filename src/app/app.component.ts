@@ -54,40 +54,6 @@ function uniqueQueryNameValidator(savedQueries: SavedQueryFormat[]) {
 
 export class AppComponent implements OnInit {
 
-
-  view: any[] = [300, 400];
-
-  // options
-  showXAxis = true;
-  showYAxis = true;
-  gradient = false;
-  showLegend = true;
-  showXAxisLabel = true;
-  xAxisLabel = 'Country';
-  showYAxisLabel = true;
-  yAxisLabel = 'Population';
-
-  colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
-  };
-
-  single = [
-    {
-      "name": "Germany",
-      "value": 12
-    },
-    {
-      "name": "USA",
-      "value": 16
-    },
-    {
-      "name": "France",
-      "value": 4
-    }
-  ];
-
-
-
   @HostListener('window:beforeunload', ['$event'])
   beforeUnloadHander(event) {
     localStorage.setItem("userQuery", JSON.stringify(this.queryFormat));
@@ -148,10 +114,11 @@ export class AppComponent implements OnInit {
   rowOpts: number[] = [5, 10, 20];
 
   //Optionen fuer Auswahl der Suchfelder
-  searchFieldOpts: any[] = [
-    ["all_text", "Freitext"],
-    ["ti_all_text", "Titel"],
-    ["person_all_text", "Personen"]];
+  searchFieldOpts = {
+    "all_text": "Freitext",
+    "ti_all_text": "Titel",
+    "person_all_text": "Person"
+  };
 
   //BehaviorSubject speichert Anfragen, zu Beginn leere Anfrage schicken, damit *:* Suche gestartet wird
   private complexSearchTerms: BehaviorSubject<QueryFormat>;
@@ -173,25 +140,6 @@ export class AppComponent implements OnInit {
 
       //gespeicherte Suchen aus localstorage holen
       this.savedQueries = JSON.parse(localStorageSavedUserQueries);
-    }
-
-    //Reactive Forms fuer Suchfelder und Suche speichern
-    this.createForms();
-
-    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
-    this.setRangeData();
-
-    //letzte Suche aus localstorage laden
-    let localStorageUserQuery = localStorage.getItem("userQuery");
-
-    //Wenn Suchanfrage aus localstorage geladen wurde
-    if (localStorageUserQuery) {
-
-      //Anfrage-Format laden
-      this.queryFormat = JSON.parse(localStorageUserQuery);
-
-      //Input-Felder in Template setzen
-      this.setFormInputValues();
     }
 
     //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus localstorage geladen werden)
@@ -226,6 +174,25 @@ export class AppComponent implements OnInit {
       this.createCharts();
     });
 
+    //Reactive Forms fuer Suchfelder und Suche speichern
+    this.createForms();
+
+    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
+    this.setRangeData();
+
+    //letzte Suche aus localstorage laden
+    let localStorageUserQuery = localStorage.getItem("userQuery");
+
+    //Wenn Suchanfrage aus localstorage geladen wurde
+    if (localStorageUserQuery) {
+
+      //Anfrage-Format laden
+      this.queryFormat = JSON.parse(localStorageUserQuery);
+
+      //Input-Felder in Template setzen
+      this.setFormInputValues();
+    }
+
     //Slider Werte setzen
     this.sliderInit();
   }
@@ -235,40 +202,97 @@ export class AppComponent implements OnInit {
 
     //Such-Form
     this.searchForm = this._fb.group({
-      rows: this.rowOpts[0],
+
+      //Anzahl der Zeilen in der Treffertabelle mit Wert aus queryFormat belegen
+      rows: this.queryFormat.queryParams.rows,
     });
 
-    //FormControls fuer searchFields festlegen
+    //Wenn Anzahl der Zeilen in Treffertabelle geandert wird
+    this.searchForm.controls["rows"].valueChanges.subscribe(rows => {
+
+      //Zeilen-Anzahl in Abfrage-Format setzen
+      this.queryFormat.queryParams.rows = rows;
+
+      //Trefferliste wieder von vorne anzeigen
+      this.queryFormat.queryParams.start = 0;
+
+      //Suche starten
+      this.complexSearchTerms.next(this.queryFormat);
+    });
+
+    //FormControls fuer Suchfelder und deren Auswahlselects festlegen
     for (let key of Object.keys(this.queryFormat.searchFields)) {
 
       //Select-Feld fuer Auswahl des Feldes (z.B. Freitext, Titel, Person,...)
       this.searchForm.addControl('selectSearchField_' + key, new FormControl(this.queryFormat.searchFields[key].field));
 
-      //Suchfeld
-      this.searchForm.addControl(key, new FormControl());
+      //Bei Aenderung des Selects
+      this.searchForm.controls['selectSearchField_' + key].valueChanges.subscribe(value => {
+
+        //Wert in queryFormat speichern
+        this.queryFormat.searchFields[key].field = value;
+
+        //Suche starten
+        this.complexSearchTerms.next(this.queryFormat);
+      });
+
+      //Suchfeld einfuegen
+      this.searchForm.addControl('searchField_' + key, new FormControl());
+
+      //Bei Aenderung des Suchfelds
+      this.searchForm.controls['searchField_' + key].valueChanges.subscribe(value => {
+
+        //Wert in Query-Format anpassen
+        this.queryFormat.searchFields[key].value = value;
+
+        //Start der Trefferliste auf Anfang setzen
+        this.queryFormat.queryParams.start = 0;
+
+        //Suche starten
+        this.complexSearchTerms.next(this.queryFormat);
+      });
     }
 
     //FormControls fuer Checkenboxen erstellen, die festlegen, ob Titel ohne ein Merkmal (z.B. Titel ohne Jahr) angezeigt werden sollen
     for (let key of Object.keys(this.queryFormat.rangeFields)) {
 
+      //FormControl fuer Checkbox anlegen
       this.searchForm.addControl('showMissing_' + key, new FormControl());
+
+      //Bei Aenderung der Checkbox
+      this.searchForm.controls['showMissing_' + key].valueChanges.subscribe(checked => {
+
+        //Wert setzen
+        this.queryFormat.rangeFields[key].showMissingValues = checked;
+
+        //Suche starten
+        this.complexSearchTerms.next(this.queryFormat);
+      });
+    }
+
+    //FormControls fuer Selects erstellen, die festlegen wie die Werte einer Facette kombiniert werden (ger and eng) vs (ger or eng)
+    for (let key of Object.keys(this.queryFormat.facetFields)) {
+
+      //FormControl nur erstellen, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
+      if (this.queryFormat.facetFields[key].operators.length > 1) {
+
+        //FormControl anlegen
+        this.searchForm.addControl('operatorSelect_' + key, new FormControl(this.queryFormat.facetFields[key].operator));
+
+        //Bei Anederung des Selects
+        this.searchForm.controls['operatorSelect_' + key].valueChanges.subscribe(value => {
+
+          //Wert in queryFormat speichern
+          this.queryFormat.facetFields[key].operator = value;
+
+          //Suche starten
+          this.complexSearchTerms.next(this.queryFormat);
+        })
+      }
     }
 
     //Input fuer "Suche speichern". Name = Pflichtfeld und muss eindeutig sein, "Meine Suche2"
     this.saveQuery = new FormControl('Meine Suche ' + (this.savedQueries.length + 1), [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.savedQueries)]);
-  }
-
-  //Bei Suche in Eingabefeld
-  searchComplex(field: string, value: string): void {
-
-    //Wert in Query-Format anpassen
-    this.queryFormat["searchFields"][field]["value"] = value;
-
-    //Start der Trefferliste auf Anfang setzen
-    this.queryFormat.queryParams.start = 0;
-
-    //Suche starten
-    this.complexSearchTerms.next(this.queryFormat);
   }
 
   //Facette speichern
@@ -344,25 +368,42 @@ export class AppComponent implements OnInit {
   //Werte des Abfrage-Formats in Input-Felder im Template schreiben
   setFormInputValues() {
 
+    //aktuellen Startwert merken (dieser wird beim Setzen der Felder auf 0 gesetzt) und ganz am Ende setzen
+    let start = this.queryFormat.queryParams.start;
+
     //Ueber Felder des Abfrage-Formats gehen
     for (let key of Object.keys(this.queryFormat.searchFields)) {
 
-      //das ausgewaehlte Suchefeld setzen (z.B. Freitext, Titel, Person,...)
+      //das ausgewaehlte Suchefeld in Template setzen (z.B. Freitext, Titel, Person,...)
       this.searchForm.get('selectSearchField_' + key).setValue(this.queryFormat.searchFields[key].field);
 
       //Wert in Input-Feld im Template setzen
-      this.searchForm.get(key).setValue(this.queryFormat.searchFields[key].value)
+      this.searchForm.get('searchField_' + key).setValue(this.queryFormat.searchFields[key].value)
+    }
+
+    //Operator bei Verknuepfung der Facettenwerte setzen
+    for (let key of Object.keys(this.queryFormat.facetFields)) {
+
+      //Es existiert nur dann ein FormControl, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
+      if (this.queryFormat.facetFields[key].operators.length > 1) {
+
+        //Wert aus QueryFormat holen und in Template setzen
+        this.searchForm.get('operatorSelect_' + key).setValue(this.queryFormat.facetFields[key].operator);
+      }
+    }
+
+    //Checkboxen anhaken, bei welchen Ranges auch Titel ohne Merkmal gesucht werden sollen (z.B. Titel ohne Jahr)
+    for (let key of Object.keys(this.queryFormat.rangeFields)) {
+
+      //Wert aus QueryFormat holen und in Template setzen
+      this.searchForm.get("showMissing_" + key).setValue(this.queryFormat.rangeFields[key].showMissingValues);
     }
 
     //Anzahl der Treffer in Select im Template auswaehlen
     this.searchForm.get("rows").setValue(this.queryFormat.queryParams.rows);
 
-    //Checkboxen anhaken, bei welchen Ranges auch Titel ohne Merkmal gesucht werden sollen (z.B. Titel ohne Jahr)
-    for (let key of Object.keys(this.queryFormat.rangeFields)) {
-
-      //Wert aus QueryFormat holen und setzen
-      this.searchForm.get("showMissing_" + key).setValue(this.queryFormat.rangeFields[key].showMissingValues);
-    }
+    //gemerkten Startwert wieder setzen (war zwischenzeitlich auf 0 gesetzt worden)
+    this.queryFormat.queryParams.start = start;
   }
 
   //Nutzeranfrage speichern
@@ -402,19 +443,6 @@ export class AppComponent implements OnInit {
 
     //Suchanfrage an passender Stelle loeschen
     this.savedQueries.splice(index, 1);
-  }
-
-  //Anzahl der Treffer in Suche anpassen
-  setRows(rows: number) {
-
-    //Zeilen-Anzahl in Abfrage-Format setzen
-    this.queryFormat.queryParams.rows = rows;
-
-    //Trefferliste wieder von vorne anzeigen
-    this.queryFormat.queryParams.start = 0;
-
-    //Suche starten
-    this.complexSearchTerms.next(this.queryFormat);
   }
 
   //Blaettern in Trefferliste
@@ -580,10 +608,13 @@ export class AppComponent implements OnInit {
   }
 
   //Slider initialieiseren
-  sliderInit() {
+  sliderInit(key?) {
+
+    //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys
+    let keys = key ? [key] : Object.keys(this.queryFormat.rangeFields)
 
     //Ueber Rangewerte gehen
-    for (let key of Object.keys(this.queryFormat.rangeFields)) {
+    for (let key of keys) {
 
       //Von und bis Werte fuer Slider setzen
       this.rangeData[key].from = this.queryFormat.rangeFields[key].from;
@@ -617,42 +648,28 @@ export class AppComponent implements OnInit {
     return this.rangeMissingValues['{!ex=' + this.queryFormat.rangeFields[key].field + '}' + this.queryFormat.rangeFields[key].field + ':0'];
   }
 
-  //Checkbox anpassen, ob Eintraege ohne ein Merkmal (z.B. Titel ohne Jahr) anzeigen
-  updateRangeMissing(key, checked) {
+  //Slider auf Anfangswerte zuruecksetzen
+  resetRange(key) {
 
-    //Wert setzen
-    this.queryFormat.rangeFields[key].showMissingValues = checked;
+    //Wert in Queryformat anpassen
+    this.queryFormat.rangeFields[key].from = this.queryFormat.rangeFields[key].min;
+    this.queryFormat.rangeFields[key].to = this.queryFormat.rangeFields[key].max;
 
-    //Suche starten
-    this.complexSearchTerms.next(this.queryFormat);
-  }
-
-  //Auswahl des durchsuchten Feldes anpassen
-  updateSearchField(field, value) {
-
-    //Wert in queryFormat speichern
-    this.queryFormat.searchFields[field].field = value;
-
-    this.single = [
-      {
-        "name": "Germany",
-        "value": 30
-      },
-      {
-        "name": "USA",
-        "value": 2
-      },
-      {
-        "name": "France",
-        "value": 13
-      }
-    ];
+    this.sliderInit(key);
 
     //Suche starten
     this.complexSearchTerms.next(this.queryFormat);
   }
 }
 
-//TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird?
+//TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
 //TODO rowOpts configurierbar
 //TODO searchFields configurierbar
+//TODO pagination richtig berechnet? 10 Treffer bei Auswahl 5 pro Seite
+//TODO table 0 Treffer nicht anzeigen
+//TODO table letzte Zeilen Zuatzinfos border-left border-top
+//TODO Suche per Link
+//TODO Merkliste
+//TODO Slider / Chart
+//TODO Wenn keine Suchefelder gewaehlt -> *:* Suche
+//TODO FormControls beim Erstellen direkt mit Werten belegen

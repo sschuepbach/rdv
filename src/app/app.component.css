@@ -1,11 +1,4 @@
-/*
-table {
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-*/
-
-/* Bootstrap Erweiterung */
+/* Bootstrap Erweiterung, kann weg? */
 .w-10 {
     width: 10%!important;
 }
@@ -25,6 +18,10 @@ table {
 
 .flex-auto {
     flex: auto;
+}
+
+.query-overview label {
+    width: 120px;
 }
 
 .row-count {
@@ -181,14 +178,14 @@ th {
     /*background-color: grey; */
   
     position: absolute;
-    top: -143px;
+    top: -174px;
 }
 
 .curtain {
     display: inline-block;
     position: absolute;
     width: 10%;
-    height: 138px;
+    height: 128px;
 }
 
 .rangeslider_div {

@@ -8,29 +8,14 @@ import { QueryFormat } from "app/query-format";
 @Injectable()
 export class SolrSearchService {
 
-  //Solr-Suche
+  //Solr-Suche, Basis-URL
   private url = `
 /solr/freidok_core/
 select?wt=json
 &indent=true
 &facet=true
-&facet.field=doctype_string
-&facet.field=language_all_facet
 &facet.mincount=1
-&facet.query={!ex=py_int}py_int:0
-&facet.range={!ex=py_int}py_int
-&f.py_int.facet.range.start=1950
-&f.py_int.facet.range.end=2018
-&f.py_int.facet.range.gap=1
-&f.py_int.facet.mincount=0
-&facet.query={!ex=pages_int}pages_int:0
-&facet.range={!ex=pages_int}pages_int
-&f.pages_int.facet.range.start=1
-&f.pages_int.facet.range.end=21
-&f.pages_int.facet.range.gap=1
-&f.pages_int.facet.mincount=0
-&json.nl=arrarr
-&fl=id,person_all_string,ti_all_string,py_string`;
+&json.nl=arrarr`;
 
   //Http Service injekten
   constructor(private http: Http) { }
@@ -38,17 +23,23 @@ select?wt=json
   //Daten in Solr suchen
   getSolrDataComplex(queryFormat: QueryFormat): Observable<any> {
 
+    //Basis-URL nehmen und mit Anfragen erweitern
+    let queryUrl = this.url;
+
     //Suchanfrage zusammenbauen
     let queryArray = [];
 
     //Ueber Anfrage-Formate gehen
     for (let key of Object.keys(queryFormat.searchFields)) {
 
+      //Schnellzugriff auf dieses Suchfeld
+      let searchfield_data = queryFormat.searchFields[key];
+
       //Wenn Wert gesetzt ist (z.B. bei all fuer all_text-Suche)
-      if (queryFormat["searchFields"][key]["value"]) {
+      if (searchfield_data.value) {
 
         //Anfrage fuer dieses Feld speichern
-        queryArray.push(queryFormat["searchFields"][key]["field"] + ":(" + queryFormat["searchFields"][key]["value"] + "*)");
+        queryArray.push(searchfield_data.field + ":(" + searchfield_data.value + "*)");
       }
     }
 
@@ -61,11 +52,20 @@ select?wt=json
     //Ueber Facettenfelder gehen
     for (let key of Object.keys(queryFormat.facetFields)) {
 
-      //Wenn es Werte bei einem Facettenfeld gibt (z.B. bei language fuer language_all_facet)
-      if (queryFormat["facetFields"][key]["values"].length) {
+      //Schnellzugriff auf Infos dieser Facette
+      let facet_data = queryFormat.facetFields[key];
 
-        //Einzelwerte dieser Facette per AND verknuepfen (ger AND eng) und in Array sammeln
-        fqArray.push("&fq=" + queryFormat["facetFields"][key]["field"] + ":(" + queryFormat["facetFields"][key]["values"].join(" AND ") + ")");
+      //Bei AND Verknuepfung innerhalb einer Facette keine Extra-Behandlung, bei OR-Verknuepfung muss sichergestellt sein, dass andere Werte auch sichtbar sind (Auswahl ger -> auch Facettenwert eng anzeigen fuer ger OR eng)
+      let extra_tag = facet_data.operator === "AND" ? ["", ""] : ["{!ex=" + facet_data.field + "}", "{!tag=" + facet_data.field + "}"];
+
+      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden)
+      queryUrl += "&facet.field=" + extra_tag[0] + facet_data.field;
+
+      //Wenn es Werte bei einem Facettenfeld gibt (z.B. bei language fuer language_all_facet)
+      if (facet_data.values.length) {
+
+        //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
+        fqArray.push("&fq=" + extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")");
       }
     }
 
@@ -78,11 +78,22 @@ select?wt=json
     //Ueber Rangefelder gehen
     for (let key of Object.keys(queryFormat.rangeFields)) {
 
+      //Schnellzugriff auf Infos dieser Range
+      let range_data = queryFormat.rangeFields[key];
+
+      //Feld als Solr-Facette in URL anmelden und Range-Optionen aktivieren
+      queryUrl += "&facet.query={!ex=" + range_data.field + "}" + range_data.field + ":0";
+      queryUrl += "&facet.range={!ex=" + range_data.field + "}" + range_data.field;
+      queryUrl += "&f." + range_data.field + ".facet.range.start=" + range_data.min;
+      queryUrl += "&f." + range_data.field + ".facet.range.end=" + range_data.max;
+      queryUrl += "&f." + range_data.field + ".facet.range.gap=1";
+      queryUrl += "&f." + range_data.field + ".facet.mincount=0";
+
       //Range-Anfrage
-      let range_query = "&fq={!tag=" + queryFormat.rangeFields[key].field + "}" + queryFormat.rangeFields[key].field + ":[" + queryFormat.rangeFields[key].from + " TO " + queryFormat.rangeFields[key].to + "]"
+      let range_query = "&fq={!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]"
 
       //ggf. Treffer ohne Wert dieser Range (z.B. ohne Jahr) einfuegen
-      range_query += queryFormat.rangeFields[key].showMissingValues ? " OR " + queryFormat.rangeFields[key].field + ":0" : "";
+      range_query += range_data.showMissingValues ? " OR " + range_data.field + ":0" : "";
 
       //alle Rangequeries in Array sammeln
       fqRangeArray.push(range_query)
@@ -92,16 +103,13 @@ select?wt=json
     let fq_range = fqRangeArray.length ? fqRangeArray.join("") : "";
 
     //Suchanfrage zusammenbauen, dabei auch Anzahl der Treffer setzen
-    let queryUrl = this.url
-      + query
-      + fq
-      + fq_range
+    queryUrl += query + fq + fq_range
       + "&rows=" + queryFormat.queryParams.rows
       + "&start=" + queryFormat.queryParams.start
-      + "&sort=" + queryFormat.queryParams.sortField + " " + queryFormat.queryParams.sortDir;
+      + "&sort=" + queryFormat.queryParams.sortField + " " + queryFormat.queryParams.sortDir
+      + "&fl=" + queryFormat.queryParams.fl.join(",");
 
-
-    //  console.log(queryUrl);
+    //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr
     return this.http

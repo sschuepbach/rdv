@@ -2,8 +2,139 @@
 
   <!-- <pre>{{queryFormat | json}}</pre> -->
 
+  <!-- Alle Werte der aktuellen Suchanfrage (Suchfelder, Facetten, Ranges) -->
+  <div class="query-overview bg-info text-white p-2 rounded">
+
+    <!-- Button "Neue Suche" -->
+    <button class="btn btn-default btn-sm"
+            (click)="resetSearch()">Neue Suche</button>
+
+    <!-- Suchfelder: Ueber Suchfeld gehen -->
+    <div *ngFor="let key of queryFormat.searchFields | objectKeys"
+         class="d-flex no-gutters">
+
+      <!-- Wenn in diesem Suchfeld etwas steht -->
+      <ng-container *ngIf="queryFormat.searchFields[key].value.length > 0">
+
+        <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
+        <label>{{searchFieldOpts[queryFormat.searchFields[key].field]}}:</label>
+
+        <!-- Suchwert -->
+        <div class="col">
+          <span>{{queryFormat.searchFields[key].value}}</span>
+          <!-- Undo-Button -->
+          <button (click)="searchForm.controls['searchField_' + key].setValue('')"
+                  class="btn p-1 fa fa-undo"></button>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Ausgewaehlte Ranges: Ueber Rangefelder gehen -->
+    <div *ngFor="let key of queryFormat.rangeFields | objectKeys"
+         class="d-flex no-gutters">
+
+      <!-- Label (Jahr:) -->
+      <label>{{queryFormat.rangeFields[key].label}}:</label>
+
+      <!-- Div mit aktuellem Wertebereich (1955-1972) -->
+      <div class="col">
+
+        <!-- Range-Bereich -->
+        <span>{{queryFormat.rangeFields[key].from}} - {{queryFormat.rangeFields[key].to}}</span>
+
+        <!-- Reset-Button (Range wieder auf Extrem-Werte setzen) -->
+        <button *ngIf="queryFormat.rangeFields[key].from != queryFormat.rangeFields[key].min || queryFormat.rangeFields[key].to != queryFormat.rangeFields[key].max"
+      
+                (click)="resetRange(key)"
+                class="btn p-1 fa fa-undo"></button>
+
+        <span *ngIf="queryFormat.rangeFields[key].showMissingValues">
+          <span> / auch Einträge ohne {{queryFormat.rangeFields[key].label}} anzeigen</span>
+
+        <!-- Undo-Button -->
+        <button (click)="searchForm.controls['showMissing_' + key].setValue(false)"
+                class="btn p-1 fa fa-undo"></button>
+        </span>
+      </div>
+    </div>
+
+    <!-- Ausgewaehlte Facetenwerte: Ueber Facettenfelder gehen -->
+    <div *ngFor="let key of queryFormat.facetFields | objectKeys"
+         class="d-flex no-gutters">
+
+      <!-- Wenn es ausgewaehlte Werte dieser Facette gibt -->
+      <ng-container *ngIf="queryFormat.facetFields[key].values.length > 0">
+
+        <!-- Name der Facette (Dokumenttyp: ) -->
+        <label>{{queryFormat.facetFields[key].label}}:</label>
+
+        <!-- Div mit Werten -->
+        <div class="col">
+
+          <!-- Ueber Werte der Facetten gehen -->
+          <ng-container *ngFor="let facetVal of queryFormat.facetFields[key].values; first as first">
+
+            <!-- ab 2. Eintrag Operator ausgeben (... OR eng) -->
+            <span *ngIf="!first">{{queryFormat.facetFields[key].operator}}</span>
+
+            <!-- Facettenwert -->
+            <span>{{facetVal}}</span>
+
+            <!-- Remove-Button -->
+            <button (click)="removeFacet(key, facetVal)"
+                    class="btn p-1 fa fa-trash"></button>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- UserQuery speichern -->
+    <div>
+      <div class="input-group">
+
+        <!-- "UserQuery speichern" Textfeld fuer Name -->
+        <input class="form-control"
+               [formControl]="saveQuery"
+               type="text"
+               #saveQueryInput
+               placeholder="Name der Suche">
+
+        <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
+        <div class="input-group-btn">
+          <button class="btn btn-default"
+                  [disabled]="saveQuery.invalid"
+                  (click)="saveUserQuery(saveQueryInput.value)">Suche speichern</button>
+        </div>
+      </div>
+
+      <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
+      <div *ngIf="saveQuery.errors">
+        <div *ngIf="saveQuery.errors.uniqueQueryName">Name muss eindeutig seind</div>
+        <div *ngIf="saveQuery.errors.required">Name ist Pflichtfeld</div>
+        <div *ngIf="saveQuery.errors.minlength">Mindestlänge {{saveQuery.errors.minlength.requiredLength}}</div>
+      </div>
+
+      <!-- Liste der gespeicherten UserQueries -->
+      <h3>Gespeicherte Anfragen</h3>
+      <ul>
+        <li *ngFor="let savedQuery of savedQueries; index as i">
+
+          <!-- Link "UserQuery laden" mit Namen der UserQuery -->
+          <a href="#"
+             class="badge badge-light"
+             (click)="loadUserQuery(i)">{{savedQuery.name}}</a>
+
+          <!-- "UserQuery loeschen" Button -->
+          <button (click)="deleteUserQuery(i)"
+                  class="btn p-1 fa fa-trash"></button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <!-- Form als aeusserstes Element der Suche -->
-  <form [formGroup]="searchForm">
+  <form [formGroup]="searchForm"
+        class="mt-2">
 
     <!-- DIV-container fuer Suchfelder/Ranges unf Facettenbereich -->
     <div class="d-flex flex-column flex-md-row no-gutters">
@@ -17,22 +148,20 @@
           <div class="input-group searchfieldrow"
                *ngFor="let field of queryFormat.searchFields | objectKeys">
 
-            <!-- Auswahl des Suchfeldes (Freitext, Titel, Person,...) -->
+            <!-- Auswahl des Suchfeldtyps (Freitext, Titel, Person,...) -->
             <div class="input-group-btn">
               <select class="btn btn-sm"
-                      [formControlName]="'selectSearchField_' + field"
-                      #selectSearchField
-                      (change)="updateSearchField(field, selectSearchField.value)">
-        <option *ngFor="let option of searchFieldOpts" [value]="option[0]">{{option[1]}}</option>
+                      [formControlName]="'selectSearchField_' + field">
+        <option *ngFor="let key of searchFieldOpts | objectKeys" 
+        [value]="key">{{searchFieldOpts[key]}}</option>
             </select>
             </div>
 
             <!-- Suchfeld -->
             <input class="form-control form-control-sm"
                    tpye="text"
-                   #searchField
-                   (keyup)="searchComplex(field, searchField.value)"
-                   [formControlName]="field"
+                   (keyup.esc)="searchForm.controls['searchField_' + field].setValue('')"
+                   [formControlName]="'searchField_' + field"
                    placeholder="Suchbegriff eingeben">
           </div>
         </div>
@@ -47,26 +176,26 @@
              id="facet-pills-tab"
              role="tablist">
 
-          <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
-          <a *ngFor="let key of rangeData | objectKeys; first as first"
+          <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
+          <a *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
              class="nav-link flex-sm-fill text-sm-center px-2 py-0"
              [class.active]="first"
              id="facet-pills-{{key}}-tab"
              data-toggle="pill"
              href="#facet-pills-{{key}}"
              role="tab"
-             attr.aria-controls="facet-pills-{{key}}"
-             attr.aria-expanded="true">{{queryFormat.rangeFields[key].label}}</a>
+             attr.aria-controls="pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.facetFields[key].label}}</a>
 
-          <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-          <a *ngFor="let key of queryFormat.facetFields | objectKeys"
+          <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
+          <a *ngFor="let key of rangeData | objectKeys"
              class="nav-link flex-sm-fill text-sm-center px-2 py-0"
              id="facet-pills-{{key}}-tab"
              data-toggle="pill"
              href="#facet-pills-{{key}}"
              role="tab"
-             attr.aria-controls="pills-{{key}}"
-             attr.aria-expanded="true">{{queryFormat.facetFields[key].label}}</a>
+             attr.aria-controls="facet-pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.rangeFields[key].label}}</a>
         </nav>
 
         <!-- DIV-Container fuer Tab-Inhalte -->
@@ -74,9 +203,51 @@
              class="tab-content mt-2"
              id="facet-pills-tabContent">
 
+          <!-- DIV pro Facette fuer Facettenwerte -->
+          <div *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
+               [class.active]="first"
+               class="tab-pane list-group"
+               id="facet-pills-{{key}}"
+               role="tabpanel"
+               attr.aria-labelledby="facet-pills-{{key}}-tab">
+
+            <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
+            Werte werden per
+            <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
+            <div *ngIf="queryFormat.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
+
+            <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
+            <ng-template #operatorSelect>
+              <select *ngIf="queryFormat.facetFields[key].operators.length > 1"
+                      class="btn btn-sm"
+                      [formControlName]="'operatorSelect_' + key">
+              <option *ngFor="let operator of queryFormat.facetFields[key].operators" [value]="operator">{{operator}}</option>
+            </select>
+            </ng-template>
+
+            <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
+            <ng-template #singleOperator>{{queryFormat.facetFields[key].operator}}</ng-template>
+
+            verküpft
+
+            <!-- Liste der Facettenwerte dieser Facette -->
+            <ng-container *ngFor="let value of facets[queryFormat.facetFields[key].field]">
+
+              <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
+              <button *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
+                      (click)="selectFacet(key, value[0])"
+                      type="button"
+                      class="list-group-item list-group-item-action p-1">
+                       <span class="justify-content-between align-items-center d-flex">
+                         <span style="word-break: break-word">{{value[0]}}</span>
+                         <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
+                       </span>
+                     </button>
+            </ng-container>
+          </div>
+
           <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
           <div *ngFor="let key of rangeData | objectKeys; first as first"
-               [class.active]="first"
                class="tab-pane p-2 list-group"
                id="facet-pills-{{key}}"
                role="tabpanel"
@@ -85,9 +256,7 @@
             <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
             <label>
               <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
-                               <input type="checkbox"
-                                 [formControlName]="'showMissing_' + key" 
-                                 #showMissingValue (change)="updateRangeMissing(key, showMissingValue.checked)">
+                               <input type="checkbox" [formControlName]="'showMissing_' + key">
                              </label>
 
             <!-- Chart -->
@@ -130,36 +299,9 @@
                                 (onChange)="updateSlider($event, key)"></ion-range-slider>
             </div>
           </div>
-
-          <!-- DIV pro Facette fuer Facettenwerte -->
-          <div *ngFor="let key of queryFormat.facetFields | objectKeys"
-               class="tab-pane list-group"
-               id="facet-pills-{{key}}"
-               role="tabpanel"
-               attr.aria-labelledby="facet-pills-{{key}}-tab">
-
-            <!-- Liste der Facettenwerte dieser Facette -->
-            <ng-container *ngFor="let value of facets[queryFormat.facetFields[key].field]">
-
-              <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
-              <button *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
-                      (click)="selectFacet(key, value[0])"
-                      type="button"
-                      class="list-group-item list-group-item-action p-1">
-                       <span class="justify-content-between align-items-center d-flex">
-                         <span style="word-break: break-word">{{value[0]}}</span>
-                         <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
-                       </span>
-                     </button>
-            </ng-container>
-          </div>
         </div>
       </div>
     </div>
-
-    <!-- Button "Neue Suche" -->
-    <button class="btn btn-default btn-sm"
-            (click)="resetSearch()">Neue Suche</button>
 
     <!-- Zeile aus Treffer-Anzahl, Select Treffer pro Seite, Pagination -->
     <div class="d-flex justify-content-start flex-wrap mt-3">
@@ -178,12 +320,10 @@
 
           <!-- Select: Rows -->
           <select class="form-control form-control-sm"
-                  id="rows"
-                  formControlName="rows"
-                  #rowSelect
-                  (change)="setRows(rowSelect.value)">
-        <option *ngFor="let rowOpt of rowOpts" [value]="rowOpt">{{rowOpt}}</option>
-      </select>
+                  formControlName="rows">
+                  <option *ngFor="let rowOpt of rowOpts"
+                  [value]="rowOpt">{{rowOpt}}</option>
+          </select>
 
           <!-- Label: Treffer pro Seite -->
           <label class="form-label ml-2 d-flex justify-content-center"
@@ -287,72 +427,5 @@
         </div>
       </div>
     </div>
-
-    <hr>
-
-    <h3>Ausgewählte Facettenwerte</h3>
-
-    <!-- Liste der ausgewaehlten Facettenwerte pro Facette -->
-    <ul>
-
-      <!-- Ueber Facettenfelder gehen -->
-      <li *ngFor="let key of queryFormat.facetFields | objectKeys">
-
-        Facette {{key}}
-
-        <!-- Liste der Facettenwerte dieser Facette -->
-        <ul>
-
-          <!-- Ueber Werte der Facetten gehen -->
-          <li *ngFor="let facetVal of queryFormat.facetFields[key].values">
-
-            <!-- ausgeaehlten Wert anzeigen und Loeschbutton anbieten -->
-            <button (click)="removeFacet(key, facetVal)">remove</button> {{facetVal}}
-          </li>
-        </ul>
-      </li>
-    </ul>
-
-    <!-- UserQuery speichern -->
-    <div class="input-group">
-
-      <!-- "UserQuery speichern" Textfeld fuer Name -->
-      <input class="form-control"
-             [formControl]="saveQuery"
-             type="text"
-             #saveQueryInput
-             placeholder="Name der Suche">
-
-      <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
-      <div class="input-group-btn">
-        <button class="btn btn-default"
-                [disabled]="saveQuery.invalid"
-                (click)="saveUserQuery(saveQueryInput.value)">Suche speichern</button>
-      </div>
-    </div>
-
-    <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
-    <div *ngIf="saveQuery.errors">
-      <h3>Fehler:</h3>
-      <div *ngIf="saveQuery.errors.uniqueQueryName">Name muss eindeutig seind</div>
-      <div *ngIf="saveQuery.errors.required">Name ist Pflichtfeld</div>
-      <div *ngIf="saveQuery.errors.minlength">Mindestlänge {{saveQuery.errors.minlength.requiredLength}}</div>
-    </div>
-
-    <!-- Liste der gespeicherten UserQueries -->
-    <h3>Gespeicherte Anfragen</h3>
-    <ul>
-      <li *ngFor="let savedQuery of savedQueries; index as i">
-
-        <!-- "UserQuery laden" Button -->
-        <button (click)="loadUserQuery(i)">Anfrage laden</button>
-
-        <!-- Name der UserQuery -->
-        {{savedQuery.name}}
-
-        <!-- "UserQuery loeschen" Button -->
-        <button (click)="deleteUserQuery(i)">Anfrage löschen</button>
-      </li>
-    </ul>
   </form>
 </div>

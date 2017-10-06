@@ -15,15 +15,19 @@ export class QueryFormat {
     };
 
     facetFields = {
+        "language": {
+            "values": [],
+            "operators": ["OR", "AND"],
+            "operator": "AND",
+            "field": "language_all_facet",
+            "label": "Sprache"
+        },
         "doctype": {
             "values": [],
             "field": "doctype_string",
+            "operators": ["OR"],
+            "operator": "OR",
             "label": "Dokumenttyp"
-        },
-        "language": {
-            "values": [],
-            "field": "language_all_facet",
-            "label": "Sprache"
         }
     };
 
@@ -52,7 +56,8 @@ export class QueryFormat {
         "rows": 10,
         "start": 0,
         "sortField": "id_int",
-        "sortDir": "asc"
+        "sortDir": "asc",
+        "fl": ["id", "person_all_string", "ti_all_string", "py_string"]
     };
 
     constructor() { }
