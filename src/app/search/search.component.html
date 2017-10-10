@@ -1,0 +1,492 @@
+<div class="container mt-3">
+
+
+
+  <!-- <pre style="position: fixed; right: 10px; top: 10px">{{queryFormat | json}}</pre> -->
+
+  <!-- Inspektor fuer Suchen: Button "Neue Suche", Uebersicht "aktuelle Suche", "gespeicherte Suchen" -->
+  <div class="query-overview bg-info text-white p-2 rounded">
+
+    <!-- Button "Neue Suche" -->
+    <button class="btn btn-default btn-sm"
+            (click)="resetSearch()">Neue Suche</button>
+
+    <hr>
+
+    <!-- Uebersicht der aktuellen Suchparameter, Link der Suche, Suche speichern -->
+    <div class="no-gutters">
+
+      <!-- Suchfelder: Ueber Suchfeld gehen -->
+      <div *ngFor="let key of queryFormat.searchFields | objectKeys"
+           class="d-flex no-gutters">
+
+        <!-- Wenn in diesem Suchfeld etwas steht -->
+        <ng-container *ngIf="queryFormat.searchFields[key].value.length > 0">
+
+          <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
+          <label>{{searchFieldOpts[queryFormat.searchFields[key].field]}}:</label>
+
+          <!-- Suchwert -->
+          <div class="col">
+            <span>{{queryFormat.searchFields[key].value}}</span>
+            <!-- Undo-Button -->
+            <button (click)="searchForm.controls['searchField_' + key].setValue('')"
+                    class="btn p-1 fa fa-trash"></button>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Ausgewaehlte Ranges: Ueber Rangefelder gehen -->
+      <div *ngFor="let key of queryFormat.rangeFields | objectKeys"
+           class="d-flex no-gutters">
+
+        <!-- Label (Jahr:) -->
+        <label>{{queryFormat.rangeFields[key].label}}:</label>
+
+        <!-- Div mit aktuellem Wertebereich (1955-1972) -->
+        <div class="col">
+
+          <!-- Range-Bereich -->
+          <span>{{queryFormat.rangeFields[key].from}} - {{queryFormat.rangeFields[key].to}}</span>
+
+          <!-- Reset-Button (Range wieder auf Extrem-Werte setzen) -->
+          <button *ngIf="queryFormat.rangeFields[key].from != queryFormat.rangeFields[key].min || queryFormat.rangeFields[key].to != queryFormat.rangeFields[key].max"
+        
+                  (click)="resetRange(key)"
+                  class="btn p-1 fa fa-undo"></button>
+
+          <span *ngIf="queryFormat.rangeFields[key].showMissingValues">
+          <span> / auch Einträge ohne {{queryFormat.rangeFields[key].label}} anzeigen</span>
+
+          <!-- Undo-Button -->
+          <button (click)="searchForm.controls['showMissing_' + key].setValue(false)"
+                  class="btn p-1 fa fa-trash"></button>
+          </span>
+        </div>
+      </div>
+
+      <!-- Ausgewaehlte Facetenwerte: Ueber Facettenfelder gehen -->
+      <div *ngFor="let key of queryFormat.facetFields | objectKeys"
+           class="d-flex no-gutters">
+
+        <!-- Wenn es ausgewaehlte Werte dieser Facette gibt -->
+        <ng-container *ngIf="queryFormat.facetFields[key].values.length > 0">
+
+          <!-- Name der Facette (Dokumenttyp: ) -->
+          <label>{{queryFormat.facetFields[key].label}}:</label>
+
+          <!-- Div mit Werten -->
+          <div class="col">
+
+            <!-- Ueber Werte der Facetten gehen -->
+            <ng-container *ngFor="let facetVal of queryFormat.facetFields[key].values; first as first">
+
+              <!-- ab 2. Eintrag Operator ausgeben (... OR eng) -->
+              <span *ngIf="!first">{{queryFormat.facetFields[key].operator}}</span>
+
+              <!-- Facettenwert -->
+              <span>{{facetVal}}</span>
+
+              <!-- Remove-Button -->
+              <button (click)="removeFacet(key, facetVal)"
+                      class="btn p-1 fa fa-trash"></button>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Block: Link dieser Suchanfrage -->
+      <div class="d-flex no-gutters">
+
+        <label>Suche als Link:</label>
+        <div class="col">
+          Link kopieren
+          <button class="btn p-1 btn-primary fa fa-link"
+                  ngxClipboard
+                  [cbContent]="getQueryLink(queryFormat)"></button>
+        </div>
+      </div>
+
+      <!-- Block: Suchanfrage speichern -->
+      <div class="d-flex no-gutters align-items-center mt-2">
+
+        <label>Suche speichern:</label>
+        <div class="col-md-4">
+
+          <!-- Input fuer Namen + Button -->
+          <div class="input-group input-group-sm">
+
+            <!-- "UserQuery speichern" Textfeld fuer Name -->
+            <input class="form-control"
+                   type="search"
+                   [formControl]="saveQuery"
+                   type="text"
+                   #saveQueryInput
+                   placeholder="Name der Suche">
+
+            <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
+            <span class="input-group-btn">
+                          <button class="btn btn-primary fa fa-floppy-o"
+                                  type="button"
+                                  [disabled]="saveQuery.invalid"
+                                  (click)="saveUserQuery(saveQueryInput.value)"></button>
+                        </span>
+          </div>
+
+          <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
+          <div *ngIf="saveQuery.errors">
+            <div *ngIf="saveQuery.errors.uniqueQueryName">Name muss eindeutig seind</div>
+            <div *ngIf="saveQuery.errors.required">Name ist Pflichtfeld</div>
+            <div *ngIf="saveQuery.errors.minlength">Mindestlänge {{saveQuery.errors.minlength.requiredLength}}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <!-- Block: Gespeicherte Suchanfragen: "Suchanfrage speichern", Liste der gespeicherten Suchanfragen -->
+    <div class="mt-2"
+         *ngIf="savedQueries.length">
+
+      <!-- Ueberschrift -->
+      <div class="h5">Meine Suchen</div>
+
+      <!-- Liste der gespeicherten UserQueries -->
+      <div class="no-gutters">
+        <div *ngFor="let savedQuery of savedQueries; index as i"
+             class="input-group input-group-sm col-md-6 mt-1">
+
+          <!-- Name der Query -->
+          <input type="text"
+                 class="form-control"
+                 disabled="true"
+                 [value]=savedQuery.name>
+
+          <!-- Button "Query laden" -->
+          <span class="input-group-btn">
+                  <button class="btn btn-primary fa fa-play" 
+                  type="button"
+                  (click)="loadUserQuery(i)"></button>
+                </span>
+
+          <!-- Button "Link kopieren" -->
+          <span class="input-group-btn">
+                    <button ngxClipboard
+                    [cbContent]="getQueryLink(savedQuery.query)"
+                    class="btn btn-primary fa fa-link" 
+                    type="button"></button>
+                  </span>
+
+          <!-- Button "Query loeschen" -->
+          <span class="input-group-btn">
+                      <button class="btn btn-danger fa fa-trash" 
+                      type="button"
+                      (click)="deleteUserQuery(i)"></button>
+                    </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form als aeusserstes Element der Suche -->
+  <form [formGroup]="searchForm"
+        class="mt-2">
+
+    <!-- DIV-container fuer Suchfelder/Ranges unf Facettenbereich -->
+    <div class="d-flex flex-column flex-md-row no-gutters">
+
+      <!-- Suchfelder + Ranges, vertikale Flexbox -->
+      <div class="col-md p-2 mr-md-2 mb-2 mb-md-0 d-flex flex-column justify-content-between no-gutters"
+           style="border: 1px solid grey; border-radius:3px; margin-right: 20px;">
+
+        <!-- Suchfelder (oben) -->
+        <div>
+          <div class="input-group searchfieldrow"
+               *ngFor="let field of queryFormat.searchFields | objectKeys">
+
+            <!-- Auswahl des Suchfeldtyps (Freitext, Titel, Person,...) -->
+            <div class="input-group-btn">
+              <select class="btn btn-sm"
+                      [formControlName]="'selectSearchField_' + field">
+        <option *ngFor="let key of searchFieldOpts | objectKeys" 
+        [value]="key">{{searchFieldOpts[key]}}</option>
+            </select>
+            </div>
+
+            <!-- Suchfeld -->
+            <input class="form-control form-control-sm"
+                   tpye="text"
+                   (keyup.esc)="searchForm.controls['searchField_' + field].setValue('')"
+                   [formControlName]="'searchField_' + field"
+                   placeholder="Suchbegriff eingeben">
+          </div>
+        </div>
+      </div>
+
+      <!-- Facettenbereich als Tabs (Pills) -->
+      <div class="d-flex flex-column p-2 col-md"
+           style="border: 1px solid grey; border-radius:3px;">
+
+        <!-- DIV-Container fuer Tab-Links -->
+        <nav class="nav nav-pills"
+             id="facet-pills-tab"
+             role="tablist">
+
+          <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
+          <a *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
+             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             [class.active]="first"
+             id="facet-pills-{{key}}-tab"
+             data-toggle="pill"
+             href="#facet-pills-{{key}}"
+             role="tab"
+             attr.aria-controls="pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.facetFields[key].label}}</a>
+
+          <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
+          <a *ngFor="let key of rangeData | objectKeys"
+             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             id="facet-pills-{{key}}-tab"
+             data-toggle="pill"
+             href="#facet-pills-{{key}}"
+             role="tab"
+             attr.aria-controls="facet-pills-{{key}}"
+             attr.aria-expanded="true">{{queryFormat.rangeFields[key].label}}</a>
+        </nav>
+
+        <!-- DIV-Container fuer Tab-Inhalte -->
+        <div style="height: 300px; overflow-y: scroll;"
+             class="tab-content mt-2"
+             id="facet-pills-tabContent">
+
+          <!-- DIV pro Facette fuer Facettenwerte -->
+          <div *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
+               [class.active]="first"
+               class="tab-pane list-group"
+               id="facet-pills-{{key}}"
+               role="tabpanel"
+               attr.aria-labelledby="facet-pills-{{key}}-tab">
+
+            <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
+            Werte werden per
+            <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
+            <div *ngIf="queryFormat.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
+
+            <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
+            <ng-template #operatorSelect>
+              <select *ngIf="queryFormat.facetFields[key].operators.length > 1"
+                      class="btn btn-sm"
+                      [formControlName]="'operatorSelect_' + key">
+              <option *ngFor="let operator of queryFormat.facetFields[key].operators" [value]="operator">{{operator}}</option>
+            </select>
+            </ng-template>
+
+            <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
+            <ng-template #singleOperator>{{queryFormat.facetFields[key].operator}}</ng-template>
+
+            verküpft
+
+            <!-- Liste der Facettenwerte dieser Facette -->
+            <ng-container *ngFor="let value of facets[queryFormat.facetFields[key].field]">
+
+              <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
+              <button *ngIf="queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
+                      (click)="selectFacet(key, value[0])"
+                      type="button"
+                      class="list-group-item list-group-item-action p-1">
+                       <span class="justify-content-between align-items-center d-flex">
+                         <span style="word-break: break-word">{{value[0]}}</span>
+                         <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
+                       </span>
+                     </button>
+            </ng-container>
+          </div>
+
+          <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
+          <div *ngFor="let key of rangeData | objectKeys; first as first"
+               class="tab-pane p-2 list-group"
+               id="facet-pills-{{key}}"
+               role="tabpanel"
+               attr.aria-labelledby="facet-pills-{{key}}-tab">
+
+            <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
+            <label>
+              <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
+                               <input type="checkbox" [formControlName]="'showMissing_' + key">
+                             </label>
+
+            <!-- Chart -->
+            <div style="height: 180px;">
+              <canvas baseChart
+                      [chartType]="'bar'"
+                      [datasets]="rangeData[key].chartData"
+                      [labels]="rangeData[key].chartLabels"
+                      [options]="rangeData[key].chartOptions"
+                      [legend]="false">
+              </canvas>
+            </div>
+
+            <!-- Vorhang ueber Chart -->
+            <div class="curtain_div">
+              <div class="curtain_container">
+                <div class="curtain"
+                     style="background-color: rgba(10, 10, 10, .3); left: 0px"
+                     [style.width]="rangeData[key].curtainLeft"></div>
+                <div class="curtain"
+                     style="background-color: rgba(10, 10, 10, .3); right: 0px"
+                     [style.width]="rangeData[key].curtainRight"></div>
+              </div>
+            </div>
+
+            <!-- Slider -->
+            <div class="rangeslider_div">
+              <ion-range-slider #sliderElement
+                                [id]="key"
+                                type="double"
+                                [min]="rangeData[key].min"
+                                [from]="rangeData[key].from"
+                                [to]="rangeData[key].to"
+                                [max]="rangeData[key].max"
+                                grid="true"
+                                grid_num="10"
+                                [prefix]="rangeData[key].label + ' '"
+                                prettify_enabled="false"
+                                hide_min_max="true"
+                                (onChange)="updateSlider($event, key)"></ion-range-slider>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zeile aus Treffer-Anzahl, Select Treffer pro Seite, Pagination -->
+    <div class="d-flex justify-content-start flex-wrap mt-3">
+
+      <!-- Treffer-Anzahl -->
+      <div class="mr-2 mb-2 mb-md-0 d-flex align-items-start h5">
+        <span class="badge badge-primary"
+              [class.badge-danger]="count == 0"> {{count}}</span>
+        <span class="ml-1">Treffer</span>
+      </div>
+
+      <!-- Block: Select Treffer pro Seite + Pagination -->
+      <div *ngIf="count"
+           class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
+
+        <!-- Select Treffer pro Seite -->
+        <div class="form-inline mr-2 mb-2 mb-md-0">
+
+          <!-- Select: Rows -->
+          <select class="form-control form-control-sm"
+                  formControlName="rows">
+                  <option *ngFor="let rowOpt of rowOpts"
+                  [value]="rowOpt">{{rowOpt}}</option>
+          </select>
+
+          <!-- Label: Treffer pro Seite -->
+          <label class="form-label ml-2 d-flex justify-content-center"
+                 for="rows">Treffer pro Seite</label>
+        </div>
+
+        <!-- Paging fuer Treffertabelle -->
+        <div class="btn-group btn-group-sm mb-2 mb-md-0"
+             role="group"
+             aria-label="Small button group">
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart('first')"
+                  [disabled]="queryFormat.queryParams.start == 0"><<</button>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart(-1)"
+                  [disabled]="queryFormat.queryParams.start == 0"><</button>
+          <div class="row-count">{{ page}} / {{pages}}</div>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart(1)"
+                  [disabled]="page == pages">></button>
+          <button class="btn btn-outline-secondary"
+                  (click)="updateStart('last')"
+                  [disabled]="page == pages">>></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treffertabelle -->
+    <div *ngIf="count"
+         class="mt-2 mh-table-view mb-2">
+
+      <!-- Tabellenheader -->
+      <div class="d-flex mh-table-header font-weight-bold">
+        <div class="col-sm-2 col-lg-1 text-sm-center"
+             (click)="sortTable('id_int')"
+             [ngClass]="sortBy('id_int')">ID</div>
+        <div class="col-sm-4 col-lg-5 text-sm-center"
+             (click)="sortTable('person_sort_string')"
+             [ngClass]="sortBy('person_sort_string')">Person</div>
+        <div class="col-sm-4 col-lg-5 text-sm-center"
+             (click)="sortTable('ti_sort_string')"
+             [ngClass]="sortBy('ti_sort_string')">Title</div>
+        <div class="col-sm-2 col-lg-1 text-sm-center"
+             (click)="sortTable('py_string')"
+             [ngClass]="sortBy('py_string')">Jahr</div>
+      </div>
+
+      <!-- Tabellenzeilen -->
+      <div class="mh-table-row"
+           *ngFor="let doc of docs">
+
+        <!-- 1. Zeile mit Hauptinfos -->
+        <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters"
+             (click)="getFullData(doc.id)">
+          <div class="col-sm-2 col-lg-1 text-sm-center d-flex">
+            <label class="d-sm-none font-weight-bold text-right">ID</label>
+            <span class="col">{{doc.id}}</span>
+          </div>
+          <div class="col-sm-4 col-lg-5 d-flex">
+            <label class="d-sm-none font-weight-bold text-right">Person</label>
+            <span class="col">
+            <ng-container *ngFor="let person of doc.person_all_string, last as isLast">
+              {{person}}
+              <br *ngIf="!isLast">
+            </ng-container>
+            </span>
+          </div>
+          <div class="col-sm-4 col-lg-5 d-flex">
+            <label class="d-sm-none font-weight-bold text-right">Titel</label>
+            <span class="col">{{doc.ti_all_string[0]}}</span>
+          </div>
+          <div class="col-sm-2 col-lg-1 text-sm-center d-flex p-0">
+            <label class="d-sm-none font-weight-bold text-right">Jahr</label>
+            <span class="col">{{doc.py_string}}</span>
+          </div>
+        </div>
+
+        <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
+        <div class="mh-table-row-info no-gutters"
+             *ngIf="detailDataArray[doc.id]?.visible">
+
+          <!-- 1 grosse Zelle fuer Inhalt, -->
+          <div class="col-12 d-flex">
+            <label class="font-weight-bold text-right">Schlagwörter</label>
+            <span class="col">
+              <ng-container *ngFor="let keyword of detailDataArray[doc.id]?.data.keyword_all_string; first as isFirst">            
+                  {{keyword}}
+                  <br *ngIf="!isLast">
+              </ng-container>
+            </span>
+          </div>
+
+          <div class="col-12 d-flex">
+            <label class="font-weight-bold text-right">Quelle</label>
+            <span class="col">
+              <ng-container *ngFor="let source of detailDataArray[doc.id]?.data.source_title_all_string; first as isFirst">
+                     {{source}}
+                  <br *ngIf="!isLast">
+              </ng-container>
+              </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

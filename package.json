@@ -29,8 +29,10 @@
     "core-js": "^2.4.1",
     "d3": "^4.11.0",
     "font-awesome": "^4.7.0",
+    "lz-string": "^1.4.4",
     "ng2-charts": "^1.6.0",
     "ng2-ion-range-slider": "^1.0.3",
+    "ngx-clipboard": "^8.1.0",
     "rxjs": "^5.1.0",
     "typescript": "^2.5.3",
     "zone.js": "^0.8.4"
