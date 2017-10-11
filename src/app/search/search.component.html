@@ -16,6 +16,20 @@
     <!-- Uebersicht der aktuellen Suchparameter, Link der Suche, Suche speichern -->
     <div class="no-gutters">
 
+      <!-- Ueberschrift -->
+      <div class="h6">Aktuelle Suche</div>
+
+      <!-- Info: "Alle Titel suchen" anzeigen, wenn kein sonstiges Textfeld belegt ist -->
+      <div class="d-flex no-gutters"
+           *ngIf="searchFieldsAreEmpty">
+
+        <!-- Label "Suche" -->
+        <label>Suche:</label>
+
+        <!-- "Alle Titel anzeigen" -->
+        <div class="col">alle Titel anzeigen</div>
+      </div>
+
       <!-- Suchfelder: Ueber Suchfeld gehen -->
       <div *ngFor="let key of queryFormat.searchFields | objectKeys"
            class="d-flex no-gutters">
@@ -151,7 +165,7 @@
          *ngIf="savedQueries.length">
 
       <!-- Ueberschrift -->
-      <div class="h5">Meine Suchen</div>
+      <div class="h6">Meine Suchen</div>
 
       <!-- Liste der gespeicherten UserQueries -->
       <div class="no-gutters">
@@ -432,16 +446,24 @@
       </div>
 
       <!-- Tabellenzeilen -->
-      <div class="mh-table-row"
+      <div class="mh-table-row d-flex flex-column"
            *ngFor="let doc of docs">
 
         <!-- 1. Zeile mit Hauptinfos -->
-        <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters"
-             (click)="getFullData(doc.id)">
-          <div class="col-sm-2 col-lg-1 text-sm-center d-flex">
+        <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
+
+          <!-- ID Spalte mit Button fuer zusaetzliche Infos -->
+          <div class="col-sm-2 col-lg-1 text-sm-center d-flex flex-sm-column align-items-center">
             <label class="d-sm-none font-weight-bold text-right">ID</label>
-            <span class="col">{{doc.id}}</span>
+            <span class="col mh-flex-1">{{doc.id}}</span>
+
+            <!-- Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
+            <button class="d-none d-sm-block btn btn-sm btn-info fa mb-1 p-1"
+                    [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
+                    [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                    (click)="getFullData(doc.id)"></button>
           </div>
+
           <div class="col-sm-4 col-lg-5 d-flex">
             <label class="d-sm-none font-weight-bold text-right">Person</label>
             <span class="col">
@@ -451,40 +473,54 @@
             </ng-container>
             </span>
           </div>
+
           <div class="col-sm-4 col-lg-5 d-flex">
             <label class="d-sm-none font-weight-bold text-right">Titel</label>
             <span class="col">{{doc.ti_all_string[0]}}</span>
           </div>
+
           <div class="col-sm-2 col-lg-1 text-sm-center d-flex p-0">
             <label class="d-sm-none font-weight-bold text-right">Jahr</label>
             <span class="col">{{doc.py_string}}</span>
           </div>
         </div>
 
+        <!-- Button zum Eingleben der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
+        <button class="btn btn-info btn-sm p-1 d-sm-none fa align-self-center mb-1"
+                [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
+                [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                (click)="getFullData(doc.id)">
+          </button>
+
         <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
         <div class="mh-table-row-info no-gutters"
              *ngIf="detailDataArray[doc.id]?.visible">
 
-          <!-- 1 grosse Zelle fuer Inhalt, -->
-          <div class="col-12 d-flex">
-            <label class="font-weight-bold text-right">Schlagwörter</label>
-            <span class="col">
-              <ng-container *ngFor="let keyword of detailDataArray[doc.id]?.data.keyword_all_string; first as isFirst">            
-                  {{keyword}}
-                  <br *ngIf="!isLast">
-              </ng-container>
-            </span>
-          </div>
+          <!-- Ueber Felder der Config gehen -->
+          <ng-container *ngFor="let key of mainConfig.extraInfos | objectKeys">
 
-          <div class="col-12 d-flex">
-            <label class="font-weight-bold text-right">Quelle</label>
-            <span class="col">
-              <ng-container *ngFor="let source of detailDataArray[doc.id]?.data.source_title_all_string; first as isFirst">
-                     {{source}}
+            <!-- 1 grosse Zelle fuer Inhalt, anzeigen, wenn es Daten zu diesem Feld gibt -->
+            <div class="col-12 d-flex"
+                 *ngIf="detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]?.length">
+
+              <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
+              <label class="font-weight-bold text-right">{{mainConfig.extraInfos[key].label}}</label>
+
+              <!-- Bereich fuer Werte rechts -->
+              <span class="col">
+
+                  <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
+                <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">            
+                    
+                  <!-- Wert ausgeben -->
+                  {{value}}
+
+                  <!-- Zeilenumbruch, wenn nicht der letzte Wert -->
                   <br *ngIf="!isLast">
-              </ng-container>
+                </ng-container>
               </span>
-          </div>
+            </div>
+          </ng-container>
         </div>
       </div>
     </div>

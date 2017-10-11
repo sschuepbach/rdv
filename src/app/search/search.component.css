@@ -24,6 +24,10 @@
     width: 140px;
 }
 
+.mh-flex-1 {
+    flex: 1;
+}
+
 .row-count {
     border-top: 1px solid #868e96;
     border-bottom: 1px solid #868e96;
@@ -57,11 +61,11 @@ th {
 
 @media (min-width: 576px) {
 
-.mh-table-row:last-child > div:last-child > div {
+.mh-table-row:last-of-type > div:last-of-type > div {
     border-bottom: 1px solid grey;
 }
 
-.mh-table-row:last-child > div:last-child > div:last-child {
+.mh-table-row:last-of-type > div:last-of-type > div:last-child {
     border-bottom-right-radius: 3px;
 }
 

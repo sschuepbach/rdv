@@ -18,6 +18,9 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { QueryFormat } from "app/query-format";
 import { SavedQueryFormat } from "app/saved-query-format";
 
+//Config
+import { MainConfig } from "app/config/main-config"
+
 //Slider-Plugin
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";
 import { ActivatedRoute } from '@angular/router';
@@ -74,6 +77,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     return Math.floor(this.queryFormat.queryParams.start / this.queryFormat.queryParams.rows) + 1
   }
 
+  //Config erstellen
+  mainConfig: MainConfig = new MainConfig();
+
   //Such-Form
   searchForm: FormGroup;
 
@@ -116,6 +122,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     "ti_all_text": "Titel",
     "person_all_text": "Person"
   };
+
+  //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
+  searchFieldsAreEmpty: boolean = true;
 
   //BehaviorSubject speichert Anfragen, zu Beginn leere Anfrage schicken, damit *:* Suche gestartet wird
   private complexSearchTerms: BehaviorSubject<QueryFormat>;
@@ -285,6 +294,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         //Suche starten
         this.complexSearchTerms.next(this.queryFormat);
+
+        //Pruefen, ob alle Suchfelder leer sind (in diesem Fall wird oben der Hinweis "alle Titel anzeigen" angezeigt)
+        this.checkIfSearchFieldsAreEmpty();
       });
     }
 
@@ -715,7 +727,32 @@ export class SearchComponent implements OnInit, OnDestroy {
     //String komprimieren
     let lzString = LZString.compressToEncodedURIComponent(jsonString);
 
+    //Link zurueckgeben
     return "localhost:4200/search?query=" + lzString;
+  }
+
+  //prueft, ob in mind. 1 der Text-Suchfelder etwas steht
+  checkIfSearchFieldsAreEmpty() {
+
+    //davon ausgehen, dass alle Suchefelder leer sind
+    let allEmpty = true;
+
+    //Ueber Suchfelder gehen gehen
+    for (let key of Object.keys(this.queryFormat.searchFields)) {
+
+      //Wenn Wert gesetzt ist (z.B. bei Freitext-Suche)
+      if (this.queryFormat.searchFields[key].value) {
+
+        //Flag aendern
+        allEmpty = false;
+
+        //Loop abbrechen (es reicht, dass 1 Feld gesetzt ist)
+        break;
+      }
+    }
+
+    //Wert in Variable setzen fuer die Oberflaeche
+    this.searchFieldsAreEmpty = allEmpty;
   }
 }
 
@@ -725,4 +762,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 //TODO Merkliste
 //TODO Slider / Chart
-//TODO Wenn keine Suchefelder gewaehlt -> *:* Suche
+//TODO Services etc. in Unterordner verschieben
+//TODO config fuer externe Solr-Url (ng build)
+//TODO queryFormat optimieren -> Merkmale nach mainConfig
+//TODO Treffer Tabelle konfigurierbar machen
+
+//TODO Wie erkennen in welchen Dateien sich etwas geaendert hat

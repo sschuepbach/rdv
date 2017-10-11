@@ -5,6 +5,9 @@ import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/query-format";
 
+//Config laden (welche Felder sollen geladen werden)
+import { MainConfig } from "app/config/main-config";
+
 @Injectable()
 export class SolrSearchService {
 
@@ -17,8 +20,28 @@ select?wt=json
 &facet.mincount=1
 &json.nl=arrarr`;
 
+  //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String -> keyword_all_string,source_title_all_string,pages_string
+  detailFields: string = "";
+
   //Http Service injekten
-  constructor(private http: Http) { }
+  constructor(private http: Http) {
+
+    //Main-Config laden
+    let mainConfig = new MainConfig();
+
+    //Felder in Array sammeln
+    let tempArray = [];
+
+    //Felder sammeln, die bei Detailsuche geholt werden sollen
+    for (let key of Object.keys(mainConfig.extraInfos)) {
+
+      //Feld-Namen in tempArray sammeln
+      tempArray.push(mainConfig.extraInfos[key].field);
+    }
+
+    //Array joinen per ,
+    this.detailFields = tempArray.join(",");
+  }
 
   //Daten in Solr suchen
   getSolrDataComplex(queryFormat: QueryFormat): Observable<any> {
@@ -124,8 +147,8 @@ select?wt=json
   //Detail-Daten aus Solr holen (abstract,...)
   getSolrDetailData(id: number): Observable<any> {
 
-    //Suchanfrage zusammenbauen, dabei auch Anzahl der Treffer setzen
-    let queryUrl = this.url + "&q=id:" + id + "&fl=keyword_all_string, source_title_all_string"
+    //Suchanfrage nach ID zusammenbauen, dabei nur die Felder holen, die benoetigt werden
+    let queryUrl = this.url + "&q=id:" + id + "&fl=" + this.detailFields;
     //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr
