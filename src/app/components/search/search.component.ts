@@ -1,7 +1,7 @@
 import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
 
 //Solr Service
-import { SolrSearchService } from "app/solr-search.service";
+import { SolrSearchService } from "app/services/solr-search.service";
 
 // Observable operators
 import 'rxjs/add/operator/debounceTime';
@@ -15,8 +15,8 @@ import { FormBuilder } from "@angular/forms";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 
 //eigene Format-Klassen
-import { QueryFormat } from "app/query-format";
-import { SavedQueryFormat } from "app/saved-query-format";
+import { QueryFormat } from "app/config/query-format";
+import { SavedQueryFormat } from "app/config/saved-query-format";
 
 //Config
 import { MainConfig } from "app/config/main-config"
@@ -112,16 +112,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   //Trefferanzahl der Solr-Antwort. Zu Beginn 0 Treffer (spaeter abgeleitet von results)
   count: number = 0;
-
-  //Optionen fuer Auswahl der Treffermenge
-  rowOpts: number[] = [5, 10, 20];
-
-  //Optionen fuer Auswahl der Suchfelder
-  searchFieldOpts = {
-    "all_text": "Freitext",
-    "ti_all_text": "Titel",
-    "person_all_text": "Person"
-  };
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty: boolean = true;
@@ -321,7 +311,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     for (let key of Object.keys(this.queryFormat.facetFields)) {
 
       //FormControl nur erstellen, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
-      if (this.queryFormat.facetFields[key].operators.length > 1) {
+      if (this.mainConfig.facetFields[key].operators.length > 1) {
 
         //FormControl anlegen
         this.searchForm.addControl('operatorSelect_' + key, new FormControl(this.queryFormat.facetFields[key].operator));
@@ -432,7 +422,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     for (let key of Object.keys(this.queryFormat.facetFields)) {
 
       //Es existiert nur dann ein FormControl, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
-      if (this.queryFormat.facetFields[key].operators.length > 1) {
+      if (this.mainConfig.facetFields[key].operators.length > 1) {
 
         //Wert aus QueryFormat holen und in Template setzen
         this.searchForm.get('operatorSelect_' + key).setValue(this.queryFormat.facetFields[key].operator);
@@ -591,7 +581,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.rangeData[key].chartLabels = labelArray;
 
       //Prefix fuer Slider
-      this.rangeData[key].label = this.queryFormat.rangeFields[key].label;
+      this.rangeData[key].label = this.mainConfig.rangeFields[key].label;
 
       //Chart Optionen
       this.rangeData[key].chartOptions = {
@@ -757,14 +747,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 }
 
 //TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
-//TODO rowOpts, searchFields, Facettenlabel und Operator configurierbar
 //TODO pagination richtig berechnet? 10 Treffer bei Auswahl 5 pro Seite
 
 //TODO Merkliste
 //TODO Slider / Chart
-//TODO Services etc. in Unterordner verschieben
 //TODO config fuer externe Solr-Url (ng build)
-//TODO queryFormat optimieren -> Merkmale nach mainConfig
-//TODO Treffer Tabelle konfigurierbar machen
+//TODO Sortierheader optisch besser (sortierte Spalte)
+//TODO Namen fuer naechste Queries beim Loeschen einer Query neu berechnen
+
 
 //TODO Wie erkennen in welchen Dateien sich etwas geaendert hat

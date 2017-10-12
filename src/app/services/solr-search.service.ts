@@ -3,7 +3,7 @@ import { Http } from "@angular/http";
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
-import { QueryFormat } from "app/query-format";
+import { QueryFormat } from "app/config/query-format";
 
 //Config laden (welche Felder sollen geladen werden)
 import { MainConfig } from "app/config/main-config";
@@ -15,10 +15,12 @@ export class SolrSearchService {
   private url = `
 /solr/freidok_core/
 select?wt=json
-&indent=true
 &facet=true
 &facet.mincount=1
 &json.nl=arrarr`;
+
+  //Felder, die bei normaler Suche fuer die Treffertabelle geholt werden, schon direkt als koma-getrennter String -> id,person_all_string,ti_all_string,py_string
+  tableFields: string = "";
 
   //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String -> keyword_all_string,source_title_all_string,pages_string
   detailFields: string = "";
@@ -29,8 +31,21 @@ select?wt=json
     //Main-Config laden
     let mainConfig = new MainConfig();
 
-    //Felder in Array sammeln
+    //Table-Felder in Array sammeln
     let tempArray = [];
+
+    //Felder sammeln, die bei normaler Suche geholt werden sollen
+    for (let field of mainConfig.tableFields) {
+
+      //Feld-Namen in tempArray sammeln
+      tempArray.push(field.field);
+    }
+
+    //Array joinen per ,
+    this.tableFields = tempArray.join(",");
+
+    //Detail-Felder in Array sammeln
+    tempArray = [];
 
     //Felder sammeln, die bei Detailsuche geholt werden sollen
     for (let key of Object.keys(mainConfig.extraInfos)) {
@@ -130,8 +145,7 @@ select?wt=json
       + "&rows=" + queryFormat.queryParams.rows
       + "&start=" + queryFormat.queryParams.start
       + "&sort=" + queryFormat.queryParams.sortField + " " + queryFormat.queryParams.sortDir
-      + "&fl=" + queryFormat.queryParams.fl.join(",");
-
+      + "&fl=" + this.tableFields;
     //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr

@@ -1,7 +1,5 @@
 <div class="container mt-3">
 
-
-
   <!-- <pre style="position: fixed; right: 10px; top: 10px">{{queryFormat | json}}</pre> -->
 
   <!-- Inspektor fuer Suchen: Button "Neue Suche", Uebersicht "aktuelle Suche", "gespeicherte Suchen" -->
@@ -19,7 +17,7 @@
       <!-- Ueberschrift -->
       <div class="h6">Aktuelle Suche</div>
 
-      <!-- Info: "Alle Titel suchen" anzeigen, wenn kein sonstiges Textfeld belegt ist -->
+      <!-- Info "Alle Titel suchen" anzeigen, wenn kein sonstiges Textfeld belegt ist -->
       <div class="d-flex no-gutters"
            *ngIf="searchFieldsAreEmpty">
 
@@ -38,7 +36,7 @@
         <ng-container *ngIf="queryFormat.searchFields[key].value.length > 0">
 
           <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
-          <label>{{searchFieldOpts[queryFormat.searchFields[key].field]}}:</label>
+          <label>{{mainConfig.searchFields[queryFormat.searchFields[key].field]}}:</label>
 
           <!-- Suchwert -->
           <div class="col">
@@ -55,7 +53,7 @@
            class="d-flex no-gutters">
 
         <!-- Label (Jahr:) -->
-        <label>{{queryFormat.rangeFields[key].label}}:</label>
+        <label>{{mainConfig.rangeFields[key].label}}:</label>
 
         <!-- Div mit aktuellem Wertebereich (1955-1972) -->
         <div class="col">
@@ -70,11 +68,11 @@
                   class="btn p-1 fa fa-undo"></button>
 
           <span *ngIf="queryFormat.rangeFields[key].showMissingValues">
-          <span> / auch Einträge ohne {{queryFormat.rangeFields[key].label}} anzeigen</span>
+            <span> / auch Einträge ohne {{mainConfig.rangeFields[key].label}} anzeigen</span>
 
-          <!-- Undo-Button -->
-          <button (click)="searchForm.controls['showMissing_' + key].setValue(false)"
-                  class="btn p-1 fa fa-trash"></button>
+            <!-- Undo-Button -->
+            <button (click)="searchForm.controls['showMissing_' + key].setValue(false)"
+                    class="btn p-1 fa fa-trash"></button>
           </span>
         </div>
       </div>
@@ -87,7 +85,7 @@
         <ng-container *ngIf="queryFormat.facetFields[key].values.length > 0">
 
           <!-- Name der Facette (Dokumenttyp: ) -->
-          <label>{{queryFormat.facetFields[key].label}}:</label>
+          <label>{{mainConfig.facetFields[key].label}}:</label>
 
           <!-- Div mit Werten -->
           <div class="col">
@@ -140,11 +138,11 @@
 
             <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
             <span class="input-group-btn">
-                          <button class="btn btn-primary fa fa-floppy-o"
-                                  type="button"
-                                  [disabled]="saveQuery.invalid"
-                                  (click)="saveUserQuery(saveQueryInput.value)"></button>
-                        </span>
+              <button class="btn btn-primary fa fa-floppy-o"
+                      type="button"
+                      [disabled]="saveQuery.invalid"
+                      (click)="saveUserQuery(saveQueryInput.value)"></button>
+            </span>
           </div>
 
           <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
@@ -155,10 +153,9 @@
           </div>
         </div>
       </div>
-
     </div>
 
-    <hr>
+    <hr *ngIf="savedQueries.length">
 
     <!-- Block: Gespeicherte Suchanfragen: "Suchanfrage speichern", Liste der gespeicherten Suchanfragen -->
     <div class="mt-2"
@@ -180,25 +177,25 @@
 
           <!-- Button "Query laden" -->
           <span class="input-group-btn">
-                  <button class="btn btn-primary fa fa-play" 
-                  type="button"
-                  (click)="loadUserQuery(i)"></button>
-                </span>
+            <button class="btn btn-primary fa fa-play"
+                    type="button"
+                    (click)="loadUserQuery(i)"></button>
+          </span>
 
           <!-- Button "Link kopieren" -->
           <span class="input-group-btn">
-                    <button ngxClipboard
+            <button ngxClipboard
                     [cbContent]="getQueryLink(savedQuery.query)"
-                    class="btn btn-primary fa fa-link" 
+                    class="btn btn-primary fa fa-link"
                     type="button"></button>
-                  </span>
+          </span>
 
           <!-- Button "Query loeschen" -->
           <span class="input-group-btn">
-                      <button class="btn btn-danger fa fa-trash" 
-                      type="button"
-                      (click)="deleteUserQuery(i)"></button>
-                    </span>
+            <button class="btn btn-danger fa fa-trash"
+                    type="button"
+                    (click)="deleteUserQuery(i)"></button>
+          </span>
         </div>
       </div>
     </div>
@@ -224,9 +221,9 @@
             <div class="input-group-btn">
               <select class="btn btn-sm"
                       [formControlName]="'selectSearchField_' + field">
-        <option *ngFor="let key of searchFieldOpts | objectKeys" 
-        [value]="key">{{searchFieldOpts[key]}}</option>
-            </select>
+                <option *ngFor="let key of mainConfig.searchFields | objectKeys"
+                        [value]="key">{{mainConfig.searchFields[key]}}</option>
+              </select>
             </div>
 
             <!-- Suchfeld -->
@@ -249,25 +246,28 @@
              role="tablist">
 
           <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-          <a *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
+          <a *ngFor="let key of queryFormat.facetFields | objectKeys"
              class="nav-link flex-sm-fill text-sm-center px-2 py-0"
-             [class.active]="first"
+             [ngClass]="'order-' + mainConfig.facetFields[key].order"
+             [class.active]="mainConfig.facetFields[key].order == 1"
              id="facet-pills-{{key}}-tab"
              data-toggle="pill"
              href="#facet-pills-{{key}}"
              role="tab"
              attr.aria-controls="pills-{{key}}"
-             attr.aria-expanded="true">{{queryFormat.facetFields[key].label}}</a>
+             attr.aria-expanded="true">{{mainConfig.facetFields[key].label}}</a>
 
           <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
           <a *ngFor="let key of rangeData | objectKeys"
              class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             [ngClass]="'order-' + mainConfig.rangeFields[key].order"
+             [class.active]="mainConfig.rangeFields[key].order == 1"
              id="facet-pills-{{key}}-tab"
              data-toggle="pill"
              href="#facet-pills-{{key}}"
              role="tab"
              attr.aria-controls="facet-pills-{{key}}"
-             attr.aria-expanded="true">{{queryFormat.rangeFields[key].label}}</a>
+             attr.aria-expanded="true">{{mainConfig.rangeFields[key].label}}</a>
         </nav>
 
         <!-- DIV-Container fuer Tab-Inhalte -->
@@ -276,8 +276,8 @@
              id="facet-pills-tabContent">
 
           <!-- DIV pro Facette fuer Facettenwerte -->
-          <div *ngFor="let key of queryFormat.facetFields | objectKeys; first as first"
-               [class.active]="first"
+          <div *ngFor="let key of queryFormat.facetFields | objectKeys"
+               [class.active]="mainConfig.facetFields[key].order == 1"
                class="tab-pane list-group"
                id="facet-pills-{{key}}"
                role="tabpanel"
@@ -286,15 +286,16 @@
             <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
             Werte werden per
             <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
-            <div *ngIf="queryFormat.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
+            <div *ngIf="mainConfig.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
 
             <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
             <ng-template #operatorSelect>
-              <select *ngIf="queryFormat.facetFields[key].operators.length > 1"
+              <select *ngIf="mainConfig.facetFields[key].operators.length > 1"
                       class="btn btn-sm"
                       [formControlName]="'operatorSelect_' + key">
-              <option *ngFor="let operator of queryFormat.facetFields[key].operators" [value]="operator">{{operator}}</option>
-            </select>
+                <option *ngFor="let operator of mainConfig.facetFields[key].operators"
+                        [value]="operator">{{operator}}</option>
+              </select>
             </ng-template>
 
             <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
@@ -310,17 +311,18 @@
                       (click)="selectFacet(key, value[0])"
                       type="button"
                       class="list-group-item list-group-item-action p-1">
-                       <span class="justify-content-between align-items-center d-flex">
-                         <span style="word-break: break-word">{{value[0]}}</span>
-                         <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
-                       </span>
-                     </button>
+                <span class="justify-content-between align-items-center d-flex">
+                  <span style="word-break: break-word">{{value[0]}}</span>
+                  <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
+                </span>
+              </button>
             </ng-container>
           </div>
 
           <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
-          <div *ngFor="let key of rangeData | objectKeys; first as first"
+          <div *ngFor="let key of rangeData | objectKeys"
                class="tab-pane p-2 list-group"
+               [class.active]="mainConfig.rangeFields[key].order == 1"
                id="facet-pills-{{key}}"
                role="tabpanel"
                attr.aria-labelledby="facet-pills-{{key}}-tab">
@@ -328,8 +330,9 @@
             <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
             <label>
               <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
-                               <input type="checkbox" [formControlName]="'showMissing_' + key">
-                             </label>
+              <input type="checkbox"
+                     [formControlName]="'showMissing_' + key">
+            </label>
 
             <!-- Chart -->
             <div style="height: 180px;">
@@ -380,7 +383,7 @@
 
       <!-- Treffer-Anzahl -->
       <div class="mr-2 mb-2 mb-md-0 d-flex align-items-start h5">
-        <span class="badge badge-primary"
+        <span class="badge badge-info"
               [class.badge-danger]="count == 0"> {{count}}</span>
         <span class="ml-1">Treffer</span>
       </div>
@@ -395,8 +398,8 @@
           <!-- Select: Rows -->
           <select class="form-control form-control-sm"
                   formControlName="rows">
-                  <option *ngFor="let rowOpt of rowOpts"
-                  [value]="rowOpt">{{rowOpt}}</option>
+            <option *ngFor="let rowOpt of mainConfig.rowOpts"
+                    [value]="rowOpt">{{rowOpt}}</option>
           </select>
 
           <!-- Label: Treffer pro Seite -->
@@ -408,19 +411,31 @@
         <div class="btn-group btn-group-sm mb-2 mb-md-0"
              role="group"
              aria-label="Small button group">
-          <button class="btn btn-outline-secondary"
+
+          <!-- 1. Seite -->
+          <button class="btn btn-primary fa fa-angle-double-left"
                   (click)="updateStart('first')"
-                  [disabled]="queryFormat.queryParams.start == 0"><<</button>
-          <button class="btn btn-outline-secondary"
+                  [disabled]="queryFormat.queryParams.start == 0">
+          </button>
+
+          <!-- nach links blaettern -->
+          <button class="btn btn-primary fa fa-angle-left"
                   (click)="updateStart(-1)"
-                  [disabled]="queryFormat.queryParams.start == 0"><</button>
+                  [disabled]="queryFormat.queryParams.start == 0">
+          </button>
+
+          <!-- aktuelle Seite von insgesamt x Seiten -->
           <div class="row-count">{{ page}} / {{pages}}</div>
-          <button class="btn btn-outline-secondary"
+
+          <!-- nach rechts blaettern -->
+          <button class="btn btn-primary fa fa-angle-right"
                   (click)="updateStart(1)"
-                  [disabled]="page == pages">></button>
-          <button class="btn btn-outline-secondary"
+                  [disabled]="page == pages"></button>
+
+          <!-- letztes Seite -->
+          <button class="btn btn-primary fa fa-angle-double-right"
                   (click)="updateStart('last')"
-                  [disabled]="page == pages">>></button>
+                  [disabled]="page == pages"></button>
         </div>
       </div>
     </div>
@@ -431,18 +446,20 @@
 
       <!-- Tabellenheader -->
       <div class="d-flex mh-table-header font-weight-bold">
-        <div class="col-sm-2 col-lg-1 text-sm-center"
-             (click)="sortTable('id_int')"
-             [ngClass]="sortBy('id_int')">ID</div>
-        <div class="col-sm-4 col-lg-5 text-sm-center"
-             (click)="sortTable('person_sort_string')"
-             [ngClass]="sortBy('person_sort_string')">Person</div>
-        <div class="col-sm-4 col-lg-5 text-sm-center"
-             (click)="sortTable('ti_sort_string')"
-             [ngClass]="sortBy('ti_sort_string')">Title</div>
-        <div class="col-sm-2 col-lg-1 text-sm-center"
-             (click)="sortTable('py_string')"
-             [ngClass]="sortBy('py_string')">Jahr</div>
+
+        <!-- Ueber Spaltenfelder gehen -->
+        <ng-container *ngFor="let field of mainConfig.tableFields">
+
+          <!-- Wenn es ein sortierbares Feld ist, Sortierfunktionen setzen -->
+          <div *ngIf="field.sort"
+               (click)="sortTable(field.sort)"
+               [class]="field.css + ' text-center ' + sortBy(field.sort)">{{field.label}}</div>
+
+          <!-- Wenn es kein sortierbares Feld ist, nur Ueberschrift ausgeben -->
+          <div *ngIf="!field.sort"
+               [class]="'text-center ' + field.css">{{field.label}}
+          </div>
+        </ng-container>
       </div>
 
       <!-- Tabellenzeilen -->
@@ -452,48 +469,54 @@
         <!-- 1. Zeile mit Hauptinfos -->
         <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
-          <!-- ID Spalte mit Button fuer zusaetzliche Infos -->
-          <div class="col-sm-2 col-lg-1 text-sm-center d-flex flex-sm-column align-items-center">
-            <label class="d-sm-none font-weight-bold text-right">ID</label>
-            <span class="col mh-flex-1">{{doc.id}}</span>
+          <!-- Ueber Spaltenfelder gehen -->
+          <ng-container *ngFor="let field of mainConfig.tableFields; first as first">
 
-            <!-- Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
-            <button class="d-none d-sm-block btn btn-sm btn-info fa mb-1 p-1"
-                    [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
-                    [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
-                    (click)="getFullData(doc.id)"></button>
-          </div>
+            <!-- Spalte -->
+            <div [class]="field.css + ' d-flex no-gutters py-1 px-2'">
 
-          <div class="col-sm-4 col-lg-5 d-flex">
-            <label class="d-sm-none font-weight-bold text-right">Person</label>
-            <span class="col">
-            <ng-container *ngFor="let person of doc.person_all_string, last as isLast">
-              {{person}}
-              <br *ngIf="!isLast">
-            </ng-container>
-            </span>
-          </div>
+              <!-- Label ("Titel: "") nur bei kleinster Darstellung (vertikal) anzeigen -->
+              <label class="d-sm-none font-weight-bold text-right mr-2">{{field.label}}</label>
 
-          <div class="col-sm-4 col-lg-5 d-flex">
-            <label class="d-sm-none font-weight-bold text-right">Titel</label>
-            <span class="col">{{doc.ti_all_string[0]}}</span>
-          </div>
+              <!-- Wenn es ein Einzelwert ist (z.B. ID, Jahr,...), einfach Wert ausgeben -->
+              <span *ngIf="!field.multi"
+                    class="col"
+                    [class.mh-flex-1]="first">{{doc[field.field]}}</span>
 
-          <div class="col-sm-2 col-lg-1 text-sm-center d-flex p-0">
-            <label class="d-sm-none font-weight-bold text-right">Jahr</label>
-            <span class="col">{{doc.py_string}}</span>
-          </div>
+              <!-- Wenn es ein Multiwert ist (z.B. Personen, Schlagwoerter,...), Werte aggregiert ausgeben -->
+              <span *ngIf="field.multi"
+                    class="col">
+
+                <!-- Ueber Werte (z.B. einzelne Personen) gehen -->
+                <ng-container *ngFor="let singleValue of doc[field.field], last as last">
+
+                  <!-- Wert ausgeben -->
+                  {{singleValue}}
+
+                  <!-- Wenn es nicht der letzte Wert war ein <br> einfuegen -->
+                  <br *ngIf="!last">
+                </ng-container>
+              </span>
+
+              <!-- In 1. Zelle jeder Zeile einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
+              <button *ngIf="first"
+                      class="d-none d-sm-block btn btn-sm btn-primary fa p-1"
+                      [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
+                      [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                      (click)="getFullData(doc.id)"></button>
+            </div>
+          </ng-container>
         </div>
 
         <!-- Button zum Eingleben der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
-        <button class="btn btn-info btn-sm p-1 d-sm-none fa align-self-center mb-1"
+        <button class="btn btn-primary btn-sm p-1 d-sm-none fa align-self-center mb-1"
                 [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
                 [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
                 (click)="getFullData(doc.id)">
-          </button>
+        </button>
 
         <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
-        <div class="mh-table-row-info no-gutters"
+        <div class="mh-table-row-info no-gutters p-1"
              *ngIf="detailDataArray[doc.id]?.visible">
 
           <!-- Ueber Felder der Config gehen -->
@@ -509,9 +532,9 @@
               <!-- Bereich fuer Werte rechts -->
               <span class="col">
 
-                  <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
-                <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">            
-                    
+                <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
+                <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
+
                   <!-- Wert ausgeben -->
                   {{value}}
 
