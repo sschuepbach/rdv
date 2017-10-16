@@ -1119,4 +1119,5 @@ export class SearchComponent implements OnInit, OnDestroy {
 //Bereiche ein- / ausblenden 
 
 //TODO Wie erkennen in welchen Dateien sich etwas geaendert hat
-  //TODO debounce + distinct bei Suchanfrage
+//TODO debounce + distinct bei Suchanfrage
+//TODO style zu CSS umarbeiten
