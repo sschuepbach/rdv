@@ -7,6 +7,7 @@ import { QueryFormat } from "app/config/query-format";
 
 //Config laden (welche Felder sollen geladen werden)
 import { MainConfig } from "app/config/main-config";
+import { BasketFormat } from 'app/config/basket-format';
 
 @Injectable()
 export class SolrSearchService {
@@ -24,6 +25,9 @@ select?wt=json
 
   //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String -> keyword_all_string,source_title_all_string,pages_string
   detailFields: string = "";
+
+  //Anzahl der Treffer pro Merklisten-Anfrage
+  basketRows: number;
 
   //Http Service injekten
   constructor(private http: Http) {
@@ -56,6 +60,9 @@ select?wt=json
 
     //Array joinen per ,
     this.detailFields = tempArray.join(",");
+
+    //Anzahl der Treffer pro Merklisten-Anfrage speichern
+    this.basketRows = mainConfig.basketRows;
   }
 
   //Daten in Solr suchen
@@ -174,4 +181,43 @@ select?wt=json
       //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json().response.docs[0] as any);
   }
+
+  //Merklisten-Daten in Solr suchen
+  getSolrDataBasket(basket: BasketFormat): Observable<any> {
+
+    //Basis-URL nehmen und mit Anfragen erweitern
+    let queryUrl = this.url;
+
+    //Suchanfrage zusammenbauen
+    let idArray = [];
+
+    //Ueber IDs gehen
+    for (let id of basket.ids) {
+
+      //ID merken
+      idArray.push("id:(" + id + ")");
+    }
+
+    //Wenn es IDs gibt, kombinierte ID Anfrage bauen (id: 10 OR id:12 OR...) ansonsten leere Treffermenge (-id:*)
+    let query = idArray.length ? idArray.join(" OR ") : "-id:*"
+    let start = basket.start ? basket.start : 0;
+
+    //Suchanfrage zusammenbauen
+    queryUrl += "&q=" + query
+      + "&sort=" + basket.sortField + " " + basket.sortDir
+      + "&fl=" + this.tableFields
+      + "&rows=" + this.basketRows
+      + "&start=" + start;
+    //console.log(queryUrl);
+
+    //HTTP-Anfrage an Solr
+    return this.http
+
+      //GET Anfrage mit URL Anfrage und Trunkierung
+      .get(queryUrl)
+
+      //von JSON-Antwort nur die Dokument weiterreichen
+      .map(response => response.json() as any);
+  }
+
 }

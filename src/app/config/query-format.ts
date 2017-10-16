@@ -24,11 +24,6 @@ export class QueryFormat {
             "field": "doctype_string",
             "values": [],
             "operator": "OR"
-        },
-        "corporate": {
-            "field": "corporate_id_all_string",
-            "values": [],
-            "operator": "OR"
         }
     };
 

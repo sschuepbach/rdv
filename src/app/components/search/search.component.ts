@@ -12,11 +12,12 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 
 //Forms
 import { FormBuilder } from "@angular/forms";
-import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { FormGroup, FormControl, Validators, FormArray } from "@angular/forms";
 
 //eigene Format-Klassen
 import { QueryFormat } from "app/config/query-format";
 import { SavedQueryFormat } from "app/config/saved-query-format";
+import { BasketFormat } from 'app/config/basket-format';
 
 //Config
 import { MainConfig } from "app/config/main-config"
@@ -25,6 +26,7 @@ import { MainConfig } from "app/config/main-config"
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";
 import { ActivatedRoute } from '@angular/router';
 
+//Kompromierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
 
 //Validator-Funktion stellt sicher, dass jede gespeicherte Suche einen eindeutigen Namen hat
@@ -70,11 +72,61 @@ export class SearchComponent implements OnInit, OnDestroy {
     return Math.floor(this.count / this.queryFormat.queryParams.rows) + 1;
   }
 
+  //Anzahl der Merklisten-Seiten gesamt
+  get basketPages(): number {
+
+    //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
+    return Math.floor(this.basketSize / this.mainConfig.basketRows) + 1;
+  }
+
   //aktuelle Seite beim Blaettern
   get page(): number {
 
     //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
     return Math.floor(this.queryFormat.queryParams.start / this.queryFormat.queryParams.rows) + 1
+  }
+
+  //aktuelle Merklisten-Seite beim Blaettern
+  get basketPage(): number {
+
+    //Wenn es Merklisten gibt
+    if (this.savedBaskets.length) {
+
+      //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
+      return Math.floor(this.activeBasket.start / this.mainConfig.basketRows) + 1
+    }
+
+    //es gibt keine Merklisten
+    else {
+
+      //0 zurueck
+      return 0;
+    }
+  }
+
+  //property: aktive Merkliste
+  get activeBasket(): BasketFormat {
+
+    //passenden Index des Merklisten-Arrays zurueckgeben
+    return this.savedBaskets[this.activeBasketIndex];
+  }
+
+  //property: Anzahl der Treffer in der Merkliste
+  get basketSize(): number {
+
+    //Wenn es Merklisten gibt
+    if (this.savedBaskets.length) {
+
+      //Anzahl der IDs in aktiver Merkliste zurueckgeben
+      return this.activeBasket.ids.length;
+    }
+
+    //es gibt keine Merklisten
+    else {
+
+      //0 zurueck
+      return 0;
+    }
   }
 
   //Config erstellen
@@ -92,11 +144,30 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Array der gespeicherten Suchanfragen
   savedQueries: SavedQueryFormat[] = [];
 
-  //Results als Observable
+  //Index, welche Merkliste gerade aktiv ist. Zu Beginn soll erste Merkliste aktiv sein
+  activeBasketIndex: number = 0;
+
+  //Aray der Merklisten
+  savedBaskets: BasketFormat[] = [];
+
+  //Liste der Merklistennamen erhalten
+  get baskets(): FormArray {
+
+    //als FormArray zureuckgeben, damit .push() angeboten wird
+    return this.searchForm.get("baskets") as FormArray;
+  }
+
+  //Results der Suchanfrage als Observable
   results: Observable<any>;
 
-  //docs Bereich der Solr-Antwort (abgeleitet von results)
+  //Results der Merkliste als Observable
+  basketResults: Observable<any>;
+
+  //docs Bereich der Server-Antwort (abgeleitet von results) fuer Treffertabelle
   docs: any[];
+
+  //docs Bereich der Server-Antwort (abgeleitet von results) fuer Merklistentabelle
+  basketDocs: any[];
 
   //Facetten (abgeleitet von results)
   facets = {};
@@ -116,8 +187,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty: boolean = true;
 
-  //BehaviorSubject speichert Anfragen, zu Beginn leere Anfrage schicken, damit *:* Suche gestartet wird
+  //BehaviorSubject speichert Such-Anfragen
   private complexSearchTerms: BehaviorSubject<QueryFormat>;
+
+  //BehaviorSubject speichert Merklisten-Anfragen
+  private basketSearchTerms: BehaviorSubject<BasketFormat>;
 
   //Eintragsdetails (abstract,...) zwischenspeichern, damit sie nicht immer geholt werden muessen
   detailDataArray: any[] = [];
@@ -148,7 +222,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Component-Init
   ngOnInit() {
 
-    //gespeicherte Suchanfrage aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
+    //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
 
     //wenn gespeicherte Suchen aus localstorage geladen wurden
@@ -164,7 +238,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Suche anmelden: Bei Aenderungen des Suchfeld-BehaviorSubjekts searchTerms
     this.results = this.complexSearchTerms
 
-      //TODO debounce + distinct
       //Term an Suchanfrage weiterleiten -> Ergebnis wird in Docs gespeichert
       .switchMap((query: QueryFormat) => this.solrSearchService.getSolrDataComplex(query))
 
@@ -172,7 +245,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.results.subscribe(results => {
 
       //Array der Treffer-Dokumente
-      this.docs = results.response.docs
+      this.docs = results.response.docs;
 
       //Anzahl der Treffer
       this.count = results.response.numFound;
@@ -193,33 +266,83 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Reactive Forms fuer Suchfelder und Suche speichern
     this.createForms();
 
+    //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
+    let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
+
+    //wenn gespeicherte Merklisten aus localstorage geladen werden konnte
+    if (JSON.parse(localStorageSavedUserBaskets).length) {
+
+      //gespeicherte Suchen aus localstorage holen
+      let lsBaskets = JSON.parse(localStorageSavedUserBaskets);
+
+      //Ueber gespeicherte Merklisten gehen
+      for (let lsBasket of lsBaskets) {
+
+        //damit Merkliste anlegen
+        this.createBasket(true, lsBasket);
+      }
+    }
+
     //Query-Parameter aus URL auslesen
     this.route.queryParamMap.subscribe(params => {
 
-      //Wenn Query-Parameter gesetzt ist
-      if (params.get("query")) {
+      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
+      if (params.get("search")) {
 
         //diesen zu queryFormat dekodieren
-        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("query")));
+        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
 
         //Flag setzen, damit nicht Wert aus localstorage genommen wird
         this.loadFromLink = true;
+      }
+
+      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
+      if (params.get("basket")) {
+
+        //diesen dekodieren
+        let basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("basket")));
+
+        //daraus Merkliste erstellen
+        this.createBasket(true, basketFromLink);
       }
     });
 
     //Wenn keine Anfrage per Link geschickt wurde
     if (!this.loadFromLink) {
 
-      //letzte Suche aus localstorage laden
+      //versuchen letzte Suche aus localstorage zu laden
       let localStorageUserQuery = localStorage.getItem("userQuery");
 
-      //Wenn Suchanfrage aus localstorage geladen wurde
+      //Wenn Suchanfrage aus localstorage geladen werden konnte
       if (localStorageUserQuery) {
 
         //Anfrage-Format laden
         this.queryFormat = JSON.parse(localStorageUserQuery);
       }
     }
+
+    //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
+    else if (!this.savedBaskets.length) {
+
+      //Leere Merkliste anlegen
+      this.createBasket(true);
+    }
+
+    //Behavior-Subject anlegen fuer Merklisten anlegen mit Intitalwert = derzeit aktiver Merkliste
+    this.basketSearchTerms = new BehaviorSubject<BasketFormat>(this.activeBasket);
+
+    //Suche anmelden: Bei Aenderungen der aktiven Merkliste
+    this.basketResults = this.basketSearchTerms
+
+      //Merklistenanfrage mit IDs und Sortierinfo abschicken
+      .switchMap((basket: BasketFormat) => this.solrSearchService.getSolrDataBasket(basket))
+
+    //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
+    this.basketResults.subscribe(basketResults => {
+
+      //Array der Treffer-Dokumente der Merkliste
+      this.basketDocs = basketResults.response.docs;
+    });
 
     //Input-Felder in Template setzen
     this.setFormInputValues();
@@ -239,6 +362,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
       //Anzahl der Zeilen in der Treffertabelle mit Wert aus queryFormat belegen
       rows: this.queryFormat.queryParams.rows,
+
+      //Merklisten als FormArray
+      baskets: this._fb.array([])
     });
 
     //Wenn Anzahl der Zeilen in Treffertabelle geandert wird
@@ -443,6 +569,150 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.queryFormat.queryParams.start = start;
   }
 
+  //Neue Merkliste anlegen
+  createBasket(init: boolean = false, basket: BasketFormat = null) {
+
+    //Variable fuer Basket
+    let newBasket;
+
+    //Wenn kein BasketFormat-Objekt mitgeschickt wurde
+    if (basket === null) {
+
+      //Neues BasketFormat-Objekt anlegen mit Namen "Meine Merkliste X"
+      newBasket = new BasketFormat("Meine Merkliste " + (this.baskets.length + 1));
+    }
+
+    //es wurde eine BasketFormat-Objekt uebergeben (z.B. aus localstorage oder per Link-Parameter)
+    else {
+
+      //dieses verwenden
+      newBasket = basket;
+    }
+
+    //Merkliste in Array der lokalen Merklisten einfuegen
+    this.savedBaskets.push(newBasket);
+
+    //Neue Merkliste in FormArray eintragen (fuer Names-Input)
+    this.baskets.push(this._fb.control(newBasket.name));
+
+    //Aenderungen des Namens-Inputs verfolgen, dazu ueber Controls gehen
+    this.baskets.controls.forEach(control => {
+
+      //Bei letztem Control = neue eingefuegtes
+      if (this.baskets.controls.indexOf(control) === this.baskets.controls.length - 1) {
+
+        //Aenderungen verfolgen
+        control.valueChanges.subscribe(
+          () => {
+
+            //Index im Formarray finden, damit passende Stelle in savedBasket-Array gefunden wird
+            let index = this.baskets.controls.indexOf(control);
+
+            //an passender Stelle in savedBaskets den Wert angleichen
+            this.savedBaskets[index].name = control.value;
+          }
+        )
+      }
+    });
+
+    //Neuer Basket (ganz hinten einfuegt) ist gleich aktiv
+    this.activeBasketIndex = this.baskets.length - 1;
+
+    //Wenn es sich nicht um den Init-Aufruf handelt
+    if (!init) {
+
+      //Merklisten-Suche abschicken (liefert leere Treffermenge, da noch keine ID in Merkliste gespeichert ist)
+      this.basketSearchTerms.next(this.activeBasket);
+    }
+  }
+
+  //Merkliste laden
+  loadBasket(index: number) {
+
+    //Diese Merkliste zur aktiven machen
+    this.activeBasketIndex = index;
+
+    //Merklisten-Suche starten
+    this.basketSearchTerms.next(this.activeBasket);
+  }
+
+  //Merkliste loeschen
+  deleteBasket(index: number) {
+
+    //Merkliste in savedBaskets loeschen
+    this.savedBaskets.splice(index, 1);
+
+    //Merkliste an passender Stelle loeschen aus FormArray (Namens-Input)
+    this.baskets.removeAt(index);
+
+    //Wenn der geloeschte Basket vor dem aktivem Basket kommt
+    if (index < this.activeBasketIndex) {
+
+      //Variable noch unten anpassen
+      this.activeBasketIndex--;
+    }
+
+    //Wenn der geloeschte Basket der gerade aktive war
+    else if (index === this.activeBasketIndex) {
+
+      //1. Basket aktiv stellen
+      this.activeBasketIndex = 0;
+    }
+
+    //Wenn es nach dem Loeschen noch Merklisten gibt
+    if (this.savedBaskets.length) {
+
+      //Merklisten-Suche starten
+      this.basketSearchTerms.next(this.savedBaskets[this.activeBasketIndex]);
+    }
+
+    //es gibt keine Merklisten mehr
+    else {
+
+      //eine neue Merkliste anlegen
+      this.createBasket();
+    }
+  }
+
+  //ID zu Merkliste hinzufuegen oder entfernen
+  toggleInBasket(id: number) {
+
+    //Wenn ID bereits in der Merkliste ist
+    if (this.isInBasket(id)) {
+
+      //ID aus aktiver Merkliste loeschen
+      this.activeBasket.ids.splice(this.activeBasket.ids.indexOf(id), 1);
+    }
+
+    //ID ist noch nicht in der Merkliste
+    else {
+
+      //ID in aktive Merkliste einfuegen
+      this.activeBasket.ids.push(id);
+    }
+
+    //Suchanfrage abschicken
+    this.basketSearchTerms.next(this.activeBasket);
+  }
+
+  //pruefen ob eine ID in der aktiven Merkliste ist
+  isInBasket(id: number) {
+
+    //Wenn es keine Merklisten gibt
+    if (this.savedBaskets.length === 0) {
+
+      //kann Eintrag in keiner Merkliste sein
+      return false;
+    }
+
+    //Wenn es Merklsiten gibt
+    else {
+
+      //pruefen ob ID in aktiver Merkliste bereits vorkommt
+      return (this.savedBaskets[this.activeBasketIndex].ids.indexOf(id) > -1)
+    }
+  }
+
   //Nutzeranfrage speichern
   saveUserQuery(name: string) {
 
@@ -482,69 +752,153 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.savedQueries.splice(index, 1);
   }
 
-  //Blaettern in Trefferliste
-  updateStart(offset) {
+  //Blaettern in Trefferliste / Merkliste
+  updateStart(offset, mode: string = 'search') {
 
     //neuen Startwert berechnen
     let newStart: number;
 
-    //auf letzte Seite springen
-    if (offset === 'last') {
-      newStart = (this.queryFormat.queryParams.rows * (this.pages - 1));
+    //Treffertabelle und Merklistetabelle unterscheiden
+    switch (mode) {
+
+      //Treffertabelle
+      case 'search':
+
+        //auf letzte Seite springen
+        if (offset === 'last') {
+          newStart = (this.queryFormat.queryParams.rows * (this.pages - 1));
+        }
+
+        //auf 1. Seite springen
+        else if (offset === 'first') {
+          newStart = 0;
+        }
+
+        //1 Schritt nach vorne oder hinten blaetten
+        else {
+          newStart = this.queryFormat.queryParams.start + (offset * this.queryFormat.queryParams.rows);
+        }
+
+        //Start anpassen
+        this.queryFormat.queryParams.start = newStart;
+
+        //Suche starten
+        this.complexSearchTerms.next(this.queryFormat);
+        break;
+
+      //Merklistentabelle
+      case 'basket':
+
+        //auf letzte Seite springen
+        if (offset === 'last') {
+          newStart = (this.mainConfig.basketRows * (this.basketPages - 1));
+        }
+
+        //auf 1. Seite springen
+        else if (offset === 'first') {
+          newStart = 0;
+        }
+
+        //1 Schritt nach vorne oder hinten blaetten
+        else {
+          newStart = this.activeBasket.start + (offset * this.mainConfig.basketRows);
+        }
+
+        //Start anpassen
+        this.activeBasket.start = newStart;
+
+        //Suche starten
+        this.basketSearchTerms.next(this.activeBasket);
+        break;
     }
-
-    //auf 1. Seite springen
-    else if (offset === 'first') {
-      newStart = 0;
-    }
-
-    //1 Schritt nach vorne oder hinten blaetten
-    else {
-      newStart = this.queryFormat.queryParams.start + (offset * this.queryFormat.queryParams.rows);
-    }
-
-    //Start anpassen
-    this.queryFormat.queryParams.start = newStart;
-
-    //Suche starten
-    this.complexSearchTerms.next(this.queryFormat);
   }
 
-  //Tabelle sortieren
-  sortTable(sortField: string) {
+  //Treffertabelle / Merkliste sortieren
+  sortTable(sortField: string, mode: string = 'search') {
 
-    //wenn bereits nach diesem Feld sortiert wird
-    if (sortField === this.queryFormat.queryParams.sortField) {
+    //Treffertabelle und Merklistetabelle unterscheiden
+    switch (mode) {
 
-      //Sortierrichtung umdrehen
-      this.queryFormat.queryParams.sortDir = this.queryFormat.queryParams.sortDir === "desc" ? "asc" : "desc";
+      //Treffertabelle
+      case 'search':
+
+        //wenn bereits nach diesem Feld sortiert wird
+        if (sortField === this.queryFormat.queryParams.sortField) {
+
+          //Sortierrichtung umdrehen
+          this.queryFormat.queryParams.sortDir = this.queryFormat.queryParams.sortDir === "desc" ? "asc" : "desc";
+        }
+
+        //es wird derzeit nach einem anderen Feld sortiert
+        else {
+
+          //Sortierfeld setzen
+          this.queryFormat.queryParams.sortField = sortField;
+
+          //Sortierrichtung aufsteigend setzen
+          this.queryFormat.queryParams.sortDir = 'asc';
+        }
+
+        //Trefferliste wieder von vorne anzeigen
+        this.queryFormat.queryParams.start = 0;
+
+        //Suche starten
+        this.complexSearchTerms.next(this.queryFormat);
+        break;
+
+      //Merkliste
+      case 'basket':
+
+        //wenn bereits nach diesem Feld sortiert wird
+        if (sortField === this.activeBasket.sortField) {
+
+          //Sortierrichtung umdrehen
+          this.activeBasket.sortDir = this.activeBasket.sortDir === "desc" ? "asc" : "desc";
+        }
+
+        //es wird derzeit nach einem anderen Feld sortiert
+        else {
+
+          //Sortierfeld setzen
+          this.activeBasket.sortField = sortField;
+
+          //Sortierrichtung aufsteigend setzen
+          this.activeBasket.sortDir = 'asc';
+        }
+
+        //Suche starten
+        this.basketSearchTerms.next(this.activeBasket);
+        break;
     }
-
-    //es wird derzeit nach einem anderen Feld sortiert
-    else {
-
-      //Sortierfeld setzen
-      this.queryFormat.queryParams.sortField = sortField;
-
-      //Sortierrichtung aufsteigend setzen
-      this.queryFormat.queryParams.sortDir = 'asc';
-    }
-
-    //Trefferliste wieder von vorne anzeigen
-    this.queryFormat.queryParams.start = 0;
-
-    //Suche starten
-    this.complexSearchTerms.next(this.queryFormat);
   }
 
   //gibt eine CSS-Klasse zurueck, wenn nach dieser Spalte sortiert wird
-  sortBy(field: string) {
+  sortBy(field: string, mode: string = 'search') {
 
-    //wenn nach diesem Feld sortiert wird
-    if (field === this.queryFormat.queryParams.sortField) {
+    //Treffertabelle und Merklistetabelle unterscheiden
+    switch (mode) {
 
-      //anhander der gesetzten Sortierrichtung eine CSS-Klasse ausgeben
-      return this.queryFormat.queryParams.sortDir === "asc" ? "sort_asc" : "sort_desc";
+      //Treffertabelle
+      case 'search':
+
+        //wenn nach diesem Feld sortiert wird
+        if (field === this.queryFormat.queryParams.sortField) {
+
+          //anhand der gesetzten Sortierrichtung eine CSS-Klasse ausgeben
+          return this.queryFormat.queryParams.sortDir === "asc" ? "sort_asc" : "sort_desc";
+        }
+        break;
+
+      //Merkliste
+      case 'basket':
+
+        //wenn nach diesem Feld sortiert wird
+        if (field === this.savedBaskets[this.activeBasketIndex].sortField) {
+
+          //anhand der gesetzten Sortierrichtung eine CSS-Klasse ausgeben
+          return this.savedBaskets[this.activeBasketIndex].sortDir === "asc" ? "sort_asc" : "sort_desc";
+        }
+        break;
     }
   }
 
@@ -704,21 +1058,24 @@ export class SearchComponent implements OnInit, OnDestroy {
     //aktuelle UserQuery speichern
     localStorage.setItem("userQuery", JSON.stringify(this.queryFormat));
 
-    //Liste der gespeicherten UserQueries speichern
+    //Array der gespeicherten UserQueries speichern
     localStorage.setItem("savedUserQueries", JSON.stringify(this.savedQueries));
+
+    //Array der Merklisten speichern
+    localStorage.setItem("savedBaskets", JSON.stringify(this.savedBaskets));
   }
 
-  //Link einer Nutzeranfrage erstellen
-  getQueryLink(queryFormat: QueryFormat): string {
+  //Link einer Nutzeranfrage / Merkliste erstellen
+  getQueryLink(jsonObject, mode: string = 'search'): string {
 
-    //String aus JSON erstellen
-    let jsonString = JSON.stringify(queryFormat);
+    //String aus JSON-Objekt erstellen (dies kann eine QueryFormat oder ein BasketFormat sein)
+    let jsonString = JSON.stringify(jsonObject);
 
     //String komprimieren
     let lzString = LZString.compressToEncodedURIComponent(jsonString);
 
-    //Link zurueckgeben
-    return "localhost:4200/search?query=" + lzString;
+    //Link zurueckgeben mit Parameter search (Suchanfrage) oder basket (Merkliste)
+    return "localhost:4200/search?" + mode + "=" + lzString;
   }
 
   //prueft, ob in mind. 1 der Text-Suchfelder etwas steht
@@ -746,14 +1103,20 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 }
 
+//TODO Merkliste
 //TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
 //TODO pagination richtig berechnet? 10 Treffer bei Auswahl 5 pro Seite
-
-//TODO Merkliste
 //TODO Slider / Chart
-//TODO config fuer externe Solr-Url (ng build)
+//TODO config fuer externe Solr-Url vs. PHP-Skript (ng build)
 //TODO Sortierheader optisch besser (sortierte Spalte)
 //TODO Namen fuer naechste Queries beim Loeschen einer Query neu berechnen
+//TODO i18n AND OR -> UND / ODER
+//TODO Filter- / Baum-Suche
+//TODO Navigation designen
+//TODO gespeicherte Anfrage als FormArray (Anfrage umbenennen)
+//TODO Merklisten / Anfragen umsortieren
 
+//Bereiche ein- / ausblenden 
 
 //TODO Wie erkennen in welchen Dateien sich etwas geaendert hat
+  //TODO debounce + distinct bei Suchanfrage

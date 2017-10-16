@@ -11,15 +11,10 @@ export class MainConfig {
     //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
     //order gilt fuer Facetten und Ranges
     facetFields = {
-        "corporate": {
-            "label": "Institution",
-            "operators": ["OR", "AND"],
-            "order": 5
-        },
         "language": {
             "label": "Sprache",
             "operators": ["OR", "AND"],
-            "order": 2
+            "order": 1
         },
         "doctype": {
             "label": "Dokumenttyp",
@@ -33,11 +28,11 @@ export class MainConfig {
     rangeFields = {
         "year": {
             "label": "Jahr",
-            "order": 4
+            "order": 2
         },
         "pages": {
             "label": "Seitenzahl",
-            "order": 1
+            "order": 4
         }
     };
 
@@ -58,7 +53,7 @@ export class MainConfig {
             "label": "Person",
             "multi": true,
             "sort": "person_sort_string",
-            "css": "col-sm-4 col-lg-5 text-left",
+            "css": "col-sm-3 col-lg-4 text-left",
         },
         {
             "field": "ti_all_string",
@@ -87,4 +82,7 @@ export class MainConfig {
             "label": "Quelle"
         }
     };
+
+    //Anzahl der Treffer pro Seite in Merklisten-Treffertabelle
+    basketRows = 2;
 }

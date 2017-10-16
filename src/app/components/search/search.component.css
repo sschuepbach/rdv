@@ -19,6 +19,11 @@
     order: 5;
 }
 
+/* Zeilenhoehe in Inspektor oben */
+.mh-lh {
+    line-height: 30px
+}
+
 /* Bootstrap Erweiterung, kann weg? */
 .w-10 {
     width: 10%!important;
