@@ -84,5 +84,5 @@ export class MainConfig {
     };
 
     //Anzahl der Treffer pro Seite in Merklisten-Treffertabelle
-    basketRows = 2;
+    basketRows = 10;
 }

@@ -81,10 +81,10 @@ select?wt=json
       let searchfield_data = queryFormat.searchFields[key];
 
       //Wenn Wert gesetzt ist (z.B. bei all fuer all_text-Suche)
-      if (searchfield_data.value) {
+      if (searchfield_data.value.trim()) {
 
         //Anfrage fuer dieses Feld speichern
-        queryArray.push(searchfield_data.field + ":(" + searchfield_data.value + "*)");
+        queryArray.push(searchfield_data.field + ":(" + searchfield_data.value.trim() + "*)");
       }
     }
 

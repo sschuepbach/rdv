@@ -1,11 +1,18 @@
 <!-- Navigation oben -->
-<nav>
-  <!-- Link "Ueber das Projekt" -->
-  <a routerLink="about">Über</a>
+<div class="container">
+  <nav class="nav nav-pills mt-3">
 
-  <!-- Link "Zur Datenbank" -->
-  <a routerLink="search">Datenbank</a>
-</nav>
+    <!-- Link "Zur Datenbank" -->
+    <a class="px-2 py-1 btn btn-outline-primary mr-2"
+       routerLink="search"
+       routerLinkActive="active">Datenbank</a>
+
+    <!-- Link "Ueber das Projekt" -->
+    <a class="btn btn-outline-primary px-2 py-1"
+       routerLinkActive="active"
+       routerLink="about">Über das Projekt</a>
+  </nav>
+</div>
 
 <!-- hier wird der gerenderte Inhalt angezeigt -->
-<router-outlet></router-outlet>
+<router-outlet class="no-gutters"></router-outlet>

@@ -82,10 +82,13 @@ th {
 }
 
 .mh-table-row:nth-child(2n - 1) {
-    background: #ddd;
+    background: #f2f2f2;
 }
 
 @media (min-width: 576px) {
+    .mh-sort-by-column {
+        background-color: rgba(0, 255, 255, 0.05);
+    }
 
 .mh-table-row:last-of-type > div:last-of-type > div {
     border-bottom: 1px solid grey;
@@ -190,18 +193,15 @@ th {
     border-right: 1px solid green; 
 }*/
 
-/* Sortierpfeil nach oben */
-.sort_asc::after {
-    content: '\2191';
+/* Sortierpfeile ganz rechts */
+.mh-sort {
     position: absolute;
     right: 3px;
+    top: 4px;
 }
 
-/* Sortierpfeil nach unten */
-.sort_desc::after {
-    content: '\2193';
-    position: absolute;
-    right: 3px;
+.mh-table-header {
+    background: #ddd;
 }
 
 .curtain_div {

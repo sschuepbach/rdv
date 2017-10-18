@@ -69,14 +69,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   get pages(): number {
 
     //Anzahl der Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.floor(this.count / this.queryFormat.queryParams.rows) + 1;
+    return Math.ceil(this.count / this.queryFormat.queryParams.rows);
   }
 
   //Anzahl der Merklisten-Seiten gesamt
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.floor(this.basketSize / this.mainConfig.basketRows) + 1;
+    return Math.ceil(this.basketSize / this.mainConfig.basketRows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -187,6 +187,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty: boolean = true;
 
+  //Nach welcher Spalte wird gerade sortiert bei Trefferliste / Merkliste fuer farbliche Hinterlegung der Spalte
+  sortColumnSearch: number = 0;
+  sortColumnBasket: number = 0;
+
   //BehaviorSubject speichert Such-Anfragen
   private complexSearchTerms: BehaviorSubject<QueryFormat>;
 
@@ -259,6 +263,9 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
       this.rangeMissingValues = results.facet_counts.facet_queries;
 
+      //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
+      this.setSortColumnIndex();
+
       //Jahres-Chart erstellen
       this.createCharts();
     });
@@ -322,7 +329,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
-    else if (!this.savedBaskets.length) {
+    if (!this.savedBaskets.length) {
 
       //Leere Merkliste anlegen
       this.createBasket(true);
@@ -342,6 +349,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
       //Array der Treffer-Dokumente der Merkliste
       this.basketDocs = basketResults.response.docs;
+
+      //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
+      this.setSortColumnIndex('basket');
     });
 
     //Input-Felder in Template setzen
@@ -875,6 +885,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   //gibt eine CSS-Klasse zurueck, wenn nach dieser Spalte sortiert wird
   sortBy(field: string, mode: string = 'search') {
 
+    //CSS-Klasse, davon ausgehen, dass gerade nicht nach diesem Feld sortiert wird (fa-sort = rauf und runter-Symbol, welches anzeigt, dass es ein sortierbares Feld ist)
+    let cssClass = "fa-sort"
+
     //Treffertabelle und Merklistetabelle unterscheiden
     switch (mode) {
 
@@ -884,8 +897,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         //wenn nach diesem Feld sortiert wird
         if (field === this.queryFormat.queryParams.sortField) {
 
-          //anhand der gesetzten Sortierrichtung eine CSS-Klasse ausgeben
-          return this.queryFormat.queryParams.sortDir === "asc" ? "sort_asc" : "sort_desc";
+          //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
+          cssClass = this.queryFormat.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
         }
         break;
 
@@ -895,11 +908,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         //wenn nach diesem Feld sortiert wird
         if (field === this.savedBaskets[this.activeBasketIndex].sortField) {
 
-          //anhand der gesetzten Sortierrichtung eine CSS-Klasse ausgeben
-          return this.savedBaskets[this.activeBasketIndex].sortDir === "asc" ? "sort_asc" : "sort_desc";
+          //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
+          cssClass = this.savedBaskets[this.activeBasketIndex].sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
         }
         break;
     }
+
+    //fa-Klasse zurueckgeben
+    return cssClass;
   }
 
   //min- / max-Werte fuer Ranges setzen
@@ -1101,23 +1117,60 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Wert in Variable setzen fuer die Oberflaeche
     this.searchFieldsAreEmpty = allEmpty;
   }
+
+  //Spalte herausfinden nach welcher gerade sortiert wird fuer farbliche Hinterlegung der Trefferliste / Merkliste
+  setSortColumnIndex(mode: string = 'search') {
+
+    //nach Modus unterscheiden
+    switch (mode) {
+
+      //Trefferliste
+      case 'search':
+
+        //Ueber Felder der Tabelle gehen
+        this.mainConfig.tableFields.forEach((item, index) => {
+
+          //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
+          if (item.sort === this.queryFormat.queryParams.sortField) {
+
+            //diesen Index merken
+            this.sortColumnSearch = index;
+          }
+        });
+        break;
+
+      //Merkliste
+      case 'basket':
+
+        //Ueber Felder der Tabelle gehen
+        this.mainConfig.tableFields.forEach((item, index) => {
+
+          //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
+          if (item.sort === this.activeBasket.sortField) {
+
+            //diesen Index merken
+            this.sortColumnBasket = index;
+          }
+        });
+        break;
+    }
+  }
 }
 
-//TODO Merkliste
 //TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
-//TODO pagination richtig berechnet? 10 Treffer bei Auswahl 5 pro Seite
 //TODO Slider / Chart
+//TODO solr-service -> data-service mit useconfig
 //TODO config fuer externe Solr-Url vs. PHP-Skript (ng build)
-//TODO Sortierheader optisch besser (sortierte Spalte)
 //TODO Namen fuer naechste Queries beim Loeschen einer Query neu berechnen
 //TODO i18n AND OR -> UND / ODER
 //TODO Filter- / Baum-Suche
 //TODO Navigation designen
 //TODO gespeicherte Anfrage als FormArray (Anfrage umbenennen)
 //TODO Merklisten / Anfragen umsortieren
+//TODO Footer
 
-//Bereiche ein- / ausblenden 
+//Bereiche ein- / ausblenden
 
-//TODO Wie erkennen in welchen Dateien sich etwas geaendert hat
 //TODO debounce + distinct bei Suchanfrage
 //TODO style zu CSS umarbeiten
+//TODO Trefferliste pills / paging mit position absolute

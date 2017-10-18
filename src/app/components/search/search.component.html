@@ -1,4 +1,5 @@
-<div class="container mt-3">
+<!-- auesserer Container -->
+<div class="container mt-2">
 
   <!-- Form als aeusserstes Element der App -->
   <form [formGroup]="searchForm"
@@ -435,7 +436,7 @@
     </div>
 
     <!-- Trefferlisten (Suche und Merkliste) als Tabs (Pills) -->
-    <div class="d-flex flex-column p-2 col-md mt-2"
+    <div class="d-flex flex-column p-2 col-md mt-2 mb-2"
          style="border: 1px solid grey; border-radius:3px;">
 
       <!-- DIV-Container fuer Tab-Links -->
@@ -444,7 +445,7 @@
            role="tablist">
 
         <!-- Tab-Link fuer Trefferliste -->
-        <a class="nav-link flex-sm-fill text-sm-center px-2 py-0 active"
+        <a class="btn btn-outline-primary mr-2 flex-sm-fill text-sm-center px-2 py-1 active"
            id="results-pills-search-tab"
            data-toggle="pill"
            href="#results-pills-search"
@@ -456,7 +457,7 @@
         </a>
 
         <!-- Tab-Link fuer Merkliste -->
-        <a class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+        <a class="btn btn-outline-primary flex-sm-fill text-sm-center px-2 py-1"
            id="results-pills-basket-tab"
            data-toggle="pill"
            href="#results-pills-basket"
@@ -541,12 +542,17 @@
             <div class="d-flex mh-table-header font-weight-bold">
 
               <!-- Ueber Spaltenfelder gehen -->
-              <ng-container *ngFor="let field of mainConfig.tableFields">
+              <ng-container *ngFor="let field of mainConfig.tableFields; index as index">
 
                 <!-- Wenn es ein sortierbares Feld ist, Sortierfunktionen setzen -->
                 <div *ngIf="field.sort"
                      (click)="sortTable(field.sort)"
-                     [class]="field.css + ' text-center ' + sortBy(field.sort)">{{field.label}}</div>
+                     [class]="field.css + ' text-center'"
+                     [class.mh-sort-by-column]="index === sortColumnSearch">{{field.label}}
+
+                  <!-- Sortiersymbol -->
+                  <span [class]="'mh-sort fa ' + sortBy(field.sort)"></span>
+                </div>
 
                 <!-- Wenn es kein sortierbares Feld ist, nur Ueberschrift ausgeben -->
                 <div *ngIf="!field.sort"
@@ -555,7 +561,11 @@
               </ng-container>
 
               <!-- Letzte Spalte fuer Merkliste -->
-              <div class="col-1 text-center">Add</div>
+              <div class="col-1 text-center">
+
+                <!-- Shopping-Cart als icon -->
+                <span class="fa fa-shopping-cart"></span>
+              </div>
             </div>
 
             <!-- Tabellenzeilen -->
@@ -566,10 +576,11 @@
               <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
                 <!-- Ueber Spaltenfelder gehen -->
-                <ng-container *ngFor="let field of mainConfig.tableFields; first as first">
+                <ng-container *ngFor="let field of mainConfig.tableFields; first as first; index as index">
 
                   <!-- Spalte -->
-                  <div [class]="field.css + ' d-flex no-gutters py-1 px-2'">
+                  <div [class]="field.css + ' d-flex no-gutters py-1 px-2'"
+                       [class.mh-sort-by-column]="index === sortColumnSearch">
 
                     <!-- Label ("Titel: "") nur bei kleinster Darstellung (vertikal) anzeigen -->
                     <label class="d-sm-none font-weight-bold text-right mr-2">{{field.label}}</label>
@@ -716,12 +727,17 @@
             <div class="d-flex mh-table-header font-weight-bold">
 
               <!-- Ueber Spaltenfelder gehen -->
-              <ng-container *ngFor="let field of mainConfig.tableFields">
+              <ng-container *ngFor="let field of mainConfig.tableFields; index as index">
 
                 <!-- Wenn es ein sortierbares Feld ist, Sortierfunktionen setzen -->
                 <div *ngIf="field.sort"
                      (click)="sortTable(field.sort, 'basket')"
-                     [class]="field.css + ' text-center ' + sortBy(field.sort, 'basket')">{{field.label}}</div>
+                     [class]="field.css + ' text-center'"
+                     [class.mh-sort-by-column]="index === sortColumnBasket">{{field.label}}
+
+                  <!-- Sortiersymbol -->
+                  <span [class]="'mh-sort fa ' + sortBy(field.sort, 'basket')"></span>
+                </div>
 
                 <!-- Wenn es kein sortierbares Feld ist, nur Ueberschrift ausgeben -->
                 <div *ngIf="!field.sort"
@@ -730,7 +746,11 @@
               </ng-container>
 
               <!-- Letzte Spalte fuer Merkliste -->
-              <div class="col-1 text-center">Add</div>
+              <div class="col-1 text-center">
+
+                <!-- Sortiersymbol, Shopping Cart als icon -->
+                <span class="fa fa-shopping-cart"></span>
+              </div>
             </div>
 
             <!-- Tabellenzeilen -->
@@ -741,10 +761,11 @@
               <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
                 <!-- Ueber Spaltenfelder gehen -->
-                <ng-container *ngFor="let field of mainConfig.tableFields; first as first">
+                <ng-container *ngFor="let field of mainConfig.tableFields; first as first; index as index">
 
                   <!-- Spalte -->
-                  <div [class]="field.css + ' d-flex no-gutters py-1 px-2'">
+                  <div [class]="field.css + ' d-flex no-gutters py-1 px-2'"
+                       [class.mh-sort-by-column]="index === sortColumnBasket">
 
                     <!-- Label ("Titel: "") nur bei kleinster Darstellung (vertikal) anzeigen -->
                     <label class="d-sm-none font-weight-bold text-right mr-2">{{field.label}}</label>
