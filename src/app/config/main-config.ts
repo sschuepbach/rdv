@@ -85,4 +85,7 @@ export class MainConfig {
 
     //Anzahl der Treffer pro Seite in Merklisten-Treffertabelle
     basketRows = 10;
+
+    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy.php";
 }

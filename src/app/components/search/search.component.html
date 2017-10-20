@@ -175,18 +175,18 @@
           <div *ngFor="let savedQuery of savedQueries; index as i"
                class="input-group input-group-sm col-md-6 mt-1">
 
-            <!-- Name der Query -->
-            <input type="text"
-                   class="form-control"
-                   disabled="true"
-                   [value]=savedQuery.name>
-
             <!-- Button "Query laden" -->
             <span class="input-group-btn">
               <button class="btn btn-primary fa fa-play"
                       type="button"
                       (click)="loadUserQuery(i)"></button>
             </span>
+
+            <!-- Name der Query -->
+            <input type="text"
+                   class="form-control"
+                   disabled="true"
+                   [value]=savedQuery.name>
 
             <!-- Button "Link kopieren" -->
             <span class="input-group-btn">
@@ -220,7 +220,7 @@
                 (click)="createBasket()"></button>
 
         <!-- Liste der gespeicherten Baskets -->
-        <div class="no-gutters col-8">
+        <div class="no-gutters">
           <div *ngFor="let basket of baskets.controls; index as i"
                class="input-group input-group-sm col-md-10 mt-1">
 
@@ -234,7 +234,7 @@
 
             <!-- Name des Baskets -->
             <input type="text"
-                   class="form-control"
+                   class="form-control col-md-6"
                    [formControlName]="i">
 
             <!-- Button "Link kopieren" -->
@@ -254,7 +254,7 @@
 
             <!-- Anzahl der Titel in dieser Merkliste -->
             <input type="text"
-                   class="form-control"
+                   class="form-control col-2"
                    disabled
                    [value]="'(' + savedBaskets[i].ids.length + ' Titel)'">
           </div>

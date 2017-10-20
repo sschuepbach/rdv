@@ -1160,14 +1160,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 //TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
 //TODO Slider / Chart
 //TODO solr-service -> data-service mit useconfig
-//TODO config fuer externe Solr-Url vs. PHP-Skript (ng build)
 //TODO Namen fuer naechste Queries beim Loeschen einer Query neu berechnen
 //TODO i18n AND OR -> UND / ODER
 //TODO Filter- / Baum-Suche
-//TODO Navigation designen
 //TODO gespeicherte Anfrage als FormArray (Anfrage umbenennen)
 //TODO Merklisten / Anfragen umsortieren
 //TODO Footer
+//TODO Aufteilung in einzelne Komponenten
 
 //Bereiche ein- / ausblenden
 

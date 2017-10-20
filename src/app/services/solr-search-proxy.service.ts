@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, URLSearchParams, RequestOptions } from "@angular/http";
+import { Http } from "@angular/http";
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
@@ -10,16 +10,21 @@ import { MainConfig } from "app/config/main-config";
 import { BasketFormat } from 'app/config/basket-format';
 
 @Injectable()
-export class SolrSearchService {
+export class SolrSearchProxyService {
 
-  //URL auf PHP-Proxy
-  private proxyUrl: string;
+  //Solr-Suche, Basis-URL
+  private url = `
+/solr/freidok_core/
+select?wt=json
+&facet=true
+&facet.mincount=1
+&json.nl=arrarr`;
 
   //Felder, die bei normaler Suche fuer die Treffertabelle geholt werden, schon direkt als koma-getrennter String -> id,person_all_string,ti_all_string,py_string
-  tableFields: string;
+  tableFields: string = "";
 
   //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String -> keyword_all_string,source_title_all_string,pages_string
-  detailFields: string;
+  detailFields: string = "";
 
   //Anzahl der Treffer pro Merklisten-Anfrage
   basketRows: number;
@@ -29,9 +34,6 @@ export class SolrSearchService {
 
     //Main-Config laden
     let mainConfig = new MainConfig();
-
-    //proxyUrl setzen
-    this.proxyUrl = mainConfig.proxyUrl;
 
     //Table-Felder in Array sammeln
     let tempArray = [];
@@ -66,8 +68,8 @@ export class SolrSearchService {
   //Daten in Solr suchen
   getSolrDataComplex(queryFormat: QueryFormat): Observable<any> {
 
-    //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
+    //Basis-URL nehmen und mit Anfragen erweitern
+    let queryUrl = this.url;
 
     //Suchanfrage zusammenbauen
     let queryArray = [];
@@ -87,8 +89,10 @@ export class SolrSearchService {
     }
 
     //Sucheanfragen aus Anfragen der Einzelfelder zusammenbauen oder *:* Abfrage, wenn Felder leer
-    let query = queryArray.length ? queryArray.join(" ") : "*:*";
-    myParams.set("q", encodeURI(query));
+    let query = queryArray.length ? "&q=" + queryArray.join(" ") : "&q=*:*";
+
+    //FilterQuery-Anfrage zusammenbauen
+    let fqArray = [];
 
     //Ueber Facettenfelder gehen
     for (let key of Object.keys(queryFormat.facetFields)) {
@@ -99,16 +103,22 @@ export class SolrSearchService {
       //Bei AND Verknuepfung innerhalb einer Facette keine Extra-Behandlung, bei OR-Verknuepfung muss sichergestellt sein, dass andere Werte auch sichtbar sind (Auswahl ger -> auch Facettenwert eng anzeigen fuer ger OR eng)
       let extra_tag = facet_data.operator === "AND" ? ["", ""] : ["{!ex=" + facet_data.field + "}", "{!tag=" + facet_data.field + "}"];
 
-      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
-      myParams.append("facet#field[]", (extra_tag[0] + facet_data.field));
+      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden)
+      queryUrl += "&facet.field=" + extra_tag[0] + facet_data.field;
 
       //Wenn es Werte bei einem Facettenfeld gibt (z.B. bei language fuer language_all_facet)
       if (facet_data.values.length) {
 
         //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
-        myParams.append("fq[]", encodeURI(extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")"));
+        fqArray.push("&fq=" + extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")");
       }
     }
+
+    //FilterQuery aus einzelnen Filterqueries zusammenbauen oder leer, wenn keine Facetten ausgewaehlt sind
+    let fq = fqArray.length ? fqArray.join("") : "";
+
+    //FilterQuery-Array fuer Range-Anfragen
+    let fqRangeArray = [];
 
     //Ueber Rangefelder gehen
     for (let key of Object.keys(queryFormat.rangeFields)) {
@@ -116,67 +126,69 @@ export class SolrSearchService {
       //Schnellzugriff auf Infos dieser Range
       let range_data = queryFormat.rangeFields[key];
 
-      //Feld als Solr-Facette in URL anmelden und Range-Optionen aktivieren, # wird von PHP wieder zu . umgewandelt
-      myParams.append("facet#query[]", "{!ex=" + range_data.field + "}" + range_data.field + ":0");
-      myParams.append("facet#range[]", "{!ex=" + range_data.field + "}" + range_data.field);
-      myParams.append("f#" + range_data.field + "#facet#range#start", range_data.min);
-      myParams.append("f#" + range_data.field + "#facet#range#end", range_data.max);
-      myParams.append("f#" + range_data.field + "#facet#range#gap", "1");
-      myParams.append("f#" + range_data.field + "#facet#mincount", "0");
+      //Feld als Solr-Facette in URL anmelden und Range-Optionen aktivieren
+      queryUrl += "&facet.query={!ex=" + range_data.field + "}" + range_data.field + ":0";
+      queryUrl += "&facet.range={!ex=" + range_data.field + "}" + range_data.field;
+      queryUrl += "&f." + range_data.field + ".facet.range.start=" + range_data.min;
+      queryUrl += "&f." + range_data.field + ".facet.range.end=" + range_data.max;
+      queryUrl += "&f." + range_data.field + ".facet.range.gap=1";
+      queryUrl += "&f." + range_data.field + ".facet.mincount=0";
 
       //Range-Anfrage
-      let range_query = "{!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]"
+      let range_query = "&fq={!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]"
 
       //ggf. Treffer ohne Wert dieser Range (z.B. ohne Jahr) einfuegen
       range_query += range_data.showMissingValues ? " OR " + range_data.field + ":0" : "";
-      myParams.append("fq[]", encodeURI(range_query));
+
+      //alle Rangequeries in Array sammeln
+      fqRangeArray.push(range_query)
     }
 
-    //Weitere Suchparameter setzen
-    myParams.set('start', queryFormat.queryParams.start.toString());
-    myParams.set('rows', queryFormat.queryParams.rows.toString());
-    myParams.set('fl', this.tableFields);
-    myParams.set('sort', encodeURI(queryFormat.queryParams.sortField + " " + queryFormat.queryParams.sortDir));
+    //Range-Filterquery aus einzelnen Anfragen zusammenbauen oder leer
+    let fq_range = fqRangeArray.length ? fqRangeArray.join("") : "";
+
+    //Suchanfrage zusammenbauen, dabei auch Anzahl der Treffer setzen
+    queryUrl += query + fq + fq_range
+      + "&rows=" + queryFormat.queryParams.rows
+      + "&start=" + queryFormat.queryParams.start
+      + "&sort=" + queryFormat.queryParams.sortField + " " + queryFormat.queryParams.sortDir
+      + "&fl=" + this.tableFields;
+    //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr
     return this.http
 
-      //GET Anfrage mit Suchparametern
-      .get(this.proxyUrl, { params: myParams })
+      //GET Anfrage mit URL Anfrage und Trunkierung
+      .get(queryUrl)
 
-      //Antwort als JSON weiterreichen
+      //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json() as any);
   }
 
   //Detail-Daten aus Solr holen (abstract,...)
   getSolrDetailData(id: number): Observable<any> {
 
-    //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
-
-    //Suche nach ID
-    myParams.set("q", "id:" + id);
-
-    //Feldliste
-    myParams.set("fl", this.detailFields);
+    //Suchanfrage nach ID zusammenbauen, dabei nur die Felder holen, die benoetigt werden
+    let queryUrl = this.url + "&q=id:" + id + "&fl=" + this.detailFields;
+    //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr
     return this.http
 
       //GET Anfrage mit URL Anfrage und Trunkierung
-      .get(this.proxyUrl, { params: myParams })
+      .get(queryUrl)
 
-      //das 1. Dokument als JSON weiterreichen
+      //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json().response.docs[0] as any);
   }
 
   //Merklisten-Daten in Solr suchen
   getSolrDataBasket(basket: BasketFormat): Observable<any> {
 
-    //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
+    //Basis-URL nehmen und mit Anfragen erweitern
+    let queryUrl = this.url;
 
-    //ID sammeln
+    //Suchanfrage zusammenbauen
     let idArray = [];
 
     //Ueber IDs gehen
@@ -188,22 +200,21 @@ export class SolrSearchService {
 
     //Wenn es IDs gibt, kombinierte ID Anfrage bauen (id: 10 OR id:12 OR...) ansonsten leere Treffermenge (-id:*)
     let query = idArray.length ? idArray.join(" OR ") : "-id:*"
-    myParams.set("q", encodeURI(query));
-
-    //Ab welchem Treffer soll gesucht werden?
     let start = basket.start ? basket.start : 0;
-    myParams.set("start", start.toString());
 
-    //weitere Parameter setzen
-    myParams.set('rows', this.basketRows.toString());
-    myParams.set('fl', this.tableFields);
-    myParams.set('sort', encodeURI(basket.sortField + " " + basket.sortDir));
+    //Suchanfrage zusammenbauen
+    queryUrl += "&q=" + query
+      + "&sort=" + basket.sortField + " " + basket.sortDir
+      + "&fl=" + this.tableFields
+      + "&rows=" + this.basketRows
+      + "&start=" + start;
+    //console.log(queryUrl);
 
     //HTTP-Anfrage an Solr
     return this.http
 
       //GET Anfrage mit URL Anfrage und Trunkierung
-      .get(this.proxyUrl, { params: myParams })
+      .get(queryUrl)
 
       //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json() as any);
