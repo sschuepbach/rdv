@@ -271,6 +271,10 @@
 
         <!-- Suchfelder (oben) -->
         <div>
+
+          <!-- Ueberschrift Suche -->
+          <div class="h6">Suche</div>
+
           <div class="input-group searchfieldrow"
                *ngFor="let field of queryFormat.searchFields | objectKeys">
 
@@ -300,29 +304,29 @@
                formGroupName="filters">
 
             <!-- Name des Filter -->
-            <div class="h6">{{filter}}</div>
+            <div class="h6">{{mainConfig.filterFields[filter].label}}</div>
 
             <!-- Auswahlmoeglichkeiten dieses Filters (z.B. [Uni Freiburg, KIT,...]) -->
             <label [formArrayName]="filter"
                    class="btn btn-sm btn-outline-primary mr-1"
                    [class.active]="filterCheckbox.checked"
-                   *ngFor="let filter_data of mainConfig.filterFields[filter]; index as i">
+                   *ngFor="let filter_data of mainConfig.filterFields[filter].data; index as i">
 
               <!-- Anhak-Symbol -->
-              <span class="btn btn-sm fa"
+              <span class="fa"
                     [ngClass]="{
                       'fa-check-circle':  filterCheckbox.checked,  
                       'fa-circle-thin': !filterCheckbox.checked
                 }"></span>
 
-              <!-- Label + Checkbox -->
+              <!-- Name der Filteroption -->
+              <span>{{filter_data.label}}</span>
+
+              <!-- unsichtbare Checkbox -->
               <input class="d-none"
                      #filterCheckbox
                      [formControlName]="i"
                      type="checkbox">
-
-              <!-- Name der Filteroption -->
-              <span>{{filter_data.rdvname}}</span>
             </label>
           </div>
         </div>
@@ -413,14 +417,14 @@
 
           <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
           <div *ngFor="let key of rangeData | objectKeys"
-               class="tab-pane p-2 list-group"
+               class="tab-pane list-group"
                [class.active]="mainConfig.rangeFields[key].order == 1"
                id="facet-pills-{{key}}"
                role="tabpanel"
                attr.aria-labelledby="facet-pills-{{key}}-tab">
 
             <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
-            <label>
+            <label class="mb-2">
               <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
               <input type="checkbox"
                      [formControlName]="'showMissing_' + key">

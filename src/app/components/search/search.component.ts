@@ -203,9 +203,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
   loadFromLink: boolean = false;
 
-  //SolrSearchService injenten
+  //SolrSearchService, FormBuilder, ActivedRoute injenten
   constructor(private solrSearchService: SolrSearchService, private _fb: FormBuilder, private route: ActivatedRoute) {
-
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -471,7 +470,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       (this.searchForm.controls['filters'] as FormGroup).addControl(filter, new FormArray([]));
 
       //Ueber moegliche Filterwerte dieses Filters gehen
-      for (let filter_data of this.mainConfig.filterFields[filter]) {
+      for (let filter_data of this.mainConfig.filterFields[filter].data) {
 
         //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
         let checked = this.queryFormat.filterFields[filter].values.indexOf(filter_data.value) > -1;
@@ -494,7 +493,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let index = ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
 
                 //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
-                let value = this.mainConfig.filterFields[filter][index].value;
+                let value = this.mainConfig.filterFields[filter].data[index].value;
 
                 //Wenn Checkbox angehakt wurde
                 if (control.value) {
@@ -634,7 +633,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     for (let key of Object.keys(this.mainConfig.filterFields)) {
 
       //Ueber moegliche Filterwerte eines Filters gehen (Institutionen: [UB Freiburg, KIT,...])
-      this.mainConfig.filterFields[key].forEach((filter_data, index) => {
+      this.mainConfig.filterFields[key].data.forEach((filter_data, index) => {
 
         //Pruefen ob Wert in QueryFormat angehakt ist
         let checked = this.queryFormat.filterFields[key].values.indexOf(filter_data.value) > -1;

@@ -71,37 +71,22 @@ export class MainConfig {
 
     //BWSTS-Filter
     filterFields = {
-        "institution": [
-            {
-                "format": "oai_dc",
-                "id": 1,
-                "value": 1,
-                "last_updated": "2017-10-23T12:12:19",
-                "rdvname": "UB Freiburg",
-                "set": "inst:fmf",
-                "update_interval": 1,
-                "url": "https:\/\/freidok.uni-freiburg.de\/oai\/oai2.php"
-            },
-            {
-                "format": "oai_dc",
-                "id": 3,
-                "value": 3,
-                "last_updated": "2017-10-23T12:12:20",
-                "rdvname": "UB Heidelberg",
-                "set": "7375626A656374733D343230",
-                "update_interval": 1,
-                "url": "http:\/\/archiv.ub.uni-heidelberg.de\/volltextserver\/cgi\/oai2"
-            },
-            {
-                "format": "oai_dc",
-                "id": 4,
-                "value": 4,
-                "last_updated": "2017-10-23T12:13:44",
-                "rdvname": "Mannheim",
-                "set": "7375626A656374733D333430",
-                "update_interval": 1,
-                "url": "https:\/\/madata.bib.uni-mannheim.de\/cgi\/oai2"
-            }
-        ]
+        "institution": {
+            "label": "Einrichtung",
+            "data": [
+                {
+                    "value": 1,
+                    "label": "Hohenheim"
+                },
+                {
+                    "value": 2,
+                    "label": "Heidelberg"
+                },
+                {
+                    "value": 3,
+                    "label": "Freiburg"
+                }
+            ]
+        }
     }
 }
