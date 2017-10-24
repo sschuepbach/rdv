@@ -130,7 +130,7 @@ select?wt=json
       queryUrl += "&facet.query={!ex=" + range_data.field + "}" + range_data.field + ":0";
       queryUrl += "&facet.range={!ex=" + range_data.field + "}" + range_data.field;
       queryUrl += "&f." + range_data.field + ".facet.range.start=" + range_data.min;
-      queryUrl += "&f." + range_data.field + ".facet.range.end=" + range_data.max;
+      queryUrl += "&f." + range_data.field + ".facet.range.end=" + range_data.max + 1;
       queryUrl += "&f." + range_data.field + ".facet.range.gap=1";
       queryUrl += "&f." + range_data.field + ".facet.mincount=0";
 
@@ -221,3 +221,5 @@ select?wt=json
   }
 
 }
+
+//TODO Filteranfragen

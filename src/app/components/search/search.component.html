@@ -262,10 +262,10 @@
       </div>
     </div>
 
-    <!-- DIV-container fuer Suchfelder/Ranges unf Facettenbereich -->
+    <!-- DIV-container fuer Suchfelder/Filter unf Facetten/Rangesbereich -->
     <div class="d-flex flex-column flex-md-row no-gutters mt-2">
 
-      <!-- Suchfelder -->
+      <!-- Suchfelder / Filter -->
       <div class="col-md p-2 mr-md-2 mb-2 mb-md-0 d-flex flex-column justify-content-between no-gutters"
            style="border: 1px solid grey; border-radius:3px; margin-right: 20px;">
 
@@ -285,10 +285,45 @@
 
             <!-- Suchfeld -->
             <input class="form-control form-control-sm"
-                   tpye="text"
+                   type="text"
                    (keyup.esc)="searchForm.controls['searchField_' + field].setValue('')"
                    [formControlName]="'searchField_' + field"
                    placeholder="Suchbegriff eingeben">
+          </div>
+        </div>
+
+        <!-- Filter (unten) -->
+        <div>
+
+          <!-- Ueber Filter gehen (z.B. Institionenauswahl, mit/ohne Datei-Auswahl) -->
+          <div *ngFor="let filter of mainConfig.filterFields | objectKeys"
+               formGroupName="filters">
+
+            <!-- Name des Filter -->
+            <div class="h6">{{filter}}</div>
+
+            <!-- Auswahlmoeglichkeiten dieses Filters (z.B. [Uni Freiburg, KIT,...]) -->
+            <label [formArrayName]="filter"
+                   class="btn btn-sm btn-outline-primary mr-1"
+                   [class.active]="filterCheckbox.checked"
+                   *ngFor="let filter_data of mainConfig.filterFields[filter]; index as i">
+
+              <!-- Anhak-Symbol -->
+              <span class="btn btn-sm fa"
+                    [ngClass]="{
+                      'fa-check-circle':  filterCheckbox.checked,  
+                      'fa-circle-thin': !filterCheckbox.checked
+                }"></span>
+
+              <!-- Label + Checkbox -->
+              <input class="d-none"
+                     #filterCheckbox
+                     [formControlName]="i"
+                     type="checkbox">
+
+              <!-- Name der Filteroption -->
+              <span>{{filter_data.rdvname}}</span>
+            </label>
           </div>
         </div>
       </div>
@@ -536,7 +571,7 @@
 
           <!-- Treffertabelle -->
           <div *ngIf="count"
-               class="mt-2 mh-table-view mb-2">
+               class="mt-2 mh-table-view">
 
             <!-- Tabellenheader -->
             <div class="d-flex mh-table-header font-weight-bold">
@@ -721,7 +756,7 @@
 
           <!-- Merklisten-Treffertabelle -->
           <div *ngIf="basketSize"
-               class="mt-2 mh-table-view mb-2">
+               class="mt-2 mh-table-view">
 
             <!-- Tabellenheader -->
             <div class="d-flex mh-table-header font-weight-bold">

@@ -236,60 +236,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.savedQueries = JSON.parse(localStorageSavedUserQueries);
     }
 
-    //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus localstorage geladen werden)
-    this.complexSearchTerms = new BehaviorSubject<QueryFormat>(this.queryFormat);
-
-    //Suche anmelden: Bei Aenderungen des Suchfeld-BehaviorSubjekts searchTerms
-    this.results = this.complexSearchTerms
-
-      //Term an Suchanfrage weiterleiten -> Ergebnis wird in Docs gespeichert
-      .switchMap((query: QueryFormat) => this.solrSearchService.getSolrDataComplex(query))
-
-    //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
-    this.results.subscribe(results => {
-
-      //Array der Treffer-Dokumente
-      this.docs = results.response.docs;
-
-      //Anzahl der Treffer
-      this.count = results.response.numFound;
-
-      //Solr-Facetten Werte
-      this.facets = results.facet_counts.facet_fields;
-
-      //Solr-Facetten-Ranges Werte
-      this.ranges = results.facet_counts.facet_ranges;
-
-      //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
-      this.rangeMissingValues = results.facet_counts.facet_queries;
-
-      //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
-      this.setSortColumnIndex();
-
-      //Jahres-Chart erstellen
-      this.createCharts();
-    });
-
-    //Reactive Forms fuer Suchfelder und Suche speichern
-    this.createForms();
-
-    //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
-    let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
-
-    //wenn gespeicherte Merklisten aus localstorage geladen werden konnte
-    if (JSON.parse(localStorageSavedUserBaskets).length) {
-
-      //gespeicherte Suchen aus localstorage holen
-      let lsBaskets = JSON.parse(localStorageSavedUserBaskets);
-
-      //Ueber gespeicherte Merklisten gehen
-      for (let lsBasket of lsBaskets) {
-
-        //damit Merkliste anlegen
-        this.createBasket(true, lsBasket);
-      }
-    }
-
     //Query-Parameter aus URL auslesen
     this.route.queryParamMap.subscribe(params => {
 
@@ -328,6 +274,66 @@ export class SearchComponent implements OnInit, OnDestroy {
       }
     }
 
+    //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus localstorage geladen werden)
+    this.complexSearchTerms = new BehaviorSubject<QueryFormat>(this.queryFormat);
+
+    //Suche anmelden: Bei Aenderungen des Suchfeld-BehaviorSubjekts searchTerms
+    this.results = this.complexSearchTerms
+
+      //Term an Suchanfrage weiterleiten -> Ergebnis wird in Docs gespeichert
+      .switchMap((query: QueryFormat) => this.solrSearchService.getSolrDataComplex(query))
+
+    //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
+    this.results.subscribe(results => {
+
+      //Array der Treffer-Dokumente
+      this.docs = results.response.docs;
+
+      //Anzahl der Treffer
+      this.count = results.response.numFound;
+
+      //Solr-Facetten Werte
+      this.facets = results.facet_counts.facet_fields;
+
+      //Solr-Facetten-Ranges Werte
+      this.ranges = results.facet_counts.facet_ranges;
+
+      //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
+      this.rangeMissingValues = results.facet_counts.facet_queries;
+
+      //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
+      this.setSortColumnIndex();
+
+      //Jahres-Chart erstellen
+      this.createCharts();
+    });
+
+    //Reactive Forms fuer Suchfelder und Suche erstellen, dabei werden die initialen Wert gesetzt und die onChange-Methoden definiert
+    this.createForms();
+
+    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
+    this.setRangeData();
+
+    //Slider Werte setzen
+    this.sliderInit();
+
+    //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
+    let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
+
+    //wenn gespeicherte Merklisten aus localstorage geladen werden konnte
+    if (JSON.parse(localStorageSavedUserBaskets).length) {
+
+      //gespeicherte Suchen aus localstorage holen
+      let lsBaskets = JSON.parse(localStorageSavedUserBaskets);
+
+      //Ueber gespeicherte Merklisten gehen
+      for (let lsBasket of lsBaskets) {
+
+        //damit Merkliste anlegen
+        this.createBasket(true, lsBasket);
+      }
+    }
+
     //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
     if (!this.savedBaskets.length) {
 
@@ -353,15 +359,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
       this.setSortColumnIndex('basket');
     });
-
-    //Input-Felder in Template setzen
-    this.setFormInputValues();
-
-    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
-    this.setRangeData();
-
-    //Slider Werte setzen
-    this.sliderInit();
   }
 
   //FormControls fuer Suchanfragen und Speicherung von Suchanfragen anlgen
@@ -374,7 +371,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       rows: this.queryFormat.queryParams.rows,
 
       //Merklisten als FormArray
-      baskets: this._fb.array([])
+      baskets: this._fb.array([]),
+
+      //Objekct fuer Filter (Filter 1: Auswahl der Einrichtung, Filter 2 mit/ohne Upload,...)
+      filters: this._fb.group({})
     });
 
     //Wenn Anzahl der Zeilen in Treffertabelle geandert wird
@@ -393,7 +393,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     //FormControls fuer Suchfelder und deren Auswahlselects festlegen
     for (let key of Object.keys(this.queryFormat.searchFields)) {
 
-      //Select-Feld fuer Auswahl des Feldes (z.B. Freitext, Titel, Person,...)
+      //Select-Feld fuer Auswahl des Feldes (z.B. Freitext, Titel, Person,...) und direkt mit Wert belegen
       this.searchForm.addControl('selectSearchField_' + key, new FormControl(this.queryFormat.searchFields[key].field));
 
       //Bei Aenderung des Selects
@@ -406,8 +406,8 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.complexSearchTerms.next(this.queryFormat);
       });
 
-      //Suchfeld einfuegen
-      this.searchForm.addControl('searchField_' + key, new FormControl());
+      //Suchfeld einfuegen und direkt mit Wert belegen
+      this.searchForm.addControl('searchField_' + key, new FormControl(this.queryFormat.searchFields[key].value));
 
       //Bei Aenderung des Suchfelds
       this.searchForm.controls['searchField_' + key].valueChanges.subscribe(value => {
@@ -429,8 +429,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     //FormControls fuer Checkenboxen erstellen, die festlegen, ob Titel ohne ein Merkmal (z.B. Titel ohne Jahr) angezeigt werden sollen
     for (let key of Object.keys(this.queryFormat.rangeFields)) {
 
-      //FormControl fuer Checkbox anlegen
-      this.searchForm.addControl('showMissing_' + key, new FormControl());
+      //FormControl fuer Checkbox anlegen und direkt anhaken (falls gesetzt)
+      this.searchForm.addControl('showMissing_' + key, new FormControl(this.queryFormat.rangeFields[key].showMissingValues));
 
       //Bei Aenderung der Checkbox
       this.searchForm.controls['showMissing_' + key].valueChanges.subscribe(checked => {
@@ -449,7 +449,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       //FormControl nur erstellen, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
       if (this.mainConfig.facetFields[key].operators.length > 1) {
 
-        //FormControl anlegen
+        //FormControl anlegen und direkt mit Wert belegen
         this.searchForm.addControl('operatorSelect_' + key, new FormControl(this.queryFormat.facetFields[key].operator));
 
         //Bei Anederung des Selects
@@ -461,6 +461,64 @@ export class SearchComponent implements OnInit, OnDestroy {
           //Suche starten
           this.complexSearchTerms.next(this.queryFormat);
         })
+      }
+    }
+
+    //FormControls fuer Filter selbst (=FormArray) und einzelne Checkboxen der Filterauswahlmoeglichkeiten (=FormControl) setzen
+    for (let filter of Object.keys(this.mainConfig.filterFields)) {
+
+      //FormArray anlegen pro Filter (z.B. 1. Filter Institutionsauswahl, 2. Filter mit/ohne Datei-Auswahl)
+      (this.searchForm.controls['filters'] as FormGroup).addControl(filter, new FormArray([]));
+
+      //Ueber moegliche Filterwerte dieses Filters gehen
+      for (let filter_data of this.mainConfig.filterFields[filter]) {
+
+        //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
+        let checked = this.queryFormat.filterFields[filter].values.indexOf(filter_data.value) > -1;
+
+        //FormControl fuer moeligche Filterwerte als Checkbox (z.B. Instiutionen: [UB Freiburg, KIT,...])
+        ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).push(this._fb.control(checked));
+
+        //Aenderungen des Checkbox-Inputs verfolgen, dazu ueber Controls gehen
+        ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.forEach(control => {
+
+          //Bei letztem Control = neue eingefuegtes
+          if (((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control) === ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.length - 1) {
+
+            //Aenderungen verfolgen
+            control.valueChanges.subscribe(
+
+              () => {
+
+                //Index des Controls in FormArray finden
+                let index = ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
+
+                //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
+                let value = this.mainConfig.filterFields[filter][index].value;
+
+                //Wenn Checkbox angehakt wurde
+                if (control.value) {
+
+                  //Suchwert in QueryFormat speichern
+                  this.queryFormat.filterFields[filter].values.push(value);
+                }
+
+                //Checkbox wurde abgehakt (das bedeutet, dass der Suchwert im QueryFormat steht und geloescht werden muss)
+                else {
+
+                  //Stelle in QueryFormat finden, wo der Suchwert steht
+                  let removeIndex = this.queryFormat.filterFields[filter].values.indexOf(value)
+
+                  //Suchwert aus QueryFormat entfernen
+                  this.queryFormat.filterFields[filter].values.splice(removeIndex, 1);
+                }
+
+                //Neue Suchabschicken
+                this.complexSearchTerms.next(this.queryFormat);
+              }
+            )
+          }
+        });
       }
     }
 
@@ -547,11 +605,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Ueber Felder des Abfrage-Formats gehen
     for (let key of Object.keys(this.queryFormat.searchFields)) {
 
-      //das ausgewaehlte Suchefeld in Template setzen (z.B. Freitext, Titel, Person,...)
-      this.searchForm.get('selectSearchField_' + key).setValue(this.queryFormat.searchFields[key].field);
+      //das ausgewaehlte Suchefeld in Template setzen (z.B. Freitext, Titel, Person,...) -> kein Event ausloesen, da sonst Mehrfachsuche
+      this.searchForm.get('selectSearchField_' + key).setValue(this.queryFormat.searchFields[key].field, { emitEvent: false });
 
-      //Wert in Input-Feld im Template setzen
-      this.searchForm.get('searchField_' + key).setValue(this.queryFormat.searchFields[key].value)
+      //Wert in Input-Feld im Template setzen -> kein Event ausloesen, da sonst Mehrfachsuche
+      this.searchForm.get('searchField_' + key).setValue(this.queryFormat.searchFields[key].value, { emitEvent: false })
     }
 
     //Operator bei Verknuepfung der Facettenwerte setzen
@@ -560,20 +618,34 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Es existiert nur dann ein FormControl, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
       if (this.mainConfig.facetFields[key].operators.length > 1) {
 
-        //Wert aus QueryFormat holen und in Template setzen
-        this.searchForm.get('operatorSelect_' + key).setValue(this.queryFormat.facetFields[key].operator);
+        //Wert aus QueryFormat holen und in Template setzen -> kein Event ausloesen, da sonst Mehrfachsuche
+        this.searchForm.get('operatorSelect_' + key).setValue(this.queryFormat.facetFields[key].operator, { emitEvent: false });
       }
     }
 
     //Checkboxen anhaken, bei welchen Ranges auch Titel ohne Merkmal gesucht werden sollen (z.B. Titel ohne Jahr)
     for (let key of Object.keys(this.queryFormat.rangeFields)) {
 
-      //Wert aus QueryFormat holen und in Template setzen
-      this.searchForm.get("showMissing_" + key).setValue(this.queryFormat.rangeFields[key].showMissingValues);
+      //Wert aus QueryFormat holen und in Template setzen -> kein Event ausloesen, da sonst Mehrfachsuche
+      this.searchForm.get("showMissing_" + key).setValue(this.queryFormat.rangeFields[key].showMissingValues, { emitEvent: false });
     }
 
-    //Anzahl der Treffer in Select im Template auswaehlen
-    this.searchForm.get("rows").setValue(this.queryFormat.queryParams.rows);
+    //Checkboxen bei Filtern anhaken, dazu ueber Filter gehen (Filter 1: Institutionsfilter, Filter 2: mit/ohne Datei-Filter,...)
+    for (let key of Object.keys(this.mainConfig.filterFields)) {
+
+      //Ueber moegliche Filterwerte eines Filters gehen (Institutionen: [UB Freiburg, KIT,...])
+      this.mainConfig.filterFields[key].forEach((filter_data, index) => {
+
+        //Pruefen ob Wert in QueryFormat angehakt ist
+        let checked = this.queryFormat.filterFields[key].values.indexOf(filter_data.value) > -1;
+
+        //Checkbox anhakden (falls gesetzt) -> kein Event ausloesen, da sonst Mehrfach-Anfrage an Backend
+        ((this.searchForm.controls['filters'] as FormGroup).controls[key] as FormArray).at(index).setValue(checked, { emitEvent: false });
+      });
+    }
+
+    //Anzahl der Treffer in Select im Template auswaehlen -> kein Event ausloesen, da sonst Mehrfachsuche
+    this.searchForm.get("rows").setValue(this.queryFormat.queryParams.rows, { emitEvent: false });
 
     //gemerkten Startwert wieder setzen (war zwischenzeitlich auf 0 gesetzt worden)
     this.queryFormat.queryParams.start = start;
@@ -1044,6 +1116,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.queryFormat.rangeFields[key].from = $event.from;
     this.queryFormat.rangeFields[key].to = $event.to;
 
+    //Start der Trefferliste auf Anfang setzen
+    this.queryFormat.queryParams.start = 0;
+
     //Suche starten
     this.complexSearchTerms.next(this.queryFormat);
   }
@@ -1173,3 +1248,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 //TODO debounce + distinct bei Suchanfrage
 //TODO style zu CSS umarbeiten
 //TODO Trefferliste pills / paging mit position absolute
+//Mehrfach-Abfrage verhindern bei Laden einer Query  this.term.setValue(choice, {emitEvent: false});   // We write the choice in the term to see it in the input
+//Link bei / aktiv anzeigen
+//Filters als property (FormGroup)
+//Merklisten export

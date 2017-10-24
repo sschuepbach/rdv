@@ -14,14 +14,20 @@ export class QueryFormat {
         }
     };
 
-    facetFields = {};
+    filterFields = {};
 
-    filterFields = {
-        "institution": {
-            "field": "mode_all_facet",
-            "values": []
+    facetFields = {
+        "language": {
+            "field": "language_all_facet",
+            "values": [],
+            "operator": "AND"
+        },
+        "doctype": {
+            "field": "doctype_string",
+            "values": [],
+            "operator": "OR"
         }
-    }
+    };
 
     rangeFields = {
         "year": {
@@ -30,6 +36,14 @@ export class QueryFormat {
             "from": 1950,
             "to": 2017,
             "max": 2017,
+            "showMissingValues": true
+        },
+        "pages": {
+            "field": "pages_int",
+            "min": 1,
+            "from": 1,
+            "to": 20,
+            "max": 20,
             "showMissingValues": true
         }
     };

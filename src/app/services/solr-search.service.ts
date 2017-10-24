@@ -90,6 +90,23 @@ export class SolrSearchService {
     let query = queryArray.length ? queryArray.join(" ") : "*:*";
     myParams.set("q", encodeURI(query));
 
+    //Ueber Filterfelder gehen
+    for (let key of Object.keys(queryFormat.filterFields)) {
+
+      //Schnellzugriff auf Infos dieses Filters
+      let filter_data = queryFormat.filterFields[key];
+
+      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
+      myParams.append("facet#field[]", filter_data.field);
+
+      //Wenn es Werte bei diesem Filter gibt
+      if (filter_data.values.length) {
+
+        //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
+        myParams.append("fq[]", encodeURI(filter_data.field + ":(" + filter_data.values.join(" OR ") + ")"));
+      }
+    }
+
     //Ueber Facettenfelder gehen
     for (let key of Object.keys(queryFormat.facetFields)) {
 
@@ -120,7 +137,7 @@ export class SolrSearchService {
       myParams.append("facet#query[]", "{!ex=" + range_data.field + "}" + range_data.field + ":0");
       myParams.append("facet#range[]", "{!ex=" + range_data.field + "}" + range_data.field);
       myParams.append("f#" + range_data.field + "#facet#range#start", range_data.min);
-      myParams.append("f#" + range_data.field + "#facet#range#end", range_data.max);
+      myParams.append("f#" + range_data.field + "#facet#range#end", range_data.max + 1);
       myParams.append("f#" + range_data.field + "#facet#range#gap", "1");
       myParams.append("f#" + range_data.field + "#facet#mincount", "0");
 
@@ -210,3 +227,5 @@ export class SolrSearchService {
   }
 
 }
+
+//facet#field in if packen
