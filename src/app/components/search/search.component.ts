@@ -21,6 +21,7 @@ import { BasketFormat } from 'app/config/basket-format';
 
 //Config
 import { MainConfig } from "app/config/main-config"
+import { UserConfigService } from 'app/config/user-config.service';
 
 //Slider-Plugin
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";
@@ -129,8 +130,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  //Config erstellen
-  mainConfig: MainConfig = new MainConfig();
+  //Config-Objekt (z.B. Felder der Trefferliste)
+  mainConfig: MainConfig;
 
   //Such-Form
   searchForm: FormGroup;
@@ -203,8 +204,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
   loadFromLink: boolean = false;
 
-  //SolrSearchService, FormBuilder, ActivedRoute injenten
-  constructor(private solrSearchService: SolrSearchService, private _fb: FormBuilder, private route: ActivatedRoute) {
+  //SolrSearchService, FormBuilder, ActivedRoute, UserConfigService injecten
+  constructor(private solrSearchService: SolrSearchService, private _fb: FormBuilder, private route: ActivatedRoute, private userConfigService: UserConfigService) {
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -222,8 +223,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.writeToLocalStorage();
   }
 
-  //Component-Init
-  ngOnInit() {
+  //Component-Init (async)
+  async ngOnInit() {
+
+    //Config ueber Service laden (z.B. dynamische Werte fuer Filter holen), await fuer async-Behandlung des Aufrufs
+    this.mainConfig = await this.userConfigService.getConfig();
 
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
@@ -376,8 +380,11 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Merklisten als FormArray
       baskets: this._fb.array([]),
 
-      //Objekct fuer Filter (Filter 1: Auswahl der Einrichtung, Filter 2 mit/ohne Upload,...)
-      filters: this._fb.group({})
+      //Objekt fuer Filter (Filter 1: Auswahl der Einrichtung, Filter 2 mit/ohne Upload,...)
+      filters: this._fb.group({}),
+
+      //Eingabefeld fuer Name der zu speichernden Suche
+      saveQuery: ['Meine Suche ' + (this.savedQueries.length + 1), [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.savedQueries)]]
     });
 
     //Wenn Anzahl der Zeilen in Treffertabelle geandert wird
@@ -524,9 +531,6 @@ export class SearchComponent implements OnInit, OnDestroy {
         });
       }
     }
-
-    //Input fuer "Suche speichern". Name = Pflichtfeld und muss eindeutig sein, "Meine Suche2"
-    this.saveQuery = new FormControl('Meine Suche ' + (this.savedQueries.length + 1), [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.savedQueries)]);
   }
 
   //Facette speichern
@@ -810,8 +814,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Objekt in Array einfuegen
     this.savedQueries.push(userQuery);
 
-    //Namensfeld fuer Nutzerabfrage mit Standard-Wert belegen ("Meine Suche2")
-    this.saveQuery.setValue('Meine Suche ' + (this.savedQueries.length + 1));
+    //Namensfeld fuer Nutzerabfrage mit Standard-Wert belegen ("Meine Suche 2")
+    this.searchForm.controls['saveQuery'].setValue('Meine Suche ' + (this.savedQueries.length + 1));
   }
 
   //Nutzeranfrage laden

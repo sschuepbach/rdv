@@ -1,8 +1,9 @@
 <!-- auesserer Container -->
 <div class="container mt-2">
 
-  <!-- Form als aeusserstes Element der App -->
-  <form [formGroup]="searchForm"
+  <!-- Form als aeusserstes Element der App, ngIf wegen async-Aufruf von OnInit -->
+  <form *ngIf="searchForm"
+        [formGroup]="searchForm"
         class="mt-2">
 
     <!-- <pre style="position: fixed; right: 10px; top: 10px">{{queryFormat | json}}</pre> -->
@@ -136,8 +137,7 @@
 
               <!-- "UserQuery speichern" Textfeld fuer Name -->
               <input class="form-control"
-                     type="search"
-                     [formControl]="saveQuery"
+                     formControlName="saveQuery"
                      type="text"
                      #saveQueryInput
                      placeholder="Name der Suche">
@@ -146,16 +146,16 @@
               <span class="input-group-btn">
                 <button class="btn btn-primary fa fa-floppy-o"
                         type="button"
-                        [disabled]="saveQuery.invalid"
+                        [disabled]="searchForm.controls['saveQuery'].invalid"
                         (click)="saveUserQuery(saveQueryInput.value)"></button>
               </span>
             </div>
 
             <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
-            <div *ngIf="saveQuery.errors">
-              <div *ngIf="saveQuery.errors.uniqueQueryName">Name muss eindeutig seind</div>
-              <div *ngIf="saveQuery.errors.required">Name ist Pflichtfeld</div>
-              <div *ngIf="saveQuery.errors.minlength">Mindestlänge {{saveQuery.errors.minlength.requiredLength}}</div>
+            <div *ngIf="searchForm.controls['saveQuery'].errors">
+              <div *ngIf="searchForm.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig seind</div>
+              <div *ngIf="searchForm.controls['saveQuery'].errors.required">Name ist Pflichtfeld</div>
+              <div *ngIf="searchForm.controls['saveQuery'].errors.minlength">Mindestlänge {{searchForm.controls['saveQuery'].errors.minlength.requiredLength}}</div>
             </div>
           </div>
         </div>
@@ -234,8 +234,13 @@
 
             <!-- Name des Baskets -->
             <input type="text"
-                   class="form-control col-md-6"
+                   class="form-control col-md-5"
                    [formControlName]="i">
+
+            <!-- Anzahl der Titel in dieser Merkliste -->
+            <span class="btn btn-sm">
+              {{savedBaskets[i].ids.length + ' Titel'}}
+            </span>
 
             <!-- Button "Link kopieren" -->
             <span class="input-group-btn">
@@ -251,12 +256,6 @@
                       type="button"
                       (click)="deleteBasket(i)"></button> -->
             </span>
-
-            <!-- Anzahl der Titel in dieser Merkliste -->
-            <input type="text"
-                   class="form-control col-2"
-                   disabled
-                   [value]="'(' + savedBaskets[i].ids.length + ' Titel)'">
           </div>
         </div>
       </div>

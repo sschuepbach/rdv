@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 
 import { SolrSearchService } from "app/services/solr-search.service";
 import { SolrSearchProxyService } from 'app/services/solr-search-proxy.service';
+import { UserConfigService } from 'app/config/user-config.service';
 
 import { ObjectKeysPipe } from './pipes/object-keys.pipe';
 
@@ -48,7 +49,7 @@ import { ClipboardModule } from 'ngx-clipboard';
   providers: [{
     provide: SolrSearchService,
     useClass: SolrSearchService
-  }],
+  }, UserConfigService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
