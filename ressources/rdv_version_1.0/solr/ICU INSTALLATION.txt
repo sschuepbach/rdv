@@ -1,3 +1,0 @@
-ICU relies upon 
-- contrib/analysis-extras/lucene-libs/lucene-analyzers-icu-X.Y.jar
-- contrib/analysis-extras/lib/icu4j-X.Y.jar
