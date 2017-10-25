@@ -319,17 +319,21 @@ export class SearchComponent implements OnInit, OnDestroy {
     //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
     let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
 
-    //wenn gespeicherte Merklisten aus localstorage geladen werden konnte
-    if (JSON.parse(localStorageSavedUserBaskets).length) {
+    //wenn es ein Merklisten-Merkmal im localstorage gibt
+    if (localStorageSavedUserBaskets) {
 
-      //gespeicherte Suchen aus localstorage holen
-      let lsBaskets = JSON.parse(localStorageSavedUserBaskets);
+      //Wenn es Merklisten im localstorage gibt (kein leeres Array)
+      if (JSON.parse(localStorageSavedUserBaskets).length) {
 
-      //Ueber gespeicherte Merklisten gehen
-      for (let lsBasket of lsBaskets) {
+        //gespeicherte Suchen aus localstorage holen
+        let lsBaskets = JSON.parse(localStorageSavedUserBaskets);
 
-        //damit Merkliste anlegen
-        this.createBasket(true, lsBasket);
+        //Ueber gespeicherte Merklisten gehen
+        for (let lsBasket of lsBaskets) {
+
+          //damit Merkliste anlegen
+          this.createBasket(true, lsBasket);
+        }
       }
     }
 

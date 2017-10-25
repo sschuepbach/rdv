@@ -314,10 +314,8 @@
 
               <!-- Anhak-Symbol -->
               <span class="fa"
-                    [ngClass]="{
-                      'fa-check-circle':  filterCheckbox.checked,  
-                      'fa-circle-thin': !filterCheckbox.checked
-                }"></span>
+                    [class.fa-check-circle]="filterCheckbox.checked"
+                    [class.fa-circle-thin]="!filterCheckbox.checked"></span>
 
               <!-- Name der Filteroption -->
               <span>{{filter_data.label}}</span>

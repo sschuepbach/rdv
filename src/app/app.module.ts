@@ -36,7 +36,6 @@ import { ClipboardModule } from 'ngx-clipboard';
     HttpModule,
     RouterModule.forRoot([
       { path: '', component: SearchComponent },
-      { path: 'search', component: SearchComponent },
       { path: 'about', component: AboutComponent },
       { path: '**', component: SearchComponent }
     ]),
