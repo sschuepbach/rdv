@@ -127,13 +127,13 @@
         </div>
 
         <!-- Block: Suchanfrage speichern -->
-        <div class="d-flex no-gutters align-items-center mt-1 mh-lh">
+        <div class="d-flex no-gutters align-items-start mt-1 mh-lh">
 
           <label>Suche speichern:</label>
-          <div class="col-md-4">
+          <div class="col no-gutters d-flex flex-column flex-md-row">
 
             <!-- Input fuer Namen + Button -->
-            <div class="input-group input-group-sm">
+            <div class="input-group input-group-sm col-8 col-md-4">
 
               <!-- "UserQuery speichern" Textfeld fuer Name -->
               <input class="form-control"
@@ -152,10 +152,14 @@
             </div>
 
             <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
-            <div *ngIf="searchForm.controls['saveQuery'].errors">
-              <div *ngIf="searchForm.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig seind</div>
-              <div *ngIf="searchForm.controls['saveQuery'].errors.required">Name ist Pflichtfeld</div>
-              <div *ngIf="searchForm.controls['saveQuery'].errors.minlength">Mindestlänge {{searchForm.controls['saveQuery'].errors.minlength.requiredLength}}</div>
+            <div class="input-group ml-md-2 mt-1 mt-md-0"
+                 *ngIf="searchForm.controls['saveQuery'].errors">
+              <div class="bg-danger px-2 rounded"
+                   *ngIf="searchForm.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig sein</div>
+              <div class="bg-danger px-2 rounded"
+                   *ngIf="searchForm.controls['saveQuery'].errors.required">Name ist Pflichtfeld</div>
+              <div class="bg-danger px-2 rounded"
+                   *ngIf="searchForm.controls['saveQuery'].errors.minlength">Mindestlänge {{searchForm.controls['saveQuery'].errors.minlength.requiredLength}}</div>
             </div>
           </div>
         </div>
