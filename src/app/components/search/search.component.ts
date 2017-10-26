@@ -140,7 +140,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   saveQuery: FormControl;
 
   //Alle Infos zu Suchanfrage hier speichern
-  queryFormat = new QueryFormat();
+  queryFormat: QueryFormat;
 
   //Array der gespeicherten Suchanfragen
   savedQueries: SavedQueryFormat[] = [];
@@ -228,6 +228,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     //Config ueber Service laden (z.B. dynamische Werte fuer Filter holen), await fuer async-Behandlung des Aufrufs
     this.mainConfig = await this.userConfigService.getConfig();
+
+    //QueryFormat erzeugen lassen
+    this.queryFormat = this.userConfigService.getQueryFormat();
 
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
@@ -564,8 +567,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Suche zuruecksetzen
   resetSearch() {
 
-    //Anfrage-Format leeren
-    this.queryFormat = new QueryFormat();
+    //Anfrage-Format neu erzeugen lassen
+    this.queryFormat = this.userConfigService.getQueryFormat();
 
     //Input-Felder in Template zureucksetzen
     this.setFormInputValues();

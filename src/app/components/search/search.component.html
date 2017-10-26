@@ -43,7 +43,7 @@
           <ng-container *ngIf="queryFormat.searchFields[key].value.length > 0">
 
             <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
-            <label>{{mainConfig.searchFields[queryFormat.searchFields[key].field]}}:</label>
+            <label>{{mainConfig.searchFields.options[queryFormat.searchFields[key].field]}}:</label>
 
             <!-- Suchwert -->
             <div class="col">
@@ -285,8 +285,8 @@
             <div class="input-group-btn">
               <select class="btn btn-sm"
                       [formControlName]="'selectSearchField_' + field">
-                <option *ngFor="let key of mainConfig.searchFields | objectKeys"
-                        [value]="key">{{mainConfig.searchFields[key]}}</option>
+                <option *ngFor="let key of mainConfig.searchFields.options | objectKeys"
+                        [value]="key">{{mainConfig.searchFields.options[key]}}</option>
               </select>
             </div>
 
