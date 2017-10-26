@@ -21,7 +21,7 @@ import { BasketFormat } from 'app/config/basket-format';
 
 //Config
 import { MainConfig } from "app/config/main-config"
-import { UserConfigService } from 'app/config/user-config.service';
+import { UserConfigService } from 'app/services/user-config.service';
 
 //Slider-Plugin
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";

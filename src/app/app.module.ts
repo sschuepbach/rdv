@@ -5,10 +5,12 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
+import { SearchComponent } from './components/search/search.component';
+import { AboutComponent } from './components/about/about.component'
 
 import { SolrSearchService } from "app/services/solr-search.service";
 import { SolrSearchProxyService } from 'app/services/solr-search-proxy.service';
-import { UserConfigService } from 'app/config/user-config.service';
+import { UserConfigService } from 'app/services/user-config.service';
 
 import { ObjectKeysPipe } from './pipes/object-keys.pipe';
 
@@ -17,12 +19,7 @@ import { IonRangeSliderModule } from "ng2-ion-range-slider";
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-
-import { SearchComponent } from './components/search/search.component';
-import { AboutComponent } from './components/about/about.component'
-
 import { ClipboardModule } from 'ngx-clipboard';
-
 
 @NgModule({
   declarations: [

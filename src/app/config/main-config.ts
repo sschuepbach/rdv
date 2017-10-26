@@ -80,20 +80,8 @@ export class MainConfig {
     filterFields = {
         "institution": {
             "label": "Einrichtung",
-            "data": [
-                {
-                    "value": 1,
-                    "label": "Hohenheim"
-                },
-                {
-                    "value": 2,
-                    "label": "Heidelberg"
-                },
-                {
-                    "value": 3,
-                    "label": "Freiburg"
-                }
-            ]
+            "url": "http://localhost/bwsts/web/export.php",
+            "data": []
         }
     }
 }

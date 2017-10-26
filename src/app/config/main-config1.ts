@@ -8,6 +8,9 @@ export class MainConfig {
         "py_string": "Jahr"
     };
 
+    //Infos zu Filtern
+    filterFields = {};
+
     //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
     //order gilt fuer Facetten und Ranges
     facetFields = {
