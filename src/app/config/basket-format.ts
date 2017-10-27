@@ -1,13 +1,26 @@
 export class BasketFormat {
 
+    //Name der Merkliste
     name: string;
+
+    //Liste der IDs in der Merkliste
     ids: number[];
-    sortField: string = "id_int";
-    sortDir = "asc";
+
+    //Sortierfeld und Richtung
+    sortField: string = "";
+    sortDir = "";
+
+    //zu Beginn Suche bei 1. Treffer beginnen
     start: number = 0;
 
-    constructor(name: string) {
+    constructor(name: string, sortField: string, sortDir: string) {
+
+        //Name und Sortierung der Merkliste setzen
         this.name = name;
+        this.sortField = sortField;
+        this.sortDir = sortDir;
+
+        //Merkliste zu Beginn leer
         this.ids = [];
     }
 }

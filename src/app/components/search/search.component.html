@@ -313,7 +313,7 @@
             <label [formArrayName]="filter"
                    class="btn btn-sm btn-outline-primary mr-1"
                    [class.active]="filterCheckbox.checked"
-                   *ngFor="let filter_data of mainConfig.filterFields[filter].data; index as i">
+                   *ngFor="let filter_data of mainConfig.filterFields[filter].options; index as i">
 
               <!-- Anhak-Symbol -->
               <span class="fa"
@@ -425,9 +425,21 @@
                attr.aria-labelledby="facet-pills-{{key}}-tab">
 
             <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
-            <label class="mb-2">
+            <label class="btn btn-sm btn-outline-primary px-2 py-1 mb-3"
+                   [class.active]="showMissingCheckbox.checked">
+
+              <!-- Anhak-Symbol -->
+              <span class="fa"
+                    [class.fa-check-circle]="showMissingCheckbox.checked"
+                    [class.fa-circle-thin]="!showMissingCheckbox.checked"></span>
+
+              <!-- Text "x Titel ohne Jahr anzeigen" -->
               <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
-              <input type="checkbox"
+
+              <!-- unsichtbare Checkbox -->
+              <input class="d-none"
+                     #showMissingCheckbox
+                     type="checkbox"
                      [formControlName]="'showMissing_' + key">
             </label>
 
@@ -625,13 +637,20 @@
                     <!-- Label ("Titel: "") nur bei kleinster Darstellung (vertikal) anzeigen -->
                     <label class="d-sm-none font-weight-bold text-right mr-2">{{field.label}}</label>
 
+                    <!-- Wenn kein Wert gesetzt ist -->
+                    <span *ngIf="getType(doc[field.field]) === 'unset'"
+                          class="col"
+                          [class.mh-flex-1]="first">
+                      <i>ohne</i>
+                    </span>
+
                     <!-- Wenn es ein Einzelwert ist (z.B. ID, Jahr,...), einfach Wert ausgeben -->
-                    <span *ngIf="!field.multi"
+                    <span *ngIf="getType(doc[field.field]) === 'single'"
                           class="col"
                           [class.mh-flex-1]="first">{{doc[field.field]}}</span>
 
                     <!-- Wenn es ein Multiwert ist (z.B. Personen, Schlagwoerter,...), Werte aggregiert ausgeben -->
-                    <span *ngIf="field.multi"
+                    <span *ngIf="getType(doc[field.field]) === 'multi'"
                           class="col">
 
                       <!-- Ueber Werte (z.B. einzelne Personen) gehen -->
@@ -693,8 +712,17 @@
                     <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
                     <label class="font-weight-bold text-right mr-2">{{mainConfig.extraInfos[key].label}}</label>
 
-                    <!-- Bereich fuer Werte rechts -->
-                    <span class="col">
+                    <!-- Wenn es ein Einzeltwert ist -->
+                    <span class="col"
+                          *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'single'">
+
+                      <!-- Diesen Wert ausgeben -->
+                      {{detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]}}
+                    </span>
+
+                    <!-- Wenn es ein Multiwert ist -->
+                    <span class="col"
+                          *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
@@ -810,13 +838,20 @@
                     <!-- Label ("Titel: "") nur bei kleinster Darstellung (vertikal) anzeigen -->
                     <label class="d-sm-none font-weight-bold text-right mr-2">{{field.label}}</label>
 
+                    <!-- Wenn kein Wert gesetzt ist -->
+                    <span *ngIf="getType(doc[field.field]) === 'unset'"
+                          class="col"
+                          [class.mh-flex-1]="first">
+                      <i>ohne</i>
+                    </span>
+
                     <!-- Wenn es ein Einzelwert ist (z.B. ID, Jahr,...), einfach Wert ausgeben -->
-                    <span *ngIf="!field.multi"
+                    <span *ngIf="getType(doc[field.field]) === 'single'"
                           class="col"
                           [class.mh-flex-1]="first">{{doc[field.field]}}</span>
 
                     <!-- Wenn es ein Multiwert ist (z.B. Personen, Schlagwoerter,...), Werte aggregiert ausgeben -->
-                    <span *ngIf="field.multi"
+                    <span *ngIf="getType(doc[field.field]) === 'multi'"
                           class="col">
 
                       <!-- Ueber Werte (z.B. einzelne Personen) gehen -->
@@ -876,8 +911,17 @@
                     <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
                     <label class="font-weight-bold text-right mr-2">{{mainConfig.extraInfos[key].label}}</label>
 
-                    <!-- Bereich fuer Werte rechts -->
-                    <span class="col">
+                    <!-- Wenn es ein Einzeltwert ist -->
+                    <span class="col"
+                          *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'single'">
+
+                      <!-- Diesen Wert ausgeben -->
+                      {{detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]}}
+                    </span>
+
+                    <!-- Wenn es ein Multiwert ist -->
+                    <span class="col"
+                          *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">

@@ -43,6 +43,13 @@ export class SolrSearchService {
       tempArray.push(field.field);
     }
 
+    //Falls ID-Feld nicht in Tabelle angzeigt wird
+    if (tempArray.indexOf("id") === -1) {
+
+      //ID-Feld trotzdem in fl-Liste hinzufuegen, da ueber die ID zusaetzliche Infos geholt werden und der Basket gefuellt wird
+      tempArray.push("id");
+    }
+
     //Array joinen per ,
     this.tableFields = tempArray.join(",");
 
@@ -60,7 +67,7 @@ export class SolrSearchService {
     this.detailFields = tempArray.join(",");
 
     //Anzahl der Treffer pro Merklisten-Anfrage speichern
-    this.basketRows = mainConfig.basketRows;
+    this.basketRows = mainConfig.basketConfig.rows;
   }
 
   //Daten in Solr suchen
@@ -171,8 +178,11 @@ export class SolrSearchService {
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     let myParams = new URLSearchParams();
 
+    //Doppelpunkt in ID für Solr-Abfrage escapen (oai:opus.uni-hohenheim.de:1 -> oai\:opus.uni-hohenheim.de\:1)
+    let clean_id = id.toString().replace(/:/g, "\\:");
+
     //Suche nach ID
-    myParams.set("q", "id:" + id);
+    myParams.set("q", "id:" + clean_id);
 
     //Feldliste
     myParams.set("fl", this.detailFields);
@@ -199,8 +209,11 @@ export class SolrSearchService {
     //Ueber IDs gehen
     for (let id of basket.ids) {
 
+      //Doppelpunkt in ID für Solr-Abfrage escapen (oai:opus.uni-hohenheim.de:1 -> oai\:opus.uni-hohenheim.de\:1)
+      let clean_id = id.toString().replace(/:/g, "\\:");
+
       //ID merken
-      idArray.push("id:(" + id + ")");
+      idArray.push("id:(" + clean_id + ")");
     }
 
     //Wenn es IDs gibt, kombinierte ID Anfrage bauen (id: 10 OR id:12 OR...) ansonsten leere Treffermenge (-id:*)

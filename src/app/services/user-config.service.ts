@@ -18,14 +18,14 @@ export class UserConfigService {
     //vorhandene Filter dynamisch laden
     for (let key of Object.keys(this.config.filterFields)) {
 
-      //Wenn bei Filter eine URL hinterlegt ist, muessen Daten dynamisch geholt werden
+      //Wenn bei Filter eine URL hinterlegt ist, muessen Optionen dynamisch geholt werden
       if (this.config.filterFields[key].url) {
 
-        //Config-Werte per URL holen
+        //Optionen per URL holen
         this.config = await this.http.get(this.config.filterFields[key].url).toPromise().then(response => {
 
           //Filter-Auswaehlmoeglichkeiten in Filterdatenbereich der Config schreiben (war bisher leer)
-          this.config.filterFields[key].data = response.json();
+          this.config.filterFields[key].options = response.json();
 
           //Config zurueckgeben
           return this.config;

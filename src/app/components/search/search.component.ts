@@ -77,7 +77,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.basketSize / this.mainConfig.basketRows);
+    return Math.ceil(this.basketSize / this.mainConfig.basketConfig.rows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -94,7 +94,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.savedBaskets.length) {
 
       //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      return Math.floor(this.activeBasket.start / this.mainConfig.basketRows) + 1
+      return Math.floor(this.activeBasket.start / this.mainConfig.basketConfig.rows) + 1
     }
 
     //es gibt keine Merklisten
@@ -484,7 +484,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       (this.searchForm.controls['filters'] as FormGroup).addControl(filter, new FormArray([]));
 
       //Ueber moegliche Filterwerte dieses Filters gehen
-      for (let filter_data of this.mainConfig.filterFields[filter].data) {
+      for (let filter_data of this.mainConfig.filterFields[filter].options) {
 
         //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
         let checked = this.queryFormat.filterFields[filter].values.indexOf(filter_data.value) > -1;
@@ -507,7 +507,7 @@ export class SearchComponent implements OnInit, OnDestroy {
                 let index = ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
 
                 //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
-                let value = this.mainConfig.filterFields[filter].data[index].value;
+                let value = this.mainConfig.filterFields[filter].options[index].value;
 
                 //Wenn Checkbox angehakt wurde
                 if (control.value) {
@@ -644,7 +644,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     for (let key of Object.keys(this.mainConfig.filterFields)) {
 
       //Ueber moegliche Filterwerte eines Filters gehen (Institutionen: [UB Freiburg, KIT,...])
-      this.mainConfig.filterFields[key].data.forEach((filter_data, index) => {
+      this.mainConfig.filterFields[key].options.forEach((filter_data, index) => {
 
         //Pruefen ob Wert in QueryFormat angehakt ist
         let checked = this.queryFormat.filterFields[key].values.indexOf(filter_data.value) > -1;
@@ -670,8 +670,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Wenn kein BasketFormat-Objekt mitgeschickt wurde
     if (basket === null) {
 
-      //Neues BasketFormat-Objekt anlegen mit Namen "Meine Merkliste X"
-      newBasket = new BasketFormat("Meine Merkliste " + (this.baskets.length + 1));
+      //Neues BasketFormat-Objekt anlegen mit Namen "Meine Merkliste X" + Sortierkriterium
+      newBasket = new BasketFormat("Meine Merkliste " + (this.baskets.length + 1), this.mainConfig.basketConfig.sortField, this.mainConfig.basketConfig.sortDir);
     }
 
     //es wurde eine BasketFormat-Objekt uebergeben (z.B. aus localstorage oder per Link-Parameter)
@@ -883,7 +883,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         //auf letzte Seite springen
         if (offset === 'last') {
-          newStart = (this.mainConfig.basketRows * (this.basketPages - 1));
+          newStart = (this.mainConfig.basketConfig.rows * (this.basketPages - 1));
         }
 
         //auf 1. Seite springen
@@ -893,7 +893,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         //1 Schritt nach vorne oder hinten blaetten
         else {
-          newStart = this.activeBasket.start + (offset * this.mainConfig.basketRows);
+          newStart = this.activeBasket.start + (offset * this.mainConfig.basketConfig.rows);
         }
 
         //Start anpassen
@@ -1238,6 +1238,25 @@ export class SearchComponent implements OnInit, OnDestroy {
           }
         });
         break;
+    }
+  }
+
+  //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
+  getType(obj) {
+
+    //Wert ist nicht gesetzt
+    if (!obj) {
+      return 'unset';
+    }
+
+    //ist Wert ein Array?
+    else if (obj.constructor === Array) {
+      return "multi";
+    }
+
+    //kein Array -> Einzelwert
+    else {
+      return "single";
     }
   }
 }
