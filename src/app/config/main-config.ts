@@ -97,11 +97,13 @@ export class MainConfig {
     extraInfos = {
         "id": {
             "field": "id",
-            "label": "vollständige ID"
+            "label": "vollständige ID",
+            "display": "text"
         },
         "url": {
             "field": "url_all_string",
-            "label": "URL"
+            "label": "URL",
+            "display": "link"
         }
     };
 }

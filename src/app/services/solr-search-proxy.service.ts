@@ -62,7 +62,7 @@ select?wt=json
     this.detailFields = tempArray.join(",");
 
     //Anzahl der Treffer pro Merklisten-Anfrage speichern
-    this.basketRows = mainConfig.basketRows;
+    this.basketRows = mainConfig.basketConfig.rows;
   }
 
   //Daten in Solr suchen

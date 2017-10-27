@@ -1259,25 +1259,44 @@ export class SearchComponent implements OnInit, OnDestroy {
       return "single";
     }
   }
+
+  //Werte fuer Darstellung in Trefferliste formattieren
+  formatValue(value, display) {
+
+    //von normalem Text ausgehen
+    let output = value;
+
+    //Wenn es ein spezieller Modus ist
+    switch (display) {
+
+      //Link-Modus
+      case 'link':
+
+        //Link erstellen
+        output = "<a href=" + value + ">" + value + " <i class='fa fa-external-link'></i></a>";
+        break;
+    }
+
+    //formattierten Wert zurueckgeben
+    return output;
+  }
 }
 
-//TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt.
+//Bug: Enter in Suchfeld
+
+//TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt. / Service
 //TODO Slider / Chart
 //TODO solr-service -> data-service mit useconfig
-//TODO Namen fuer naechste Queries beim Loeschen einer Query neu berechnen
 //TODO i18n AND OR -> UND / ODER
-//TODO Filter- / Baum-Suche
-//TODO gespeicherte Anfrage als FormArray (Anfrage umbenennen)
+//TODO Baum-Suche
 //TODO Merklisten / Anfragen umsortieren
-//TODO Footer
 //TODO Aufteilung in einzelne Komponenten
 
 //Bereiche ein- / ausblenden
 
 //TODO debounce + distinct bei Suchanfrage
 //TODO style zu CSS umarbeiten
+//TODO Merklisten Export
 //TODO Trefferliste pills / paging mit position absolute
 //Mehrfach-Abfrage verhindern bei Laden einer Query  this.term.setValue(choice, {emitEvent: false});   // We write the choice in the term to see it in the input
-//Link bei / aktiv anzeigen
 //Filters als property (FormGroup)
-//Merklisten export
