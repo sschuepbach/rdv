@@ -10,15 +10,8 @@ export class MainConfig {
         "preselect": ["all_text", "ti_all_text", "person_all_text"]
     };
 
-    //BWSTS-Filter
-    filterFields = {
-        "institution": {
-            "label": "Einrichtung",
-            "field": "mode_all_facet",
-            "url": "http://localhost/bwsts/web/export.php",
-            "options": []
-        }
-    }
+    //Infos zu Filtern (z.B. Filterung nach Einrichtung)
+    filterFields = {};
 
     //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
     //order gilt fuer Facetten und Ranges
@@ -26,27 +19,16 @@ export class MainConfig {
 
     //Infos zu Ranges (z.B. Label)
     //order gilt fuer Facetten und Ranges
-    rangeFields = {
-        "year": {
-            "field": "py_int",
-            "label": "Jahr",
-            "order": 1,
-            "min": 1950,
-            "from": 1950,
-            "to": 2017,
-            "max": 2017,
-            "showMissingValues": true
-        }
-    };
+    rangeFields = {};
 
     //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_bwsts.php";
+    proxyUrl = "http://localhost/mh1018/test/php/elasticsearch/angularx_elasticsearch_proxy_unibas.php";
 
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];
 
     queryParams = {
-        "rows": this.rowOpts[2],
+        "rows": 10,
         "start": 0,
         "sortField": "id_int",
         "sortDir": "asc"
@@ -62,48 +44,28 @@ export class MainConfig {
     //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)
     tableFields = [
         {
-            "field": "id_int",
+            "field": "id",
             "label": "ID",
             "sort": "id_int",
-            "css": "col-sm-2 col-lg-2 flex-sm-column align-items-center text-sm-center",
+            "css": "col-sm-2 col-lg-1 flex-sm-column align-items-center text-sm-center",
         },
         {
-            "field": "rdvname_string",
-            "label": "Repo",
-            "sort": "rdvname_string",
-            "css": "col-sm-2 col-lg-2 text-left",
-        },
-        {
-            "field": "person_all_string",
+            "field": "fct_person_organisation",
             "label": "Person",
-            "sort": "person_sort_string",
-            "css": "col-sm-2 col-lg-2 text-left",
+            "sort": "ti_sort_string",
+            //"css": "col-sm-4 col-lg-5 text-left",
+            "css": "col-sm-4 col-lg-4 text-left",
         },
         {
-            "field": "ti_all_string",
+            "field": "Titel",
             "label": "Titel",
             "sort": "ti_sort_string",
-            "css": "col-sm-3 col-lg-4 text-left",
-        },
-        {
-            "field": "py_int",
-            "label": "Jahr",
-            "sort": "py_int",
-            "css": "col-sm-2 col-lg-1 text-sm-center",
+            //"css": "col-sm-4 col-lg-5 text-left",
+            "css": "col-sm-5 col-lg-6 text-left",
         }
+
     ];
 
     //Welche Felder sollen in zusaetzlicher Zeile angezeigt werden
-    extraInfos = {
-        "id": {
-            "field": "id",
-            "label": "vollständige ID",
-            "display": "text"
-        },
-        "url": {
-            "field": "url_all_string",
-            "label": "URL",
-            "display": "link"
-        }
-    };
+    extraInfos = {};
 }
