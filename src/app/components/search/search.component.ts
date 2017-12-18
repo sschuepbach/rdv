@@ -1,7 +1,7 @@
 import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
 
-//Solr Service
-import { SolrSearchService } from "app/services/solr-search.service";
+//Backend Service (z.B. Elasticsearch oder Solr)
+import { BackendSearchService } from "app/services/backend-search.service";
 
 // Observable operators
 import 'rxjs/add/operator/debounceTime';
@@ -77,7 +77,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.basketSize / this.mainConfig.basketConfig.rows);
+    return Math.ceil(this.basketSize / this.mainConfig.basketConfig.queryParams.rows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -94,7 +94,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.savedBaskets.length) {
 
       //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      return Math.floor(this.activeBasket.start / this.mainConfig.basketConfig.rows) + 1
+      return Math.floor(this.activeBasket.queryParams.start / this.mainConfig.basketConfig.queryParams.rows) + 1
     }
 
     //es gibt keine Merklisten
@@ -182,7 +182,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
 
-  //Trefferanzahl der Solr-Antwort. Zu Beginn 0 Treffer (spaeter abgeleitet von results)
+  //Trefferanzahl der Backend-Antwort. Zu Beginn 0 Treffer (spaeter abgeleitet von results)
   count: number = 0;
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
@@ -204,8 +204,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
   loadFromLink: boolean = false;
 
-  //SolrSearchService, FormBuilder, ActivedRoute, UserConfigService injecten
-  constructor(private solrSearchService: SolrSearchService, private _fb: FormBuilder, private route: ActivatedRoute, private userConfigService: UserConfigService) {
+  //BackendSearch, FormBuilder, ActivedRoute, UserConfigService injecten
+  constructor(private backendSearchService: BackendSearchService, private _fb: FormBuilder, private route: ActivatedRoute, private userConfigService: UserConfigService) {
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -287,9 +287,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.results = this.complexSearchTerms
 
       //Term an Suchanfrage weiterleiten -> Ergebnis wird in Docs gespeichert
-      .switchMap((query: QueryFormat) => this.solrSearchService.getSolrDataComplex(query))
+      .switchMap((query: QueryFormat) => this.backendSearchService.getBackendDataComplex(query))
 
-    //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
+    //Aenderungen bei results (=Backend-Suche-Anfrage) und Werte extrahieren
     this.results.subscribe(results => {
 
       //Array der Treffer-Dokumente
@@ -298,10 +298,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Anzahl der Treffer
       this.count = results.response.numFound;
 
-      //Solr-Facetten Werte
+      //Facetten-Werte
       this.facets = results.facet_counts.facet_fields;
 
-      //Solr-Facetten-Ranges Werte
+      //Facetten-Ranges Werte
       this.ranges = results.facet_counts.facet_ranges;
 
       //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
@@ -358,9 +358,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.basketResults = this.basketSearchTerms
 
       //Merklistenanfrage mit IDs und Sortierinfo abschicken
-      .switchMap((basket: BasketFormat) => this.solrSearchService.getSolrDataBasket(basket))
+      .switchMap((basket: BasketFormat) => this.backendSearchService.getBackendDataBasket(basket))
 
-    //Aenderungen bei results (=Solr-Suche-Anfrage) und Werte extrahieren
+    //Aenderungen bei results (=Backend-Suche-Anfrage) und Werte extrahieren
     this.basketResults.subscribe(basketResults => {
 
       //Array der Treffer-Dokumente der Merkliste
@@ -588,13 +588,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   //Detailinfo holen und Ansicht toggeln
-  getFullData(id: number) {
+  getFullData(id: string) {
 
     //Wenn es noch keine Detailinfos (abstract,...) dieser ID gibt
     if (this.detailDataArray[id] === undefined) {
 
-      //Infos aus Solr holen und lokal speichern. Eintrag sichtbar machen
-      this.solrSearchService.getSolrDetailData(id).subscribe(
+      //Infos aus Backend holen und lokal speichern. Eintrag sichtbar machen
+      this.backendSearchService.getBackendDetailData(id).subscribe(
         res => this.detailDataArray[id] = { "data": res, "visible": true });
     }
 
@@ -671,7 +671,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (basket === null) {
 
       //Neues BasketFormat-Objekt anlegen mit Namen "Meine Merkliste X" + Sortierkriterium
-      newBasket = new BasketFormat("Meine Merkliste " + (this.baskets.length + 1), this.mainConfig.basketConfig.sortField, this.mainConfig.basketConfig.sortDir);
+      newBasket = new BasketFormat("Meine Merkliste " + (this.baskets.length + 1), this.mainConfig.basketConfig.queryParams.sortField, this.mainConfig.basketConfig.queryParams.sortDir, this.mainConfig.basketConfig.queryParams.rows);
     }
 
     //es wurde eine BasketFormat-Objekt uebergeben (z.B. aus localstorage oder per Link-Parameter)
@@ -767,7 +767,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   //ID zu Merkliste hinzufuegen oder entfernen
-  toggleInBasket(id: number) {
+  toggleInBasket(id: string) {
 
     //Wenn ID bereits in der Merkliste ist
     if (this.isInBasket(id)) {
@@ -788,7 +788,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   //pruefen ob eine ID in der aktiven Merkliste ist
-  isInBasket(id: number) {
+  isInBasket(id: string) {
 
     //Wenn es keine Merklisten gibt
     if (this.savedBaskets.length === 0) {
@@ -883,7 +883,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         //auf letzte Seite springen
         if (offset === 'last') {
-          newStart = (this.mainConfig.basketConfig.rows * (this.basketPages - 1));
+          newStart = (this.mainConfig.basketConfig.queryParams.rows * (this.basketPages - 1));
         }
 
         //auf 1. Seite springen
@@ -893,11 +893,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         //1 Schritt nach vorne oder hinten blaetten
         else {
-          newStart = this.activeBasket.start + (offset * this.mainConfig.basketConfig.rows);
+          newStart = this.activeBasket.queryParams.start + (offset * this.mainConfig.basketConfig.queryParams.rows);
         }
 
         //Start anpassen
-        this.activeBasket.start = newStart;
+        this.activeBasket.queryParams.start = newStart;
 
         //Suche starten
         this.basketSearchTerms.next(this.activeBasket);
@@ -942,20 +942,20 @@ export class SearchComponent implements OnInit, OnDestroy {
       case 'basket':
 
         //wenn bereits nach diesem Feld sortiert wird
-        if (sortField === this.activeBasket.sortField) {
+        if (sortField === this.activeBasket.queryParams.sortField) {
 
           //Sortierrichtung umdrehen
-          this.activeBasket.sortDir = this.activeBasket.sortDir === "desc" ? "asc" : "desc";
+          this.activeBasket.queryParams.sortDir = this.activeBasket.queryParams.sortDir === "desc" ? "asc" : "desc";
         }
 
         //es wird derzeit nach einem anderen Feld sortiert
         else {
 
           //Sortierfeld setzen
-          this.activeBasket.sortField = sortField;
+          this.activeBasket.queryParams.sortField = sortField;
 
           //Sortierrichtung aufsteigend setzen
-          this.activeBasket.sortDir = 'asc';
+          this.activeBasket.queryParams.sortDir = 'asc';
         }
 
         //Suche starten
@@ -988,10 +988,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       case 'basket':
 
         //wenn nach diesem Feld sortiert wird
-        if (field === this.savedBaskets[this.activeBasketIndex].sortField) {
+        if (field === this.savedBaskets[this.activeBasketIndex].queryParams.sortField) {
 
           //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
-          cssClass = this.savedBaskets[this.activeBasketIndex].sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
+          cssClass = this.savedBaskets[this.activeBasketIndex].queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
         }
         break;
     }
@@ -1082,13 +1082,13 @@ export class SearchComponent implements OnInit, OnDestroy {
 
       //Werte sammeln
       let barData = [];
-      let solrData = this.ranges[this.queryFormat.rangeFields[key].field].counts;
+      let backendData = this.ranges[this.queryFormat.rangeFields[key].field].counts;
 
       //Ranges kommen als Array von Arrays [["1800", 2]["1801", 0]["1802", 6],...],
-      for (let i = 0; i < solrData.length; i++) {
+      for (let i = 0; i < backendData.length; i++) {
 
         //nur den Zaehlwert speichern fuer Chart
-        barData.push(solrData[i][1]);
+        barData.push(backendData[i][1]);
       }
 
       //Daten fuer Chart speichern
@@ -1231,7 +1231,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.mainConfig.tableFields.forEach((item, index) => {
 
           //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
-          if (item.sort === this.activeBasket.sortField) {
+          if (item.sort === this.activeBasket.queryParams.sortField) {
 
             //diesen Index merken
             this.sortColumnBasket = index;
@@ -1286,7 +1286,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
 //TODO kann Suche immer angestossen werden, wenn Wert in queryFormat angepasst wird? -> Fkt. / Service
 //TODO Slider / Chart
-//TODO solr-service -> data-service mit useconfig
+//TODO elasticsearch vs. solr-service -> data-service mit useconfig
 //TODO i18n AND OR -> UND / ODER
 //TODO Baum-Suche
 //TODO Merklisten / Anfragen umsortieren
@@ -1300,3 +1300,4 @@ export class SearchComponent implements OnInit, OnDestroy {
 //TODO Trefferliste pills / paging mit position absolute
 //Mehrfach-Abfrage verhindern bei Laden einer Query  this.term.setValue(choice, {emitEvent: false});   // We write the choice in the term to see it in the input
 //Filters als property (FormGroup)
+//mehrere Felder für Sortierung

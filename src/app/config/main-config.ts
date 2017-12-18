@@ -4,10 +4,11 @@ export class MainConfig {
     searchFields = {
         "options": {
             "all_text": "Freitext",
-            "ti_all_text": "Titel",
-            "person_all_text": "Person"
+            "Titel": "Titel",
+            "fct_location.search": "Ort",
+            "Verlag": "Verlag"
         },
-        "preselect": ["all_text", "ti_all_text", "person_all_text"]
+        "preselect": ["all_text", "Titel", "Verlag"]
     };
 
     //Infos zu Filtern (z.B. Filterung nach Einrichtung)
@@ -30,15 +31,17 @@ export class MainConfig {
     queryParams = {
         "rows": 10,
         "start": 0,
-        "sortField": "id_int",
+        "sortField": "_uid",
         "sortDir": "asc"
     }
 
     //Config fuer Merkliste
     basketConfig = {
-        "rows": 10,
-        "sortField": "id_int",
-        "sortDir": "asc"
+        queryParams: {
+            "rows": 10,
+            "sortField": "_uid",
+            "sortDir": "asc"
+        }
     };
 
     //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)
@@ -46,26 +49,35 @@ export class MainConfig {
         {
             "field": "id",
             "label": "ID",
-            "sort": "id_int",
+            "sort": "_uid",
             "css": "col-sm-2 col-lg-1 flex-sm-column align-items-center text-sm-center",
         },
         {
             "field": "fct_person_organisation",
             "label": "Person",
-            "sort": "ti_sort_string",
-            //"css": "col-sm-4 col-lg-5 text-left",
+            "sort": "fct_person_organisation",
             "css": "col-sm-4 col-lg-4 text-left",
         },
         {
             "field": "Titel",
             "label": "Titel",
-            "sort": "ti_sort_string",
-            //"css": "col-sm-4 col-lg-5 text-left",
+            "sort": "Titel.keyword",
             "css": "col-sm-5 col-lg-6 text-left",
         }
 
     ];
 
     //Welche Felder sollen in zusaetzlicher Zeile angezeigt werden
-    extraInfos = {};
+    extraInfos = {
+        "date": {
+            "field": "Anfangsdatum",
+            "label": "Anfangsdatum",
+            "display": "text"
+        },
+        "number": {
+            "field": "Inventarnummer",
+            "label": "Inventarnummer",
+            "display": "text"
+        }
+    };
 }

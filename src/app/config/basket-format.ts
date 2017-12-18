@@ -4,21 +4,24 @@ export class BasketFormat {
     name: string;
 
     //Liste der IDs in der Merkliste
-    ids: number[];
+    ids: string[];
 
-    //Sortierfeld und Richtung
-    sortField: string = "";
-    sortDir = "";
+    //Suchparameter fuer Paging und Sortierung (werden über Config gesetzt)
+    queryParams = {
+        "rows": 0,
+        "start": 0,
+        "sortField": "",
+        "sortDir": ""
+    };
 
-    //zu Beginn Suche bei 1. Treffer beginnen
-    start: number = 0;
-
-    constructor(name: string, sortField: string, sortDir: string) {
+    //Constructor zur Erstellung einer neuen Merkliste
+    constructor(name: string, sortField: string, sortDir: string, rows: number) {
 
         //Name und Sortierung der Merkliste setzen
         this.name = name;
-        this.sortField = sortField;
-        this.sortDir = sortDir;
+        this.queryParams.sortField = sortField;
+        this.queryParams.sortDir = sortDir;
+        this.queryParams.rows = rows;
 
         //Merkliste zu Beginn leer
         this.ids = [];
