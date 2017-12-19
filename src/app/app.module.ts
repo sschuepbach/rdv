@@ -1,3 +1,7 @@
+//Fuer Config anpassen
+//import { BackendSearchService } from 'app/services/solr-search.service';
+import { BackendSearchService } from 'app/services/elastic-search.service';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -7,10 +11,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component'
-
-//import { SolrSearchService } from "app/services/solr-search.service";
-//import { SolrSearchProxyService } from 'app/services/solr-search-proxy.service';
-import { BackendSearchService } from 'app/services/backend-search.service';
 
 import { UserConfigService } from 'app/services/user-config.service';
 import { ObjectKeysPipe } from './pipes/object-keys.pipe';

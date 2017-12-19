@@ -1,3 +1,7 @@
+//Config anpassen
+import { MainConfig } from "app/config/main-config-freidok";
+//import { MainConfig } from "app/config/main-config-bwsts";
+
 import { Injectable } from '@angular/core';
 import { Http, Headers, URLSearchParams, RequestOptions } from "@angular/http";
 
@@ -5,12 +9,10 @@ import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/config/query-format";
 
-//Config laden (welche Felder sollen geladen werden)
-import { MainConfig } from "app/config/main-config";
 import { BasketFormat } from 'app/config/basket-format';
 
 @Injectable()
-export class SolrSearchService {
+export class BackendSearchService {
 
   //URL auf PHP-Proxy
   private proxyUrl: string;
@@ -67,11 +69,11 @@ export class SolrSearchService {
     this.detailFields = tempArray.join(",");
 
     //Anzahl der Treffer pro Merklisten-Anfrage speichern
-    this.basketRows = mainConfig.basketConfig.rows;
+    this.basketRows = mainConfig.basketConfig.queryParams.rows;
   }
 
   //Daten in Solr suchen
-  getSolrDataComplex(queryFormat: QueryFormat): Observable<any> {
+  getBackendDataComplex(queryFormat: QueryFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     let myParams = new URLSearchParams();
@@ -173,7 +175,7 @@ export class SolrSearchService {
   }
 
   //Detail-Daten aus Solr holen (abstract,...)
-  getSolrDetailData(id: number): Observable<any> {
+  getBackendDetailData(id: string): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     let myParams = new URLSearchParams();
@@ -198,7 +200,7 @@ export class SolrSearchService {
   }
 
   //Merklisten-Daten in Solr suchen
-  getSolrDataBasket(basket: BasketFormat): Observable<any> {
+  getBackendDataBasket(basket: BasketFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     let myParams = new URLSearchParams();
@@ -221,13 +223,13 @@ export class SolrSearchService {
     myParams.set("q", encodeURI(query));
 
     //Ab welchem Treffer soll gesucht werden?
-    let start = basket.start ? basket.start : 0;
+    let start = basket.queryParams.start ? basket.queryParams.start : 0;
     myParams.set("start", start.toString());
 
     //weitere Parameter setzen
     myParams.set('rows', this.basketRows.toString());
     myParams.set('fl', this.tableFields);
-    myParams.set('sort', encodeURI(basket.sortField + " " + basket.sortDir));
+    myParams.set('sort', encodeURI(basket.queryParams.sortField + " " + basket.queryParams.sortDir));
 
     //HTTP-Anfrage an Solr
     return this.http

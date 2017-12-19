@@ -1,3 +1,6 @@
+//Config anpassen
+import { MainConfig } from "app/config/main-config-elastic";
+
 import { Injectable } from '@angular/core';
 import { Http } from "@angular/http";
 
@@ -5,9 +8,6 @@ import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/config/query-format";
 import { BasketFormat } from 'app/config/basket-format';
-
-//Config laden (welche Felder sollen geholt werden)
-import { MainConfig } from "app/config/main-config";
 
 @Injectable()
 export class BackendSearchService {

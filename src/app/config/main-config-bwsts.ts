@@ -54,9 +54,11 @@ export class MainConfig {
 
     //Config fuer Merkliste
     basketConfig = {
-        "rows": 10,
-        "sortField": "id_int",
-        "sortDir": "asc"
+        "queryParams": {
+            "rows": 10,
+            "sortField": "id_int",
+            "sortDir": "asc"
+        }
     };
 
     //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)

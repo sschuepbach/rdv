@@ -37,7 +37,7 @@ export class MainConfig {
 
     //Config fuer Merkliste
     basketConfig = {
-        queryParams: {
+        "queryParams": {
             "rows": 10,
             "sortField": "_uid",
             "sortDir": "asc"

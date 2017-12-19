@@ -1,6 +1,10 @@
+//Fuer Config anpassen
+//import { MainConfig } from 'app/config/main-config-freidok';
+//import { MainConfig } from 'app/config/main-config-bwsts';
+import { MainConfig } from 'app/config/main-config-elastic';
+
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { MainConfig } from 'app/config/main-config';
 import { QueryFormat } from 'app/config/query-format';
 
 @Injectable()

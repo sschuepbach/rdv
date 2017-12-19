@@ -1,7 +1,12 @@
-import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
+//Fuer Config anpassen
+//import { BackendSearchService } from "app/services/solr-search.service";
+import { BackendSearchService } from "app/services/elastic-search.service";
 
-//Backend Service (z.B. Elasticsearch oder Solr)
-import { BackendSearchService } from "app/services/backend-search.service";
+//import { MainConfig } from "app/config/main-config-freidok"
+//import { MainConfig } from "app/config/main-config-bwsts"
+import { MainConfig } from "app/config/main-config-elastic"
+
+import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
 
 // Observable operators
 import 'rxjs/add/operator/debounceTime';
@@ -20,7 +25,6 @@ import { SavedQueryFormat } from "app/config/saved-query-format";
 import { BasketFormat } from 'app/config/basket-format';
 
 //Config
-import { MainConfig } from "app/config/main-config"
 import { UserConfigService } from 'app/services/user-config.service';
 
 //Slider-Plugin

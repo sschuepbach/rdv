@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { BackendSearchService } from './backend-search.service';
+import { BackendSearchService } from './elastic-search.service';
 
 describe('BackendSearchService', () => {
   beforeEach(() => {
