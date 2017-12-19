@@ -12,7 +12,44 @@ export class MainConfig {
     };
 
     //Infos zu Filtern (z.B. Filterung nach Einrichtung)
-    filterFields = {};
+    filterFields = {
+        "institution": {
+            "label": "Ort",
+            "field": "hidden_analysis_fct_location",
+            "options": [
+                {
+                    "value": "Ort",
+                    "label": "Ort"
+                },
+                {
+                    "value": "Region",
+                    "label": "Region"
+                },
+                {
+                    "value": "Aushangsort",
+                    "label": "Aushangsort"
+                }
+            ]
+        },
+        "type": {
+            "label": "Typ",
+            "field": "fct_type",
+            "options": [
+                {
+                    "value": "Apartheid",
+                    "label": "Apartheid"
+                },
+                {
+                    "value": "Kunst",
+                    "label": "Kunst"
+                },
+                {
+                    "value": "Widerstand",
+                    "label": "Wiederstand"
+                }
+            ]
+        }
+    };
 
     //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
     //order gilt fuer Facetten und Ranges
@@ -53,16 +90,22 @@ export class MainConfig {
             "css": "col-sm-2 col-lg-1 flex-sm-column align-items-center text-sm-center",
         },
         {
-            "field": "fct_person_organisation",
-            "label": "Person",
-            "sort": "fct_person_organisation",
-            "css": "col-sm-4 col-lg-4 text-left",
+            "field": "hidden_analysis_fct_location",
+            "label": "Region",
+            "sort": "hidden_analysis_fct_location",
+            "css": "col-sm-2 col-lg-2 text-left",
         },
         {
             "field": "Titel",
             "label": "Titel",
             "sort": "Titel.keyword",
-            "css": "col-sm-5 col-lg-6 text-left",
+            "css": "col-sm-5 col-lg-5 text-left",
+        },
+        {
+            "field": "fct_type",
+            "label": "Type",
+            "sort": "fct_type",
+            "css": "col-sm-2 col-lg-2 text-left",
         }
 
     ];

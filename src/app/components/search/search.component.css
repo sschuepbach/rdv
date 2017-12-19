@@ -232,3 +232,7 @@ th {
     margin-left: 30px;
     margin-right: 30px;
 }
+
+.filterBlock + .filterBlock {
+    margin-top: 10px;
+}

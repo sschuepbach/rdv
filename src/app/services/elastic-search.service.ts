@@ -33,7 +33,7 @@ export class BackendSearchService {
     //Felder sammeln, die bei normaler Suche geholt werden sollen
     for (let field of mainConfig.tableFields) {
 
-      //ID Feld kommt sowieso (allerdings als _id und nicht als id in _source)
+      //ID Feld kommt sowieso (allerdings als _id und nicht als id in _source), daher id nicht in Liste der geholten Felder einfuegen
       if (field.field !== "id") {
 
         //Feld-Namen in tempArray sammeln
@@ -58,13 +58,6 @@ export class BackendSearchService {
     //Suchparameter fuer Paging und Sortierung direkt aus Queryformat uebernehmen
     complexQueryFormat['queryParams'] = queryFormat.queryParams;
 
-    //davon ausgehen, dass Suchwerte gesetzt sind und daher Geruest einer Boolquery aufbauen
-    complexQueryFormat["query"] = {
-      "bool": {
-        "must": []
-      }
-    };
-
     //Ueber Anfrage-Formate gehen
     for (let key of Object.keys(queryFormat.searchFields)) {
 
@@ -74,7 +67,18 @@ export class BackendSearchService {
       //Wenn Wert gesetzt ist (z.B. bei der Titel-Suche)
       if (searchfield_data.value.trim()) {
 
-        //Wildcard query_string-Suche aufbauen
+        //Wenn query-Bereich noch nicht angelegt wurde
+        if (complexQueryFormat["query"] === undefined) {
+
+          //Geruest einer Boolquery aufbauen (Titel:Freiheit AND Person:Martin He*), einzelne Suchfelder werden per AND verknuepft
+          complexQueryFormat["query"] = {
+            "bool": {
+              "must": []
+            }
+          };
+        }
+
+        //Wildcard query_string-Suche aufbauen mit Trunkierung rechts
         let queryString = {
           "query_string": {
             "query": searchfield_data.value.trim() + "*",
@@ -89,16 +93,13 @@ export class BackendSearchService {
           queryString["query_string"]["fields"] = [searchfield_data.field]
         }
 
-        //Bool-Query sammeln
+        //Bool-Queries sammeln
         complexQueryFormat["query"]["bool"]["must"].push(queryString);
       }
     }
 
     //Wenn es keine komplexe Suche gibt (also keine Werte in den Suchfeldern stehen)
-    if (!complexQueryFormat["query"]["bool"]["must"].length) {
-
-      //query-key aus Abfrage-Objekt entfernen (damit proxy es nicht auswertet)
-      delete complexQueryFormat["query"];
+    if (complexQueryFormat["query"] === undefined) {
 
       //match_all = *:* Anfrage-Parameter setzen fuer proxy
       complexQueryFormat["match_all"] = true;
@@ -108,17 +109,35 @@ export class BackendSearchService {
     for (let key of Object.keys(queryFormat.filterFields)) {
 
       //Schnellzugriff auf Infos dieses Filters
-      let filter_data = queryFormat.filterFields[key];
+      let filterData = queryFormat.filterFields[key];
 
-      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
-      //myParams.append("facet#field[]", filter_data.field);
+      //Ueber ausgewaehlte Filterwerte dieses Filters gehen (["Artikel", "Buch"] bei Filter "Typ")
+      filterData.values.forEach((item, index) => {
 
-      //Wenn es Werte bei diesem Filter gibt
-      if (filter_data.values.length) {
+        //Zu Beginn gibt es noch keinen Filterbereich -> anlegen       
+        if (complexQueryFormat["filter"] === undefined) {
 
-        //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
-        //myParams.append("fq[]", encodeURI(filter_data.field + ":(" + filter_data.values.join(" OR ") + ")"));
-      }
+          //Filterbereich mit must-clause-Array (AND-Verknuepfung) anlegen. Must query kombiniert die einzelnen Filter per AND. Die einzelnen Werte eines Filters sind dann per OR verknuepft: type:Artikel AND ort:(Berlin OR Bremen)
+          complexQueryFormat["filter"] = {
+            "bool": {
+              "must": []
+            }
+          };
+        }
+
+        //Bei 1. Filterwert ("Aritkel") dieses Filters ("Dokumentyp")
+        if (index === 0) {
+
+          //should-clause (=OR-Verknuepfung) anlegen fuer diesen Filter (Artikel OR Buch)
+          complexQueryFormat["filter"]["bool"]["must"].push({ "bool": { "should": [] } });
+        }
+
+        //passenden Index im must-Array finden = letzter Eintrag
+        let mustIndex = complexQueryFormat["filter"]["bool"]["must"].length - 1;
+
+        //Filterwert in should-clause dieses Filteres einfuegen als term-query (exakter Treffer auf keyword-type)
+        complexQueryFormat["filter"]["bool"]["must"][mustIndex]["bool"]["should"].push({ "term": { [filterData.field]: item } });
+      });
     }
 
     //Ueber Facettenfelder gehen
@@ -188,7 +207,7 @@ export class BackendSearchService {
 
     //Liste der zu holenenden Felder
     detailQueryFormat["sourceFields"] = this.detailFields;
-    console.log(JSON.stringify(detailQueryFormat));
+    //console.log(JSON.stringify(detailQueryFormat));
 
     //HTTP-Anfrage an Elasticsearch
     return this.http
@@ -214,7 +233,7 @@ export class BackendSearchService {
 
     //Liste der Tabellenfelder mitgeben
     basketQueryFormat['sourceFields'] = this.tableFields;
-    console.log(JSON.stringify(basketQueryFormat));
+    //console.log(JSON.stringify(basketQueryFormat));
 
     //HTTP-Anfrage an Elasticsearch
     return this.http
@@ -227,5 +246,3 @@ export class BackendSearchService {
   }
 
 }
-
-//facet#field in if packen

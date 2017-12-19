@@ -304,7 +304,8 @@
 
           <!-- Ueber Filter gehen (z.B. Institionenauswahl, mit/ohne Datei-Auswahl) -->
           <div *ngFor="let filter of mainConfig.filterFields | objectKeys"
-               formGroupName="filters">
+               formGroupName="filters"
+               class="filterBlock">
 
             <!-- Name des Filter -->
             <div class="h6">{{mainConfig.filterFields[filter].label}}</div>
