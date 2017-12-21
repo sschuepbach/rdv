@@ -128,7 +128,7 @@ export class BackendSearchService {
         //Bei 1. Filterwert ("Aritkel") dieses Filters ("Dokumentyp")
         if (index === 0) {
 
-          //should-clause (=OR-Verknuepfung) anlegen fuer diesen Filter (Artikel OR Buch)
+          //should-clause (=OR-Verknuepfung) anlegen fuer diesen Filter (Artikel OR Buch). Wenn Filterung per AND (Region = Aushangsort AND Druckort), muss hier must statt should gesetzt werden
           complexQueryFormat["filter"]["bool"]["must"].push({ "bool": { "should": [] } });
         }
 
@@ -143,20 +143,21 @@ export class BackendSearchService {
     //Ueber Facettenfelder gehen
     for (let key of Object.keys(queryFormat.facetFields)) {
 
+      //Zu Beginn gibt es noch keinen Facettenbereich -> anlegen       
+      if (complexQueryFormat["facet"] === undefined) {
+
+        //Facettenbereich = aggs anlegen und Infos sammeln (eigentliche Anfrage wird wegen der php {} Problematik erst auf php Seite erstellt)
+        complexQueryFormat["facet"] = {};
+      }
+
       //Schnellzugriff auf Infos dieser Facette
-      let facet_data = queryFormat.facetFields[key];
+      let facetData = queryFormat.facetFields[key];
 
-      //Bei AND Verknuepfung innerhalb einer Facette keine Extra-Behandlung, bei OR-Verknuepfung muss sichergestellt sein, dass andere Werte auch sichtbar sind (Auswahl ger -> auch Facettenwert eng anzeigen fuer ger OR eng)
-      let extra_tag = facet_data.operator === "AND" ? ["", ""] : ["{!ex=" + facet_data.field + "}", "{!tag=" + facet_data.field + "}"];
-
-      //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
-      //myParams.append("facet#field[]", (extra_tag[0] + facet_data.field));
-
-      //Wenn es Werte bei einem Facettenfeld gibt (z.B. bei language fuer language_all_facet)
-      if (facet_data.values.length) {
-
-        //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
-        //myParams.append("fq[]", encodeURI(extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")"));
+      //Infos zu Felder, benutzer Verknuepfung und ausgewaehlten Werten
+      complexQueryFormat["facet"][key] = {
+        "field": facetData.field,
+        "operator": facetData.operator,
+        "values": facetData.values
       }
     }
 
@@ -184,7 +185,7 @@ export class BackendSearchService {
 
     //Liste der zu holenden Tabellenfelder
     complexQueryFormat['sourceFields'] = this.tableFields;
-    console.log(JSON.stringify(complexQueryFormat));
+    //console.log(JSON.stringify(complexQueryFormat, null, 2));
 
     //HTTP-Anfrage an Elasticsearch
     return this.http

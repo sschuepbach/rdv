@@ -22,8 +22,8 @@ export class MainConfig {
                     "label": "Ort"
                 },
                 {
-                    "value": "Region",
-                    "label": "Region"
+                    "value": "Druckort",
+                    "label": "Druckort"
                 },
                 {
                     "value": "Aushangsort",
@@ -53,7 +53,22 @@ export class MainConfig {
 
     //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
     //order gilt fuer Facetten und Ranges
-    facetFields = {};
+    facetFields = {
+        "topic": {
+            "field": "fct_topic",
+            "label": "Topic",
+            "operators": ["OR", "AND"],
+            "operator": "AND",
+            "order": 1
+        },
+        "country": {
+            "field": "fct_countrycode",
+            "label": "Country",
+            "operators": ["OR"],
+            "operator": "OR",
+            "order": 3
+        }
+    };
 
     //Infos zu Ranges (z.B. Label)
     //order gilt fuer Facetten und Ranges
@@ -99,7 +114,7 @@ export class MainConfig {
             "field": "Titel",
             "label": "Titel",
             "sort": "Titel.keyword",
-            "css": "col-sm-5 col-lg-5 text-left",
+            "css": "col-sm-5 col-lg-6 text-left",
         },
         {
             "field": "fct_type",
