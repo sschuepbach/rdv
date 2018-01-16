@@ -1,5 +1,8 @@
 export class MainConfig {
 
+    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    proxyUrl = "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php";
+
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
     searchFields = {
         "options": {
@@ -102,9 +105,6 @@ export class MainConfig {
             "showMissingValues": true
         }
     };
-
-    //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "http://localhost/mh1018/test/php/elasticsearch/angularx_elasticsearch_proxy_unibas.php";
 
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];
