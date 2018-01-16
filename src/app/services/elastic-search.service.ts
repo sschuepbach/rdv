@@ -79,11 +79,15 @@ export class BackendSearchService {
           };
         }
 
-        //Wildcard query_string-Suche aufbauen mit Trunkierung rechts
+        //Inputstring rechts trunkieren und zu Array umwandeln: "martin helfer welt" => ["martin", "helfer", "welt*"]
+        let input_value_array = (searchfield_data.value.trim() + "*").split(" ");
+
+        //Wildcard query_string-Suche aufbauen, dazu Inputstring-Arraywerte per AND verknupefen
         let queryString = {
           "query_string": {
-            "query": searchfield_data.value.trim() + "*",
-            "default_operator": "AND"
+
+            //["martin", "helfer", "welt*"] -> "martin AND helfer AND welt*"
+            "query": input_value_array.join(" AND ")
           }
         };
 
