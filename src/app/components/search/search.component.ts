@@ -4,7 +4,8 @@ import { BackendSearchService } from "app/services/elastic-search.service";
 
 //import { MainConfig } from "app/config/main-config-freidok"
 //import { MainConfig } from "app/config/main-config-bwsts"
-import { MainConfig } from "app/config/main-config-elastic"
+//import { MainConfig } from "app/config/main-config-elastic"
+import { MainConfig } from "app/config/main-config-elastic-mh"
 
 import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
 
@@ -1305,3 +1306,5 @@ export class SearchComponent implements OnInit, OnDestroy {
 //Mehrfach-Abfrage verhindern bei Laden einer Query  this.term.setValue(choice, {emitEvent: false});   // We write the choice in the term to see it in the input
 //Filters als property (FormGroup)
 //mehrere Felder für Sortierung
+//Filter in Uebersicht oben anzeigen
+//Overflow bei Facetten scroll-y

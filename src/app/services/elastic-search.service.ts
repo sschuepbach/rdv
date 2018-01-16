@@ -1,5 +1,6 @@
 //Config anpassen
-import { MainConfig } from "app/config/main-config-elastic";
+//import { MainConfig } from "app/config/main-config-elastic";
+import { MainConfig } from "app/config/main-config-elastic-mh";
 
 import { Injectable } from '@angular/core';
 import { Http } from "@angular/http";
@@ -164,28 +165,20 @@ export class BackendSearchService {
     //Ueber Rangefelder gehen
     for (let key of Object.keys(queryFormat.rangeFields)) {
 
-      //Schnellzugriff auf Infos dieser Range
-      let range_data = queryFormat.rangeFields[key];
+      //Zu Beginn gibt es noch keinen Rangebereich -> anlegen       
+      if (complexQueryFormat["range"] === undefined) {
 
-      //Feld als Solr-Facette in URL anmelden und Range-Optionen aktivieren, # wird von PHP wieder zu . umgewandelt
-      //myParams.append("facet#query[]", "{!ex=" + range_data.field + "}" + range_data.field + ":0");
-      //myParams.append("facet#range[]", "{!ex=" + range_data.field + "}" + range_data.field);
-      //myParams.append("f#" + range_data.field + "#facet#range#start", range_data.min);
-      //myParams.append("f#" + range_data.field + "#facet#range#end", range_data.max + 1);
-      //myParams.append("f#" + range_data.field + "#facet#range#gap", "1");
-      //myParams.append("f#" + range_data.field + "#facet#mincount", "0");
+        //Rangebereich = aggs anlegen und Infos sammeln (eigentliche Anfrage in php erstellt)
+        complexQueryFormat["range"] = {};
+      }
 
-      //Range-Anfrage
-      let range_query = "{!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]"
-
-      //ggf. Treffer ohne Wert dieser Range (z.B. ohne Jahr) einfuegen
-      range_query += range_data.showMissingValues ? " OR " + range_data.field + ":0" : "";
-      //myParams.append("fq[]", encodeURI(range_query));
+      //Rangeinfos weiterreichen
+      complexQueryFormat["range"][key] = queryFormat.rangeFields[key];
     }
 
     //Liste der zu holenden Tabellenfelder
     complexQueryFormat['sourceFields'] = this.tableFields;
-    //console.log(JSON.stringify(complexQueryFormat, null, 2));
+    console.log(JSON.stringify(complexQueryFormat, null, 2));
 
     //HTTP-Anfrage an Elasticsearch
     return this.http
