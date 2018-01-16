@@ -155,11 +155,7 @@ export class BackendSearchService {
       let facetData = queryFormat.facetFields[key];
 
       //Infos zu Felder, benutzer Verknuepfung und ausgewaehlten Werten
-      complexQueryFormat["facet"][key] = {
-        "field": facetData.field,
-        "operator": facetData.operator,
-        "values": facetData.values
-      }
+      complexQueryFormat["facet"][key] = queryFormat.facetFields[key];
     }
 
     //Ueber Rangefelder gehen
@@ -178,7 +174,7 @@ export class BackendSearchService {
 
     //Liste der zu holenden Tabellenfelder
     complexQueryFormat['sourceFields'] = this.tableFields;
-    console.log(JSON.stringify(complexQueryFormat, null, 2));
+    //console.log(JSON.stringify(complexQueryFormat, null, 2));
 
     //HTTP-Anfrage an Elasticsearch
     return this.http

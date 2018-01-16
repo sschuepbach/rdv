@@ -151,24 +151,26 @@ export class MainConfig {
             "sort": "Sprache.keyword",
             "css": "col-sm-2 col-lg-2 text-left",
         },
-        {
-            "field": "Beschreibung",
-            "label": "Beschreibung",
-            "sort": "Beschreibung.keyword",
-            "css": "col-sm-4 col-lg-4 text-left",
-        },
-        {
-            "field": "Dokumenttyp",
-            "label": "Dokumenttyp",
-            "sort": "Dokumenttyp.keyword",
-            "css": "col-sm-4 col-lg-4 text-left",
-        },
-        {
-            "field": "Ort",
-            "label": "Ort",
-            "sort": "Ort.keyword",
-            "css": "col-sm-4 col-lg-4 text-left",
-        },
+        /*
+         {
+             "field": "Beschreibung",
+             "label": "Beschreibung",
+             "sort": "Beschreibung.keyword",
+             "css": "col-sm-4 col-lg-4 text-left",
+         },
+         {
+             "field": "Dokumenttyp",
+             "label": "Dokumenttyp",
+             "sort": "Dokumenttyp.keyword",
+             "css": "col-sm-4 col-lg-4 text-left",
+         },
+         {
+             "field": "Ort",
+             "label": "Ort",
+             "sort": "Ort.keyword",
+             "css": "col-sm-4 col-lg-4 text-left",
+         },
+         */
         {
             "field": "Jahr",
             "label": "Jahr",

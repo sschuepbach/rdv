@@ -616,8 +616,8 @@
               <!-- Letzte Spalte fuer Merkliste -->
               <div class="col-1 text-center">
 
-                <!-- Shopping-Cart als icon -->
-                <span class="fa fa-shopping-cart"></span>
+                <!-- Star als icon -->
+                <span class="fa fa-star"></span>
               </div>
             </div>
 
@@ -674,20 +674,21 @@
                   </div>
                 </ng-container>
 
-                <!-- letzte Spalte fuer Merkliste -->
-                <div class="col-sm-1 d-flex align-items-center no-gutters py-1 px-2">
+                <!-- letzte Spalte fuer Merkliste, Klick Event auf ganze Zelle: "Merken" fuegt ID ein oder loescht sie aus aktiver Merkliste -->
+                <div class="col-sm-1 d-flex align-items-center no-gutters py-1 px-2"
+                     (click)="toggleInBasket(doc.id)">
 
                   <!-- Label "Merken" nur bei kleinster Darstellung (vertikal) anzeigen -->
                   <label class="d-sm-none font-weight-bold text-right mr-2">Add</label>
 
-                  <!-- Button "Merken" fuegt ID ein oder loescht sie aus aktiver Merkliste -->
+                  <!-- Star-Symbol  -->
                   <span class="col text-sm-center">
-                    <button class="btn btn-sm fa p-1"
-                            [ngClass]="{
-                           'fa-minus btn-danger': isInBasket(doc.id),
-                           'fa-plus btn-primary' : !isInBasket(doc.id)
-                         }"
-                            (click)="toggleInBasket(doc.id)"></button>
+                    <div class="fa"
+                         [ngClass]="{
+                          'fa-star-o text-warning' : !isInBasket(doc.id),
+                           'text-warning fa-star' : isInBasket(doc.id)
+                         }">
+                    </div>
                   </span>
                 </div>
               </div>
@@ -815,8 +816,8 @@
               <!-- Letzte Spalte fuer Merkliste -->
               <div class="col-1 text-center">
 
-                <!-- Sortiersymbol, Shopping Cart als icon -->
-                <span class="fa fa-shopping-cart"></span>
+                <!-- Star als icon -->
+                <span class="fa fa-star"></span>
               </div>
             </div>
 
@@ -873,8 +874,9 @@
                   </div>
                 </ng-container>
 
-                <!-- letzte Spalte fuer Merkliste -->
-                <div class="col-sm-1 d-flex align-items-center no-gutters py-1 px-2">
+                <!-- letzte Spalte fuer Merkliste, Klick-Event auf die ganze Zeile -->
+                <div class="col-sm-1 d-flex align-items-center no-gutters py-1 px-2"
+                     (click)="toggleInBasket(doc.id)">
 
                   <!-- Label "Merken" nur bei kleinster Darstellung (vertikal) anzeigen -->
                   <label class="d-sm-none font-weight-bold text-right mr-2">Add</label>
@@ -882,9 +884,8 @@
                   <!-- Button "Merken" fuegt ID ein oder loescht sie aus aktiver Merkliste -->
                   <span class="col text-sm-center">
 
-                    <!-- Bei Merkliste imm ein - anzeigen -->
-                    <button class="btn btn-sm btn-danger fa p-1 fa-minus"
-                            (click)="toggleInBasket(doc.id)"></button>
+                    <!-- Bei Merkliste imm ein ausgefuellten Stern anzeigen -->
+                    <div class="text-warning fa fa-star"></div>
                   </span>
                 </div>
               </div>
