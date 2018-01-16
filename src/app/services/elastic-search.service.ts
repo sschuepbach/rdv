@@ -1,6 +1,6 @@
 //Config anpassen
-//import { MainConfig } from "app/config/main-config-elastic";
-import { MainConfig } from "app/config/main-config-elastic-mh";
+//import { MainConfig } from "app/config/main-config-elastic-mh";
+import { MainConfig } from "app/config/main-config-elastic";
 
 import { Injectable } from '@angular/core';
 import { Http } from "@angular/http";
