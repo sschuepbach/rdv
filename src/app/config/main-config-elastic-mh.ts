@@ -1,6 +1,6 @@
 export class MainConfig {
 
-    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    //Wo liegt Proxy-Skript, das mit Elasticsearch spricht?
     proxyUrl = "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php";
 
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen

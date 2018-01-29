@@ -191,7 +191,7 @@ export class BackendSearchService {
   }
 
   //Detail-Daten aus Elasticsearch fuer zusaetzliche Zeile holen (abstract,...)
-  getBackendDetailData(id: string): Observable<any> {
+  getBackendDetailData(id: string, fullRecord: boolean = false): Observable<any> {
 
     //Objekt fuer Detailsuche
     let detailQueryFormat = {};
@@ -199,8 +199,12 @@ export class BackendSearchService {
     //ID-Suche (nach 1 ID)
     detailQueryFormat["ids"] = [id];
 
-    //Liste der zu holenenden Felder
-    detailQueryFormat["sourceFields"] = this.detailFields;
+    //Wenn nur ein Teil der Felder geholt weren soll
+    if (!fullRecord) {
+
+      //Liste der zu holenenden Felder
+      detailQueryFormat["sourceFields"] = this.detailFields;
+    }
     //console.log(JSON.stringify(detailQueryFormat));
 
     //HTTP-Anfrage an Elasticsearch

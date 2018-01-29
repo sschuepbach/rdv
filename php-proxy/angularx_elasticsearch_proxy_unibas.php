@@ -9,8 +9,11 @@ require 'vendor/autoload.php';
 //ES-Proxy
 use Elasticsearch\ClientBuilder;
 
-//welcher Index soll abgefragt werden?
-$index = 'slider18';
+//welcher Index/Type soll abgefragt werden?
+//$index = 'slider18';
+//$type = 'doc';
+$index = 'afrikaportal_v6';
+$type = 'document';
 
 //Debugausgabe?
 //$debug = true;
@@ -283,13 +286,17 @@ if (isset($request["queryParams"]["rows"])) {
     $body["size"] = $request["queryParams"]["rows"];
 }
 
-//Liste der zu holenden Felder setzen
+//Wenn nur gewisse Felder geholt werden sollen (sonst werden alle Felder geholt)
+if (isset($request["sourceFields"])) {
+
+    //Auswahl der Felder (~fl bei solr) setzen
 $body["_source"] = $request["sourceFields"];
+}
 
 //Parameter fuer Suche = index, type + query-body
 $params = [
     'index' => $index,
-    'type' => 'doc',
+    'type' => $type,
     'body' => $body
 ];
 
@@ -334,8 +341,21 @@ if (isset($request["range"])) {
     foreach ($request["range"] as $key => $range_data) {
 
         //Rangewerte [from to query] ins passende Weiterverarbeitungsformat transformieren
-        $buckets = array_map("bucket_map", $result["aggregations"]["all_facets"]["histogram_" . $key]["filtered_histogram_" . $key]["buckets"]);
-        $output["facet_counts"]["facet_ranges"][$range_data["field"]]["counts"] = $buckets;
+        //$buckets = array_map("bucket_map", $result["aggregations"]["all_facets"]["histogram_" . $key]["filtered_histogram_" . $key]["buckets"]);
+        //$output["facet_counts"]["facet_ranges"][$range_data["field"]]["counts"] = $buckets;
+
+                //Rangewerte [from to query] ins passende Weiterverarbeitungsformat transformieren
+                
+                $buckets = $result["aggregations"]["all_facets"]["histogram_" . $key]["filtered_histogram_" . $key]["buckets"];
+        
+                foreach($buckets as $bucket) {
+        
+                    if ($bucket["key"] >= 1950 && $bucket["key"] <= 2018) {
+        
+                    $output["facet_counts"]["facet_ranges"][$range_data["field"]]["counts"][] = [$bucket["key"], $bucket["doc_count"]];
+                    }
+                }
+                
 
         //Anzahl der Missing-Werte holen
         $output["facet_counts"]["facet_queries"]["{!ex=" . $range_data["field"] . "}" . $range_data["field"] . ":0"] = $result["aggregations"]["all_facets"]["missing_" . $key]["filtered_missing_" . $key]["doc_count"];

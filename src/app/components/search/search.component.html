@@ -625,6 +625,10 @@
             <div class="mh-table-row d-flex flex-column"
                  *ngFor="let doc of docs">
 
+              <!-- Link auf Landing Page, nur bei schmalster Breite sichtbar -->
+              <a class="btn btn-primary btn-sm p-1 d-sm-none fa align-self-center mt-1"
+                 [routerLink]="['/doc', doc.id]">Landing Page öffnen</a>
+
               <!-- 1. Zeile mit Hauptinfos -->
               <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
@@ -664,6 +668,11 @@
                         <br *ngIf="!last">
                       </ng-container>
                     </span>
+
+                    <!-- In 1. Zelle jeder Zeile einen Link auf Landing Page -->
+                    <a *ngIf="first"
+                       class="d-none d-sm-block btn btn-sm btn-primary fa fa-info p-1 mb-1"
+                       [routerLink]="['/doc', doc.id]"></a>
 
                     <!-- In 1. Zelle jeder Zeile einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
                     <button *ngIf="first"
@@ -825,6 +834,10 @@
             <div class="mh-table-row d-flex flex-column"
                  *ngFor="let doc of basketDocs">
 
+              <!-- Link auf Landing Page, nur bei schmalster Breite sichtbar -->
+              <a class="btn btn-primary btn-sm p-1 d-sm-none fa align-self-center mt-1"
+                 [routerLink]="['/doc', doc.id]">Landing Page öffnen</a>
+
               <!-- 1. Zeile mit Hauptinfos -->
               <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
@@ -864,6 +877,11 @@
                         <br *ngIf="!last">
                       </ng-container>
                     </span>
+
+                    <!-- In 1. Zelle jeder Zeile einen Link auf Landing Page -->
+                    <a *ngIf="first"
+                       class="d-none d-sm-block btn btn-sm btn-primary fa fa-info p-1 mb-1"
+                       [routerLink]="['/doc', doc.id]"></a>
 
                     <!-- In 1. Zelle jeder Zeile einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
                     <button *ngIf="first"

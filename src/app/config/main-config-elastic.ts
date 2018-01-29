@@ -1,6 +1,6 @@
 export class MainConfig {
 
-    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    //Wo liegt Proxy-Skript, das mit Elasticsearch spricht?
     proxyUrl = "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php";
 
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
@@ -62,7 +62,7 @@ export class MainConfig {
             "label": "Topic",
             "operators": ["OR", "AND"],
             "operator": "AND",
-            "order": 1
+            "order": 2
         },
         "country": {
             "field": "fct_countrycode",
@@ -75,7 +75,19 @@ export class MainConfig {
 
     //Infos zu Ranges (z.B. Label)
     //order gilt fuer Facetten und Ranges
-    rangeFields = {};
+    rangeFields = {
+        "year": {
+            "field": "fct_year",
+            "label": "Jahr",
+            "order": 1,
+            "min": 1950,
+            "from": 1950,
+            "to": 2018,
+            "max": 2018,
+            "showMissingValues": true
+
+        },
+    };
 
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];
@@ -117,9 +129,9 @@ export class MainConfig {
             "css": "col-sm-5 col-lg-6 text-left",
         },
         {
-            "field": "fct_type",
-            "label": "Type",
-            "sort": "fct_type",
+            "field": "fct_year",
+            "label": "Jahr",
+            "sort": "fct_year",
             "css": "col-sm-2 col-lg-2 text-left",
         }
 

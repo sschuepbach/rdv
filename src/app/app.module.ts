@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { SearchComponent } from './components/search/search.component';
 import { AboutComponent } from './components/about/about.component'
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
 
 import { UserConfigService } from 'app/services/user-config.service';
 import { ObjectKeysPipe } from './pipes/object-keys.pipe';
@@ -28,6 +29,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     ObjectKeysPipe,
     SearchComponent,
     AboutComponent,
+    LandingPageComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,6 +37,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     HttpModule,
     RouterModule.forRoot([
       { path: '', component: SearchComponent },
+      { path: 'doc/:id', component: LandingPageComponent },
       { path: 'about', component: AboutComponent },
       { path: '**', component: SearchComponent }
     ]),
