@@ -582,8 +582,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.sliderElement.toArray().forEach((value, index) => {
 
       //Werte zuruecksetzen
-      value.restore();
-    })
+      value.reset();
+    });
 
     //Slider zuruecksetzen
     this.sliderInit();
