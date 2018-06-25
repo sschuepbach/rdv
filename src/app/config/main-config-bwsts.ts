@@ -15,7 +15,7 @@ export class MainConfig {
         "institution": {
             "label": "Einrichtung",
             "field": "mode_all_facet",
-            "url": "http://localhost/bwsts/web/export.php",
+            "url": "https://bwsciencetoshare.ub.uni-freiburg.de/export.php",
             "options": []
         }
     }
@@ -33,14 +33,14 @@ export class MainConfig {
             "order": 1,
             "min": 1950,
             "from": 1950,
-            "to": 2017,
-            "max": 2017,
+            "to": 2018,
+            "max": 2018,
             "showMissingValues": true
         }
     };
 
     //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_bwsts.php";
+    proxyUrl = "https://bwsciencetoshare.ub.uni-freiburg.de/angularx_solr_proxy_bwsts.php";
 
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];

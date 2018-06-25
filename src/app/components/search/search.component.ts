@@ -5,7 +5,7 @@ import { BackendSearchService } from "app/services/elastic-search.service";
 //import { MainConfig } from "app/config/main-config-freidok"
 //import { MainConfig } from "app/config/main-config-bwsts"
 //import { MainConfig } from "app/config/main-config-elastic-mh"
-import { MainConfig } from "app/config/main-config-elastic"
+import { MainConfig } from "app/config/main-config-elastic";
 
 import { Component, ViewChildren, QueryList, AfterViewInit, OnInit, HostListener, OnDestroy } from '@angular/core';
 
