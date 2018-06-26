@@ -2,6 +2,7 @@
 
 //CORS
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
 
 //Name des Solr Cores
 $core = "collection1";
@@ -9,8 +10,8 @@ $core = "collection1";
 //Solr URL
 $url = "http://localhost:8080/solr/" . $core . "/select?wt=json&facet=true&facet.mincount=1&json.nl=arrarr&omitHeader=true";
 
-//Ueber GET-Parameter gehen
-foreach ($_GET as $param => $value) {
+//Ueber POST-Parameter gehen
+foreach ($_POST as $param => $value) {
 
     //facet#field -> field.field (. wuerde von php zu _ daher kommen Werte aus Angular mit #)
     $clean_param = str_replace("#", ".", $param);

@@ -168,7 +168,7 @@ export class BackendSearchService {
     return this.http
 
       //GET Anfrage mit Suchparametern
-      .get(this.proxyUrl, { params: myParams })
+      .post(this.proxyUrl, myParams)
 
       //Antwort als JSON weiterreichen
       .map(response => response.json() as any);
@@ -195,7 +195,7 @@ export class BackendSearchService {
     return this.http
 
       //GET Anfrage mit URL Anfrage und Trunkierung
-      .get(this.proxyUrl, { params: myParams })
+      .post(this.proxyUrl, myParams)
 
       //das 1. Dokument als JSON weiterreichen
       .map(response => response.json().response.docs[0] as any);
@@ -237,7 +237,7 @@ export class BackendSearchService {
     return this.http
 
       //GET Anfrage mit URL Anfrage und Trunkierung
-      .get(this.proxyUrl, { params: myParams })
+      .post(this.proxyUrl, myParams )
 
       //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json() as any);
