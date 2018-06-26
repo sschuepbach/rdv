@@ -1,5 +1,8 @@
 export class MainConfig {
 
+    // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
+    baseUrl = "http://localhost:4200";
+
     //Wo liegt Proxy-Skript, das mit Elasticsearch spricht?
     proxyUrl = "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php";
 
@@ -115,6 +118,8 @@ export class MainConfig {
             "label": "ID",
             "sort": "_uid",
             "css": "col-sm-2 col-lg-1 flex-sm-column align-items-center text-sm-center",
+            "extraInfo": true,
+            "landingpage": true,
         },
         {
             "field": "hidden_analysis_fct_location",

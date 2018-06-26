@@ -1,5 +1,11 @@
 export class MainConfig {
 
+    // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
+    baseUrl = "http://localhost:4200";
+
+    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_freidok.php";
+
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
     searchFields = {
         "options": {
@@ -58,9 +64,6 @@ export class MainConfig {
         }
     };
 
-    //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_freidok.php";
-
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];
 
@@ -87,6 +90,8 @@ export class MainConfig {
             "label": "ID",
             "sort": "id_int",
             "css": "col-sm-2 col-lg-1 flex-sm-column align-items-center text-sm-center",
+            "extraInfo": true,
+            "landingpage": true,
         },
         {
             "field": "person_all_string",

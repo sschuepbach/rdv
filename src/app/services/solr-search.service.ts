@@ -1,6 +1,6 @@
 //Config anpassen
-import { MainConfig } from "app/config/main-config-freidok";
-//import { MainConfig } from "app/config/main-config-bwsts";
+// import { MainConfig } from "app/config/main-config-freidok";
+import { MainConfig } from "app/config/main-config-bwsts";
 
 import { Injectable } from '@angular/core';
 import { Http, Headers, URLSearchParams, RequestOptions } from "@angular/http";
@@ -175,7 +175,7 @@ export class BackendSearchService {
   }
 
   //Detail-Daten aus Solr holen (abstract,...)
-  getBackendDetailData(id: string): Observable<any> {
+  getBackendDetailData(id: string, fullRecord = false): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     let myParams = new URLSearchParams();
@@ -186,8 +186,10 @@ export class BackendSearchService {
     //Suche nach ID
     myParams.set("q", "id:" + clean_id);
 
-    //Feldliste
-    myParams.set("fl", this.detailFields);
+    //Feldliste, falls nicht alle Daten geholt werden sollen
+    if (!fullRecord) {
+      myParams.set("fl", this.detailFields);
+    }
 
     //HTTP-Anfrage an Solr
     return this.http

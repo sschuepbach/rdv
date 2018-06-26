@@ -670,12 +670,12 @@
                     </span>
 
                     <!-- In 1. Zelle jeder Zeile einen Link auf Landing Page -->
-                    <a *ngIf="first"
+                    <a *ngIf="field.landingpage === true"
                        class="d-none d-sm-block btn btn-sm btn-primary fa fa-info p-1 mb-1"
                        [routerLink]="['/doc', doc.id]"></a>
 
                     <!-- In 1. Zelle jeder Zeile einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
-                    <button *ngIf="first"
+                    <button *ngIf="field.extraInfo === true"
                             class="d-none d-sm-block btn btn-sm btn-primary fa p-1"
                             [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
                             [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"

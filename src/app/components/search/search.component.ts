@@ -374,6 +374,8 @@ export class SearchComponent implements OnInit, OnDestroy {
       //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
       this.setSortColumnIndex('basket');
     });
+
+    this.checkIfSearchFieldsAreEmpty();
   }
 
   //FormControls fuer Suchanfragen und Speicherung von Suchanfragen anlgen
@@ -847,6 +849,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     //Suchanfrage an passender Stelle loeschen
     this.savedQueries.splice(index, 1);
+    this.searchForm.controls['saveQuery'].updateValueAndValidity();
   }
 
   //Blaettern in Trefferliste / Merkliste
@@ -1181,7 +1184,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     let lzString = LZString.compressToEncodedURIComponent(jsonString);
 
     //Link zurueckgeben mit Parameter search (Suchanfrage) oder basket (Merkliste)
-    return "localhost:4200/search?" + mode + "=" + lzString;
+    return this.mainConfig.baseUrl + "/search?" + mode + "=" + lzString;
   }
 
   //prueft, ob in mind. 1 der Text-Suchfelder etwas steht

@@ -1,4 +1,9 @@
 export class MainConfig {
+    // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
+    baseUrl = "https://bwsciencetoshare.ub.uni-freiburg.de";
+
+    //Wo liegt Proxy-Skript, das mit Solr spricht?
+    proxyUrl = "https://bwsciencetoshare.ub.uni-freiburg.de/angularx_solr_proxy_bwsts.php";
 
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
     searchFields = {
@@ -39,9 +44,6 @@ export class MainConfig {
         }
     };
 
-    //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "https://bwsciencetoshare.ub.uni-freiburg.de/angularx_solr_proxy_bwsts.php";
-
     //Optionen fuer Anzahl der Treffer Treffertabelle
     rowOpts = [5, 10, 20, 50];
 
@@ -68,6 +70,8 @@ export class MainConfig {
             "label": "ID",
             "sort": "id_int",
             "css": "col-sm-2 col-lg-2 flex-sm-column align-items-center text-sm-center",
+            "extraInfo": true,
+            "landingpage": false,
         },
         {
             "field": "rdvname_string",
