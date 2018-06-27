@@ -10,9 +10,8 @@ export class MainConfig {
         "options": {
             "all_text": "Freitext",
             "ti_all_text": "Titel",
-            "person_all_text": "Person"
         },
-        "preselect": ["all_text", "ti_all_text", "person_all_text"]
+        "preselect": ["all_text", "ti_all_text"]
     };
 
     //BWSTS-Filter
@@ -106,8 +105,43 @@ export class MainConfig {
             "label": "vollständige ID",
             "display": "text"
         },
+        "doi": {
+            "field": "doi_string",
+            "label": "DOI",
+            "display": "text"
+        },
+        "language": {
+            "field": "language_string",
+            "label": "Sprache",
+            "display": "text"
+        },
+        "publisher": {
+            "field": "publisher_string",
+            "label": "Verlag",
+            "display": "text"
+        },
+        "place": {
+            "field": "place_string",
+            "label": "Verlagsort",
+            "display": "text"
+        },
+        "abstract": {
+            "field": "abstract_string",
+            "label": "Zusammenfassung",
+            "display": "text"
+        },
+        "edition": {
+            "field": "edition_string",
+            "label": "Ausgabe",
+            "display": "text"
+        },
+        "ddc": {
+            "field": "ddc_string",
+            "label": "DDC",
+            "display": "text"
+        },
         "url": {
-            "field": "url_all_string",
+            "field": "url_string",
             "label": "URL",
             "display": "link"
         }
