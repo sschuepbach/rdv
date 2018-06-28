@@ -345,7 +345,7 @@
 
           <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
           <a *ngFor="let key of queryFormat.facetFields | objectKeys"
-             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             class="nav-link text-sm-center px-2 py-0"
              [ngClass]="'order-' + mainConfig.facetFields[key].order"
              [class.active]="mainConfig.facetFields[key].order == 1"
              id="facet-pills-{{key}}-tab"
@@ -357,7 +357,7 @@
 
           <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
           <a *ngFor="let key of rangeData | objectKeys"
-             class="nav-link flex-sm-fill text-sm-center px-2 py-0"
+             class="nav-link text-sm-center px-2 py-0"
              [ngClass]="'order-' + mainConfig.rangeFields[key].order"
              [class.active]="mainConfig.rangeFields[key].order == 1"
              id="facet-pills-{{key}}-tab"
@@ -498,7 +498,7 @@
            role="tablist">
 
         <!-- Tab-Link fuer Trefferliste -->
-        <a class="btn btn-outline-primary mr-2 flex-sm-fill text-sm-center px-2 py-1 active"
+        <a class="btn btn-outline-primary mr-2 text-sm-center px-2 py-1 active"
            id="results-pills-search-tab"
            data-toggle="pill"
            href="#results-pills-search"
@@ -510,7 +510,7 @@
         </a>
 
         <!-- Tab-Link fuer Merkliste -->
-        <a class="btn btn-outline-primary flex-sm-fill text-sm-center px-2 py-1"
+        <a class="btn btn-outline-primary text-sm-center px-2 py-1"
            id="results-pills-basket-tab"
            data-toggle="pill"
            href="#results-pills-basket"
