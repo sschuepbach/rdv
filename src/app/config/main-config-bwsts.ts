@@ -146,4 +146,7 @@ export class MainConfig {
             "display": "link"
         }
     };
+
+    /** Nicht löschen, wird von user-config-service befüllt */
+    generatedConfig = {};
 }

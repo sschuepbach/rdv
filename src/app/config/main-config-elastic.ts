@@ -155,4 +155,7 @@ export class MainConfig {
             "display": "text"
         }
     };
+
+    /** Nicht löschen, wird von user-config-service befüllt */
+    generatedConfig = {};
 }

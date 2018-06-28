@@ -1104,7 +1104,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  //Slider initialieiseren
+  //Slider initialisieren
   sliderInit(key?) {
 
     //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys

@@ -20,6 +20,24 @@ export class UserConfigService {
   //Config an Anwendung ausliefern
   async getConfig(): Promise<MainConfig> {
 
+    // falls ein tableField extraInfo gesetzt hat, generatedConfig['tableFieldsDisplayExtraInfo'] auf true setzen
+    this.config.generatedConfig['tableFieldsDisplayExtraInfo'] = false;
+    for (const field of this.config.tableFields) {
+      if (field.hasOwnProperty('extraInfo') && field["extraInfo"] === true) {
+        this.config.generatedConfig['tableFieldsDisplayExtraInfo'] = true;
+        break;
+      }
+    }
+
+    // falls ein tableField landingpage gesetzt hat, generatedConfig['tableFieldsDisplayLandingpage'] auf true setzen
+    this.config.generatedConfig['tableFieldsDisplayLandingpage'] = false;
+    for (const field of this.config.tableFields) {
+      if (field.hasOwnProperty('landingpage') && field["landingpage"] === true) {
+        this.config.generatedConfig['tableFieldsDisplayLandingpage'] = true;
+        break;
+      }
+    }
+
     //vorhandene Filter dynamisch laden
     for (let key of Object.keys(this.config.filterFields)) {
 

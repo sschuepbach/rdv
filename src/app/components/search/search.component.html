@@ -625,10 +625,6 @@
             <div class="mh-table-row d-flex flex-column"
                  *ngFor="let doc of docs">
 
-              <!-- Link auf Landing Page, nur bei schmalster Breite sichtbar -->
-              <a class="btn btn-primary btn-sm p-1 d-sm-none fa align-self-center mt-1"
-                 [routerLink]="['/doc', doc.id]">Landing Page öffnen</a>
-
               <!-- 1. Zeile mit Hauptinfos -->
               <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
@@ -669,12 +665,12 @@
                       </ng-container>
                     </span>
 
-                    <!-- In 1. Zelle jeder Zeile einen Link auf Landing Page -->
+                    <!-- ggfs. einen Link auf Landing Page -->
                     <a *ngIf="field.landingpage === true"
                        class="d-none d-sm-block btn btn-sm btn-primary fa fa-info p-1 mb-1"
                        [routerLink]="['/doc', doc.id]"></a>
 
-                    <!-- In 1. Zelle jeder Zeile einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
+                    <!-- ggfs. einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
                     <button *ngIf="field.extraInfo === true"
                             class="d-none d-sm-block btn btn-sm btn-primary fa p-1"
                             [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
@@ -702,12 +698,22 @@
                 </div>
               </div>
 
-              <!-- Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
-              <button class="btn btn-primary btn-sm p-1 d-sm-none fa align-self-center mb-1"
-                      [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
-                      [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
-                      (click)="getFullData(doc.id)">
-              </button>
+              <!-- Link auf Landing Page und Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
+              <div *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo" 
+              class="d-flex d-sm-none" style="margin:auto">
+              <!-- Link auf Landing Page -->
+                <a *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage === true"
+                class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
+                  [routerLink]="['/doc', doc.id]"></a>
+
+                <!-- Button zum Einblenden der zusaetzlichen Infos -->
+                <button *ngIf="mainConfig.generatedConfig.tableFieldsDisplayExtraInfo === true"
+                        class="btn btn-primary btn-sm p-1 fa mb-1 ml-2"
+                        [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
+                        [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                        (click)="getFullData(doc.id)">
+                </button>
+              </div>
 
               <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
               <div class="mh-table-row-info no-gutters"
