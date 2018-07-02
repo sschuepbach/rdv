@@ -51,7 +51,7 @@ function uniqueQueryNameValidator(savedQueries: SavedQueryFormat[]) {
         //Fehlerobjekt setzen
         error = {
           uniqueQueryName: { valid: false }
-        }
+        };
       }
     });
 
@@ -89,7 +89,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   get page(): number {
 
     //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-    return Math.floor(this.queryFormat.queryParams.start / this.queryFormat.queryParams.rows) + 1
+    return Math.floor(this.queryFormat.queryParams.start / this.queryFormat.queryParams.rows) + 1;
   }
 
   //aktuelle Merklisten-Seite beim Blaettern
@@ -99,7 +99,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.savedBaskets.length) {
 
       //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      return Math.floor(this.activeBasket.queryParams.start / this.mainConfig.basketConfig.queryParams.rows) + 1
+      return Math.floor(this.activeBasket.queryParams.start / this.mainConfig.basketConfig.queryParams.rows) + 1;
     }
 
     //es gibt keine Merklisten
@@ -237,54 +237,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     //QueryFormat erzeugen lassen
     this.queryFormat = this.userConfigService.getQueryFormat();
 
-    //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
-    let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
-
-    //wenn gespeicherte Suchen aus localstorage geladen wurden
-    if (localStorageSavedUserQueries) {
-
-      //gespeicherte Suchen aus localstorage holen
-      this.savedQueries = JSON.parse(localStorageSavedUserQueries);
-    }
-
-    //Query-Parameter aus URL auslesen
-    this.route.queryParamMap.subscribe(params => {
-
-      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
-      if (params.get("search")) {
-
-        //diesen zu queryFormat dekodieren
-        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
-
-        //Flag setzen, damit nicht Wert aus localstorage genommen wird
-        this.loadFromLink = true;
-      }
-
-      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
-      if (params.get("basket")) {
-
-        //diesen dekodieren
-        let basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("basket")));
-
-        //daraus Merkliste erstellen
-        this.createBasket(true, basketFromLink);
-      }
-    });
-
-    //Wenn keine Anfrage per Link geschickt wurde
-    if (!this.loadFromLink) {
-
-      //versuchen letzte Suche aus localstorage zu laden
-      let localStorageUserQuery = localStorage.getItem("userQuery");
-
-      //Wenn Suchanfrage aus localstorage geladen werden konnte
-      if (localStorageUserQuery) {
-
-        //Anfrage-Format laden
-        this.queryFormat = JSON.parse(localStorageUserQuery);
-      }
-    }
-
     //Behavior-Subjekt anlegen mit Initialwert queryFormat (enthaelt ggf. Werte, die aus localstorage geladen werden)
     this.complexSearchTerms = new BehaviorSubject<QueryFormat>(this.queryFormat);
 
@@ -328,6 +280,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Slider Werte setzen
     this.sliderInit();
 
+    //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
+    let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
+
+    //wenn gespeicherte Suchen aus localstorage geladen wurden
+    if (localStorageSavedUserQueries) {
+
+      //gespeicherte Suchen aus localstorage holen
+      this.savedQueries = JSON.parse(localStorageSavedUserQueries);
+    }
+
     //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
     let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
 
@@ -346,6 +308,44 @@ export class SearchComponent implements OnInit, OnDestroy {
           //damit Merkliste anlegen
           this.createBasket(true, lsBasket);
         }
+      }
+    }
+
+    //Query-Parameter aus URL auslesen
+    this.route.queryParamMap.subscribe(params => {
+
+      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
+      if (params.get("search")) {
+
+        //diesen zu queryFormat dekodieren
+        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
+
+        //Flag setzen, damit nicht Wert aus localstorage genommen wird
+        this.loadFromLink = true;
+      }
+
+      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
+      if (params.get("basket")) {
+
+        //diesen dekodieren
+        let basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("basket")));
+
+        //daraus Merkliste erstellen
+        this.createBasket(true, basketFromLink);
+      }
+    });
+
+    //Wenn keine Anfrage per Link geschickt wurde
+    if (!this.loadFromLink) {
+
+      //versuchen letzte Suche aus localstorage zu laden
+      let localStorageUserQuery = localStorage.getItem("userQuery");
+
+      //Wenn Suchanfrage aus localstorage geladen werden konnte
+      if (localStorageUserQuery) {
+
+        //Anfrage-Format laden
+        this.queryFormat = JSON.parse(localStorageUserQuery);
       }
     }
 
