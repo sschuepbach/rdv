@@ -20,7 +20,7 @@ foreach ($_POST as $param => $value) {
     if (!is_array($value)) {
 
         //Parameter setzen: &rows=10
-        $url .= "&" . $clean_param . "=" . $value;
+        $url .= "&" . $clean_param . "=" . urlencode(urldecode($value));
     }
 
     //Wenn es ein Array ist (z.B. fq[])
@@ -30,7 +30,7 @@ foreach ($_POST as $param => $value) {
         foreach ($value as $single_value) {
 
             //Parameter einzeln setzen: &fq=...
-            $url .= "&" . $clean_param . "=" . $single_value;
+            $url .= "&" . $clean_param . "=" . urlencode(urldecode($single_value));
         }
     }
 }
