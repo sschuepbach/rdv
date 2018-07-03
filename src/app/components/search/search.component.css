@@ -90,11 +90,11 @@ th {
         background-color: rgba(0, 255, 255, 0.05);
     }
 
-.mh-table-row:last-of-type > div:last-of-type > div {
+.mh-table-row:last-of-type > div > div {
     border-bottom: 1px solid grey;
 }
 
-.mh-table-row:last-of-type > div:last-of-type > div:last-child {
+.mh-table-row:last-of-type > div > div:last-child {
     border-bottom-right-radius: 3px;
 }
 
