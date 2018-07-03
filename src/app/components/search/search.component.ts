@@ -151,7 +151,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   savedQueries: SavedQueryFormat[] = [];
 
   //Index, welche Merkliste gerade aktiv ist. Zu Beginn soll erste Merkliste aktiv sein
-  activeBasketIndex: number = 0;
+  activeBasketIndex = 0;
 
   //Aray der Merklisten
   savedBaskets: BasketFormat[] = [];
@@ -188,14 +188,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   rangeData = {};
 
   //Trefferanzahl der Backend-Antwort. Zu Beginn 0 Treffer (spaeter abgeleitet von results)
-  count: number = 0;
+  count = 0;
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty: boolean = true;
 
   //Nach welcher Spalte wird gerade sortiert bei Trefferliste / Merkliste fuer farbliche Hinterlegung der Spalte
-  sortColumnSearch: number = 0;
-  sortColumnBasket: number = 0;
+  sortColumnSearch = 0;
+  sortColumnBasket = 0;
 
   //BehaviorSubject speichert Such-Anfragen
   private complexSearchTerms: BehaviorSubject<QueryFormat>;
@@ -207,10 +207,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   detailDataArray: any[] = [];
 
   //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
-  loadFromLink: boolean = false;
+  loadFromLink = false;
+  basketFromLinkData = "";
 
   //BackendSearch, FormBuilder, ActivedRoute, UserConfigService injecten
-  constructor(private backendSearchService: BackendSearchService, private _fb: FormBuilder, private route: ActivatedRoute, private userConfigService: UserConfigService) {
+  constructor(private backendSearchService: BackendSearchService,
+    private _fb: FormBuilder,
+    private route: ActivatedRoute,
+    private userConfigService: UserConfigService) {
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -271,6 +275,40 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.createCharts();
     });
 
+
+    //Query-Parameter aus URL auslesen
+    this.route.queryParamMap.subscribe(params => {
+
+      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
+      if (params.get("search")) {
+
+        //diesen zu queryFormat dekodieren
+        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
+
+        //Flag setzen, damit nicht Wert aus localstorage genommen wird
+        this.loadFromLink = true;
+      }
+
+      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
+      if (params.get("basket")) {
+        this.basketFromLinkData = params.get("basket");
+      }
+    });
+
+    //Wenn keine Anfrage per Link geschickt wurde
+    if (!this.loadFromLink) {
+
+      //versuchen letzte Suche aus localstorage zu laden
+      let localStorageUserQuery = localStorage.getItem("userQuery");
+
+      //Wenn Suchanfrage aus localstorage geladen werden konnte
+      if (localStorageUserQuery) {
+
+        //Anfrage-Format laden
+        this.queryFormat = JSON.parse(localStorageUserQuery);
+      }
+    }
+
     //Reactive Forms fuer Suchfelder und Suche erstellen, dabei werden die initialen Wert gesetzt und die onChange-Methoden definiert
     this.createForms();
 
@@ -311,42 +349,13 @@ export class SearchComponent implements OnInit, OnDestroy {
       }
     }
 
-    //Query-Parameter aus URL auslesen
-    this.route.queryParamMap.subscribe(params => {
-
-      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
-      if (params.get("search")) {
-
-        //diesen zu queryFormat dekodieren
-        this.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
-
-        //Flag setzen, damit nicht Wert aus localstorage genommen wird
-        this.loadFromLink = true;
-      }
-
-      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
-      if (params.get("basket")) {
+    if(this.basketFromLinkData !== "") {
 
         //diesen dekodieren
-        let basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("basket")));
+        let basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(this.basketFromLinkData));
 
         //daraus Merkliste erstellen
         this.createBasket(true, basketFromLink);
-      }
-    });
-
-    //Wenn keine Anfrage per Link geschickt wurde
-    if (!this.loadFromLink) {
-
-      //versuchen letzte Suche aus localstorage zu laden
-      let localStorageUserQuery = localStorage.getItem("userQuery");
-
-      //Wenn Suchanfrage aus localstorage geladen werden konnte
-      if (localStorageUserQuery) {
-
-        //Anfrage-Format laden
-        this.queryFormat = JSON.parse(localStorageUserQuery);
-      }
     }
 
     //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
@@ -376,6 +385,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     });
 
     this.checkIfSearchFieldsAreEmpty();
+
+    //Suche starten
+    this.complexSearchTerms.next(this.queryFormat);
   }
 
   //FormControls fuer Suchanfragen und Speicherung von Suchanfragen anlgen
