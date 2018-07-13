@@ -539,6 +539,13 @@
             <div *ngIf="count"
                  class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
+              <!-- Link fuer export -->
+              <a *ngIf="mainConfig.showExportList.table"
+              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
+              [href]="exportListData"
+              (click)="exportList(docs)"
+              download="export-trefferliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
+
               <!-- Select Treffer pro Seite -->
               <div class="form-inline mr-2 mb-2 mb-md-0">
 
@@ -768,6 +775,13 @@
             <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
             <div *ngIf="basketSize"
                  class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
+
+              <!-- Link fuer export -->
+              <a *ngIf="mainConfig.showExportList.basket"
+              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
+              [href]="exportListData"
+              (click)="exportList(basketDocs)"
+              download="export-merkliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
 
               <!-- Paging fuer Merklisten-Treffertabelle -->
               <div class="btn-group btn-group-sm mb-2 mb-md-0"

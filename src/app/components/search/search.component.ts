@@ -31,8 +31,9 @@ import { UserConfigService } from 'app/services/user-config.service';
 //Slider-Plugin
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";
 import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 
-//Kompromierung von Link-Anfragen (Suchanfragen, Merklisten)
+//Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
 
 //Validator-Funktion stellt sicher, dass jede gespeicherte Suche einen eindeutigen Namen hat
@@ -209,12 +210,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
   loadFromLink = false;
   basketFromLinkData = "";
+  exportListData;
 
   //BackendSearch, FormBuilder, ActivedRoute, UserConfigService injecten
   constructor(private backendSearchService: BackendSearchService,
     private _fb: FormBuilder,
     private route: ActivatedRoute,
-    private userConfigService: UserConfigService) {
+    private userConfigService: UserConfigService,
+    private sanitizer: DomSanitizer) {
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -1299,6 +1302,36 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     //formattierten Wert zurueckgeben
     return output;
+  }
+
+  exportList(docs) {
+    let dataString = "data:application/octet-stream,";
+
+    // Header hinzufügen
+    for (const field of this.mainConfig.tableFields) {
+      dataString += encodeURIComponent(field.label) + "%09";
+    }
+    dataString += "%0A";
+
+    // Daten hinzufügen
+    for (const doc of docs){
+      for (const field of this.mainConfig.tableFields) {
+        switch (this.getType(doc[field.field])) {
+          case 'unset':
+            dataString += "ohne%09";
+            break;
+          case 'single':
+            dataString += encodeURIComponent(doc[field.field]) + "%09";
+            break;
+          case 'multi':
+            dataString += encodeURIComponent(doc[field.field].join("; ")) + "%09";
+            break;
+          }
+      }
+      dataString += "%0A";
+    }
+
+    this.exportListData = this.sanitizer.bypassSecurityTrustUrl(dataString);
   }
 }
 

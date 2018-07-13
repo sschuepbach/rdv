@@ -128,6 +128,11 @@ export class MainConfig {
         }
     };
 
+    showExportList = {
+        "basket": true,
+        "table": false
+    };
+
     //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)
     tableFields = [
         {
