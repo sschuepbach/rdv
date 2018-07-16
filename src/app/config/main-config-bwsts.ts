@@ -3,7 +3,7 @@ export class MainConfig {
     baseUrl = "https://bwsciencetoshare.ub.uni-freiburg.de";
 
     //Wo liegt Proxy-Skript, das mit Solr spricht?
-    proxyUrl = "https://bwsciencetoshare.ub.uni-freiburg.de/angularx_solr_proxy_bwsts.php";
+    proxyUrl = "https://bwsciencetoshare.ub.uni-freiburg.de/angularx_solr_proxy.php";
 
     //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
     searchFields = {

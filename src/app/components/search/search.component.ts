@@ -312,15 +312,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       }
     }
 
-    //Reactive Forms fuer Suchfelder und Suche erstellen, dabei werden die initialen Wert gesetzt und die onChange-Methoden definiert
-    this.createForms();
-
-    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
-    this.setRangeData();
-
-    //Slider Werte setzen
-    this.sliderInit();
-
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     let localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
 
@@ -331,7 +322,16 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.savedQueries = JSON.parse(localStorageSavedUserQueries);
     }
 
-    //versuchen gespeicherte Merklisten aus localstorage zu laden -> vor Form-Erstellung
+    //Reactive Forms fuer Suchfelder und Suche erstellen, dabei werden die initialen Wert gesetzt und die onChange-Methoden definiert
+    this.createForms();
+
+    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
+    this.setRangeData();
+
+    //Slider Werte setzen
+    this.sliderInit();
+
+    //versuchen gespeicherte Merklisten aus localstorage zu laden -> nach Form-Erstellung
     let localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
 
     //wenn es ein Merklisten-Merkmal im localstorage gibt
