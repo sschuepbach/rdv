@@ -5,6 +5,7 @@ import { BackendSearchService } from 'app/services/elastic-search.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+// FIXME: Replace HttpModule with HttpClient
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
@@ -36,10 +37,10 @@ import { ClipboardModule } from 'ngx-clipboard';
     ReactiveFormsModule,
     HttpModule,
     RouterModule.forRoot([
-      { path: '', component: SearchComponent },
-      { path: 'doc/:id', component: LandingPageComponent },
-      { path: 'about', component: AboutComponent },
-      { path: '**', component: SearchComponent }
+      {path: '', component: SearchComponent},
+      {path: 'doc/:id', component: LandingPageComponent},
+      {path: 'about', component: AboutComponent},
+      {path: '**', component: SearchComponent}
     ]),
     ChartsModule,
     IonRangeSliderModule,
@@ -52,4 +53,5 @@ import { ClipboardModule } from 'ngx-clipboard';
     UserConfigService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

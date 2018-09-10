@@ -1,8 +1,7 @@
-//Config anpassen
-//import { MainConfig } from "app/config/main-config-elastic-mh";
 import { MainConfig } from "app/config/main-config-elastic";
 
 import { Injectable } from '@angular/core';
+// FIXME: Replace HttpModule with HttpClient
 import { Http } from "@angular/http";
 
 import 'rxjs/add/operator/map';
@@ -26,13 +25,13 @@ export class BackendSearchService {
   constructor(private http: Http) {
 
     //Main-Config laden
-    let mainConfig = new MainConfig();
+    const mainConfig = new MainConfig();
 
     //proxyUrl setzen
     this.proxyUrl = mainConfig.proxyUrl;
 
     //Felder sammeln, die bei normaler Suche geholt werden sollen
-    for (let field of mainConfig.tableFields) {
+    for (const field of mainConfig.tableFields) {
 
       //ID Feld kommt sowieso (allerdings als _id und nicht als id in _source), daher id nicht in Liste der geholten Felder einfuegen
       if (field.field !== "id") {
@@ -43,7 +42,7 @@ export class BackendSearchService {
     }
 
     //Felder sammeln, die bei Detailsuche geholt werden sollen
-    for (let key of Object.keys(mainConfig.extraInfos)) {
+    for (const key of Object.keys(mainConfig.extraInfos)) {
 
       //Feld-Namen in tempArray sammeln
       this.detailFields.push(mainConfig.extraInfos[key].field);
@@ -54,16 +53,16 @@ export class BackendSearchService {
   getBackendDataComplex(queryFormat: QueryFormat): Observable<any> {
 
     //Anfrageobjekt erzeugen
-    let complexQueryFormat = {};
+    const complexQueryFormat = {};
 
     //Suchparameter fuer Paging und Sortierung direkt aus Queryformat uebernehmen
     complexQueryFormat['queryParams'] = queryFormat.queryParams;
 
     //Ueber Anfrage-Formate gehen
-    for (let key of Object.keys(queryFormat.searchFields)) {
+    for (const key of Object.keys(queryFormat.searchFields)) {
 
       //Schnellzugriff auf dieses Suchfeld
-      let searchfield_data = queryFormat.searchFields[key];
+      const searchfield_data = queryFormat.searchFields[key];
 
       //Wenn Wert gesetzt ist (z.B. bei der Titel-Suche)
       if (searchfield_data.value.trim()) {
@@ -80,10 +79,10 @@ export class BackendSearchService {
         }
 
         //Inputstring rechts trunkieren und zu Array umwandeln: "martin helfer welt" => ["martin", "helfer", "welt*"]
-        let input_value_array = (searchfield_data.value.trim() + "*").split(" ");
+        const input_value_array = (searchfield_data.value.trim() + "*").split(" ");
 
         //Wildcard query_string-Suche aufbauen, dazu Inputstring-Arraywerte per AND verknupefen
-        let queryString = {
+        const queryString = {
           "query_string": {
 
             //["martin", "helfer", "welt*"] -> "martin AND helfer AND welt*"
@@ -111,18 +110,19 @@ export class BackendSearchService {
     }
 
     //Ueber Filterfelder gehen
-    for (let key of Object.keys(queryFormat.filterFields)) {
+    for (const key of Object.keys(queryFormat.filterFields)) {
 
       //Schnellzugriff auf Infos dieses Filters
-      let filterData = queryFormat.filterFields[key];
+      const filterData = queryFormat.filterFields[key];
 
       //Ueber ausgewaehlte Filterwerte dieses Filters gehen (["Artikel", "Buch"] bei Filter "Typ")
       filterData.values.forEach((item, index) => {
 
-        //Zu Beginn gibt es noch keinen Filterbereich -> anlegen       
+        //Zu Beginn gibt es noch keinen Filterbereich -> anlegen
         if (complexQueryFormat["filter"] === undefined) {
 
-          //Filterbereich mit must-clause-Array (AND-Verknuepfung) anlegen. Must query kombiniert die einzelnen Filter per AND. Die einzelnen Werte eines Filters sind dann per OR verknuepft: type:Artikel AND ort:(Berlin OR Bremen)
+          //Filterbereich mit must-clause-Array (AND-Verknuepfung) anlegen. Must query kombiniert die einzelnen Filter per AND.
+          //Die einzelnen Werte eines Filters sind dann per OR verknuepft: type:Artikel AND ort:(Berlin OR Bremen)
           complexQueryFormat["filter"] = {
             "bool": {
               "must": []
@@ -133,39 +133,42 @@ export class BackendSearchService {
         //Bei 1. Filterwert ("Aritkel") dieses Filters ("Dokumentyp")
         if (index === 0) {
 
-          //should-clause (=OR-Verknuepfung) anlegen fuer diesen Filter (Artikel OR Buch). Wenn Filterung per AND (Region = Aushangsort AND Druckort), muss hier must statt should gesetzt werden
-          complexQueryFormat["filter"]["bool"]["must"].push({ "bool": { "should": [] } });
+          //should-clause (=OR-Verknuepfung) anlegen fuer diesen Filter (Artikel OR Buch).
+          //Wenn Filterung per AND (Region = Aushangsort AND Druckort), muss hier must statt should gesetzt werden
+          complexQueryFormat["filter"]["bool"]["must"].push({"bool": {"should": []}});
         }
 
         //passenden Index im must-Array finden = letzter Eintrag
-        let mustIndex = complexQueryFormat["filter"]["bool"]["must"].length - 1;
+        const mustIndex = complexQueryFormat["filter"]["bool"]["must"].length - 1;
 
         //Filterwert in should-clause dieses Filteres einfuegen als term-query (exakter Treffer auf keyword-type)
-        complexQueryFormat["filter"]["bool"]["must"][mustIndex]["bool"]["should"].push({ "term": { [filterData.field]: item } });
+        complexQueryFormat["filter"]["bool"]["must"][mustIndex]["bool"]["should"].push({"term": {[filterData.field]: item}});
       });
     }
 
     //Ueber Facettenfelder gehen
-    for (let key of Object.keys(queryFormat.facetFields)) {
+    for (const key of Object.keys(queryFormat.facetFields)) {
 
-      //Zu Beginn gibt es noch keinen Facettenbereich -> anlegen       
+      //Zu Beginn gibt es noch keinen Facettenbereich -> anlegen
       if (complexQueryFormat["facet"] === undefined) {
 
-        //Facettenbereich = aggs anlegen und Infos sammeln (eigentliche Anfrage wird wegen der php {} Problematik erst auf php Seite erstellt)
+        //Facettenbereich = aggs anlegen und Infos sammeln
+        //(eigentliche Anfrage wird wegen der php {} Problematik erst auf php Seite erstellt)
         complexQueryFormat["facet"] = {};
       }
 
       //Schnellzugriff auf Infos dieser Facette
-      let facetData = queryFormat.facetFields[key];
+      // noinspection JSUnusedLocalSymbols
+      const facetData = queryFormat.facetFields[key];
 
       //Infos zu Felder, benutzer Verknuepfung und ausgewaehlten Werten
       complexQueryFormat["facet"][key] = queryFormat.facetFields[key];
     }
 
     //Ueber Rangefelder gehen
-    for (let key of Object.keys(queryFormat.rangeFields)) {
+    for (const key of Object.keys(queryFormat.rangeFields)) {
 
-      //Zu Beginn gibt es noch keinen Rangebereich -> anlegen       
+      //Zu Beginn gibt es noch keinen Rangebereich -> anlegen
       if (complexQueryFormat["range"] === undefined) {
 
         //Rangebereich = aggs anlegen und Infos sammeln (eigentliche Anfrage in php erstellt)
@@ -183,7 +186,7 @@ export class BackendSearchService {
     //HTTP-Anfrage an Elasticsearch
     return this.http
 
-      //POST Anfrage
+    //POST Anfrage
       .post(this.proxyUrl, JSON.stringify(complexQueryFormat))
 
       //Antwort als JSON weiterreichen
@@ -194,7 +197,7 @@ export class BackendSearchService {
   getBackendDetailData(id: string, fullRecord: boolean = false): Observable<any> {
 
     //Objekt fuer Detailsuche
-    let detailQueryFormat = {};
+    const detailQueryFormat = {};
 
     //ID-Suche (nach 1 ID)
     detailQueryFormat["ids"] = [id];
@@ -210,7 +213,7 @@ export class BackendSearchService {
     //HTTP-Anfrage an Elasticsearch
     return this.http
 
-      //POST-Anfrage mit URL, ID und sourceFields
+    //POST-Anfrage mit URL, ID und sourceFields
       .post(this.proxyUrl, JSON.stringify(detailQueryFormat))
 
       //das 1. Dokument als JSON weiterreichen
@@ -221,7 +224,7 @@ export class BackendSearchService {
   getBackendDataBasket(basket: BasketFormat): Observable<any> {
 
     //Anfrage-Objekt erstellen
-    let basketQueryFormat = {}
+    const basketQueryFormat = {};
 
     //Parameter fuer Paging und Sortierung direkt vom Merklisten-Objekt uebernehmen
     basketQueryFormat["queryParams"] = basket.queryParams;
@@ -236,7 +239,7 @@ export class BackendSearchService {
     //HTTP-Anfrage an Elasticsearch
     return this.http
 
-      //POST Anfrage mit URL, Liste der IDs und Liste der Felder
+    //POST Anfrage mit URL, Liste der IDs und Liste der Felder
       .post(this.proxyUrl, JSON.stringify(basketQueryFormat))
 
       //von JSON-Antwort nur die Dokument weiterreichen

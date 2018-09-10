@@ -1,9 +1,8 @@
-//Config anpassen
-// import { MainConfig } from "app/config/main-config-freidok";
 import { MainConfig } from "app/config/main-config-bwsts";
 
 import { Injectable } from '@angular/core';
-import { Http, Headers, URLSearchParams, RequestOptions } from "@angular/http";
+// FIXME: Replace HttpModule with HttpClient
+import { Http, URLSearchParams } from "@angular/http";
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
@@ -17,10 +16,12 @@ export class BackendSearchService {
   //URL auf PHP-Proxy
   private proxyUrl: string;
 
-  //Felder, die bei normaler Suche fuer die Treffertabelle geholt werden, schon direkt als koma-getrennter String -> id,person_all_string,ti_all_string,py_string
+  //Felder, die bei normaler Suche fuer die Treffertabelle geholt werden, schon direkt als koma-getrennter String ->
+  //id,person_all_string,ti_all_string,py_string
   tableFields: string;
 
-  //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String -> keyword_all_string,source_title_all_string,pages_string
+  //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String ->
+  //keyword_all_string,source_title_all_string,pages_string
   detailFields: string;
 
   //Anzahl der Treffer pro Merklisten-Anfrage
@@ -30,7 +31,7 @@ export class BackendSearchService {
   constructor(private http: Http) {
 
     //Main-Config laden
-    let mainConfig = new MainConfig();
+    const mainConfig = new MainConfig();
 
     //proxyUrl setzen
     this.proxyUrl = mainConfig.proxyUrl;
@@ -39,7 +40,7 @@ export class BackendSearchService {
     let tempArray = [];
 
     //Felder sammeln, die bei normaler Suche geholt werden sollen
-    for (let field of mainConfig.tableFields) {
+    for (const field of mainConfig.tableFields) {
 
       //Feld-Namen in tempArray sammeln
       tempArray.push(field.field);
@@ -59,7 +60,7 @@ export class BackendSearchService {
     tempArray = [];
 
     //Felder sammeln, die bei Detailsuche geholt werden sollen
-    for (let key of Object.keys(mainConfig.extraInfos)) {
+    for (const key of Object.keys(mainConfig.extraInfos)) {
 
       //Feld-Namen in tempArray sammeln
       tempArray.push(mainConfig.extraInfos[key].field);
@@ -76,16 +77,16 @@ export class BackendSearchService {
   getBackendDataComplex(queryFormat: QueryFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
+    const myParams = new URLSearchParams();
 
     //Suchanfrage zusammenbauen
-    let queryArray = [];
+    const queryArray = [];
 
     //Ueber Anfrage-Formate gehen
-    for (let key of Object.keys(queryFormat.searchFields)) {
+    for (const key of Object.keys(queryFormat.searchFields)) {
 
       //Schnellzugriff auf dieses Suchfeld
-      let searchfield_data = queryFormat.searchFields[key];
+      const searchfield_data = queryFormat.searchFields[key];
 
       //Wenn Wert gesetzt ist (z.B. bei all fuer all_text-Suche)
       if (searchfield_data.value.trim()) {
@@ -96,14 +97,14 @@ export class BackendSearchService {
     }
 
     //Sucheanfragen aus Anfragen der Einzelfelder zusammenbauen oder *:* Abfrage, wenn Felder leer
-    let query = queryArray.length ? queryArray.join(" ") : "*:*";
+    const query = queryArray.length ? queryArray.join(" ") : "*:*";
     myParams.set("q", encodeURI(query));
 
     //Ueber Filterfelder gehen
-    for (let key of Object.keys(queryFormat.filterFields)) {
+    for (const key of Object.keys(queryFormat.filterFields)) {
 
       //Schnellzugriff auf Infos dieses Filters
-      let filter_data = queryFormat.filterFields[key];
+      const filter_data = queryFormat.filterFields[key];
 
       //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
       myParams.append("facet#field[]", filter_data.field);
@@ -117,13 +118,15 @@ export class BackendSearchService {
     }
 
     //Ueber Facettenfelder gehen
-    for (let key of Object.keys(queryFormat.facetFields)) {
+    for (const key of Object.keys(queryFormat.facetFields)) {
 
       //Schnellzugriff auf Infos dieser Facette
-      let facet_data = queryFormat.facetFields[key];
+      const facet_data = queryFormat.facetFields[key];
 
-      //Bei AND Verknuepfung innerhalb einer Facette keine Extra-Behandlung, bei OR-Verknuepfung muss sichergestellt sein, dass andere Werte auch sichtbar sind (Auswahl ger -> auch Facettenwert eng anzeigen fuer ger OR eng)
-      let extra_tag = facet_data.operator === "AND" ? ["", ""] : ["{!ex=" + facet_data.field + "}", "{!tag=" + facet_data.field + "}"];
+      //Bei AND Verknuepfung innerhalb einer Facette keine Extra-Behandlung,
+      //bei OR-Verknuepfung muss sichergestellt sein, dass andere Werte auch sichtbar sind
+      //(Auswahl ger -> auch Facettenwert eng anzeigen fuer ger OR eng)
+      const extra_tag = facet_data.operator === "AND" ? ["", ""] : ["{!ex=" + facet_data.field + "}", "{!tag=" + facet_data.field + "}"];
 
       //Feld als Solr-Facette in URL anmelden (damit ueberhaupt Daten geliefert werden), # wird von PHP wieder zu . umgewandelt
       myParams.append("facet#field[]", (extra_tag[0] + facet_data.field));
@@ -132,15 +135,16 @@ export class BackendSearchService {
       if (facet_data.values.length) {
 
         //Einzelwerte dieser Facette operator (OR vs. AND) verknuepfen (ger OR eng) und in Array sammeln
-        myParams.append("fq[]", encodeURI(extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")"));
+        myParams.append("fq[]",
+          encodeURI(extra_tag[1] + facet_data.field + ":(" + facet_data.values.join(" " + facet_data.operator + " ") + ")"));
       }
     }
 
     //Ueber Rangefelder gehen
-    for (let key of Object.keys(queryFormat.rangeFields)) {
+    for (const key of Object.keys(queryFormat.rangeFields)) {
 
       //Schnellzugriff auf Infos dieser Range
-      let range_data = queryFormat.rangeFields[key];
+      const range_data = queryFormat.rangeFields[key];
 
       //Feld als Solr-Facette in URL anmelden und Range-Optionen aktivieren, # wird von PHP wieder zu . umgewandelt
       myParams.append("facet#query[]", "{!ex=" + range_data.field + "}" + range_data.field + ":0");
@@ -151,7 +155,7 @@ export class BackendSearchService {
       myParams.append("f#" + range_data.field + "#facet#mincount", "0");
 
       //Range-Anfrage
-      let range_query = "{!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]"
+      let range_query = "{!tag=" + range_data.field + "}" + range_data.field + ":[" + range_data.from + " TO " + range_data.to + "]";
 
       //ggf. Treffer ohne Wert dieser Range (z.B. ohne Jahr) einfuegen
       range_query += range_data.showMissingValues ? " OR " + range_data.field + ":0" : "";
@@ -167,7 +171,7 @@ export class BackendSearchService {
     //HTTP-Anfrage an Solr
     return this.http
 
-      //GET Anfrage mit Suchparametern
+    //GET Anfrage mit Suchparametern
       .post(this.proxyUrl, myParams)
 
       //Antwort als JSON weiterreichen
@@ -178,10 +182,10 @@ export class BackendSearchService {
   getBackendDetailData(id: string, fullRecord = false): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
+    const myParams = new URLSearchParams();
 
     //Doppelpunkt in ID für Solr-Abfrage escapen (oai:opus.uni-hohenheim.de:1 -> oai\:opus.uni-hohenheim.de\:1)
-    let clean_id = id.toString().replace(/:/g, "\\:");
+    const clean_id = id.toString().replace(/:/g, "\\:");
 
     //Suche nach ID
     myParams.set("q", "id:" + clean_id);
@@ -194,7 +198,7 @@ export class BackendSearchService {
     //HTTP-Anfrage an Solr
     return this.http
 
-      //GET Anfrage mit URL Anfrage und Trunkierung
+    //GET Anfrage mit URL Anfrage und Trunkierung
       .post(this.proxyUrl, myParams)
 
       //das 1. Dokument als JSON weiterreichen
@@ -205,27 +209,27 @@ export class BackendSearchService {
   getBackendDataBasket(basket: BasketFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    let myParams = new URLSearchParams();
+    const myParams = new URLSearchParams();
 
     //ID sammeln
-    let idArray = [];
+    const idArray = [];
 
     //Ueber IDs gehen
-    for (let id of basket.ids) {
+    for (const id of basket.ids) {
 
       //Doppelpunkt in ID für Solr-Abfrage escapen (oai:opus.uni-hohenheim.de:1 -> oai\:opus.uni-hohenheim.de\:1)
-      let clean_id = id.toString().replace(/:/g, "\\:");
+      const clean_id = id.toString().replace(/:/g, "\\:");
 
       //ID merken
       idArray.push("id:(" + clean_id + ")");
     }
 
     //Wenn es IDs gibt, kombinierte ID Anfrage bauen (id: 10 OR id:12 OR...) ansonsten leere Treffermenge (-id:*)
-    let query = idArray.length ? idArray.join(" OR ") : "-id:*"
+    const query = idArray.length ? idArray.join(" OR ") : "-id:*";
     myParams.set("q", encodeURI(query));
 
     //Ab welchem Treffer soll gesucht werden?
-    let start = basket.queryParams.start ? basket.queryParams.start : 0;
+    const start = basket.queryParams.start ? basket.queryParams.start : 0;
     myParams.set("start", start.toString());
 
     //weitere Parameter setzen
@@ -236,8 +240,8 @@ export class BackendSearchService {
     //HTTP-Anfrage an Solr
     return this.http
 
-      //GET Anfrage mit URL Anfrage und Trunkierung
-      .post(this.proxyUrl, myParams )
+    //GET Anfrage mit URL Anfrage und Trunkierung
+      .post(this.proxyUrl, myParams)
 
       //von JSON-Antwort nur die Dokument weiterreichen
       .map(response => response.json() as any);

@@ -1,10 +1,7 @@
-//Fuer Config anpassen
-//import { MainConfig } from 'app/config/main-config-freidok';
-//import { MainConfig } from 'app/config/main-config-bwsts';
-//import { MainConfig } from 'app/config/main-config-elastic-mh';
 import { MainConfig } from 'app/config/main-config-elastic';
 
 import { Injectable } from '@angular/core';
+// FIXME: Replace HttpModule with HttpClient
 import { Http } from '@angular/http';
 import { QueryFormat } from 'app/config/query-format';
 
@@ -15,7 +12,8 @@ export class UserConfigService {
   config: MainConfig = new MainConfig();
 
   //Http-Service laden
-  constructor(private http: Http) { }
+  constructor(private http: Http) {
+  }
 
   //Config an Anwendung ausliefern
   async getConfig(): Promise<MainConfig> {
@@ -39,7 +37,7 @@ export class UserConfigService {
     }
 
     //vorhandene Filter dynamisch laden
-    for (let key of Object.keys(this.config.filterFields)) {
+    for (const key of Object.keys(this.config.filterFields)) {
 
       //Wenn bei Filter eine URL hinterlegt ist, muessen Optionen dynamisch geholt werden
       if (this.config.filterFields[key].url) {
@@ -64,7 +62,7 @@ export class UserConfigService {
   getQueryFormat(): QueryFormat {
 
     //Neues QueryFormat-Geruest erstellen
-    let queryFormat = new QueryFormat();
+    const queryFormat = new QueryFormat();
 
     //Ueber Suchfelder in der Config gehen
     this.config.searchFields.preselect.forEach((option, index) => {
@@ -77,7 +75,7 @@ export class UserConfigService {
     });
 
     //Ueber Fitlerfelder in der Config gehen
-    for (let key of Object.keys(this.config.filterFields)) {
+    for (const key of Object.keys(this.config.filterFields)) {
 
       //Filter anlegen in QueryFormat
       queryFormat.filterFields[key] = {
@@ -87,7 +85,7 @@ export class UserConfigService {
     }
 
     //Ueber Facettenfelder in der Config gehen
-    for (let key of Object.keys(this.config.facetFields)) {
+    for (const key of Object.keys(this.config.facetFields)) {
 
       //Facette anlegen in QueryFormat
       queryFormat.facetFields[key] = {
@@ -98,7 +96,7 @@ export class UserConfigService {
     }
 
     //Ueber Rangefelder in der Config gehen
-    for (let key of Object.keys(this.config.rangeFields)) {
+    for (const key of Object.keys(this.config.rangeFields)) {
 
       //Range anlegen in QueryFormat
       queryFormat.rangeFields[key] = {

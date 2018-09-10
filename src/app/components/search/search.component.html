@@ -14,7 +14,8 @@
 
       <!-- Button "Neue Suche" -->
       <button class="btn btn-default btn-sm"
-              (click)="resetSearch()">Neue Suche</button>
+              (click)="resetSearch()">Neue Suche
+      </button>
 
       <hr>
 
@@ -69,10 +70,11 @@
             <span>{{queryFormat.rangeFields[key].from}} - {{queryFormat.rangeFields[key].to}}</span>
 
             <!-- Reset-Button (Range wieder auf Extrem-Werte setzen) -->
-            <button *ngIf="queryFormat.rangeFields[key].from != queryFormat.rangeFields[key].min || queryFormat.rangeFields[key].to != queryFormat.rangeFields[key].max"
-          
-                    (click)="resetRange(key)"
-                    class="btn p-1 fa fa-undo"></button>
+            <button
+              *ngIf="queryFormat.rangeFields[key].from != queryFormat.rangeFields[key].min || queryFormat.rangeFields[key].to != queryFormat.rangeFields[key].max"
+
+              (click)="resetRange(key)"
+              class="btn p-1 fa fa-undo"></button>
 
             <span *ngIf="queryFormat.rangeFields[key].showMissingValues">
               <span> / auch Einträge ohne {{mainConfig.rangeFields[key].label}} anzeigen</span>
@@ -155,11 +157,15 @@
             <div class="input-group ml-md-2 mt-1 mt-md-0"
                  *ngIf="searchForm.controls['saveQuery'].errors">
               <div class="bg-danger px-2 rounded"
-                   *ngIf="searchForm.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig sein</div>
+                   *ngIf="searchForm.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig sein
+              </div>
               <div class="bg-danger px-2 rounded"
-                   *ngIf="searchForm.controls['saveQuery'].errors.required">Name ist Pflichtfeld</div>
+                   *ngIf="searchForm.controls['saveQuery'].errors.required">Name ist Pflichtfeld
+              </div>
               <div class="bg-danger px-2 rounded"
-                   *ngIf="searchForm.controls['saveQuery'].errors.minlength">Mindestlänge {{searchForm.controls['saveQuery'].errors.minlength.requiredLength}}</div>
+                   *ngIf="searchForm.controls['saveQuery'].errors.minlength">Mindestlänge
+                {{searchForm.controls['saveQuery'].errors.minlength.requiredLength}}
+              </div>
             </div>
           </div>
         </div>
@@ -189,7 +195,8 @@
             <!-- Name der Query -->
             <input type="text"
                    class="form-control"
-                   disabled="true"
+                   disabled
+                   title="Name der Query"
                    [value]=savedQuery.name>
 
             <!-- Button "Link kopieren" -->
@@ -239,6 +246,7 @@
             <!-- Name des Baskets -->
             <input type="text"
                    class="form-control col-md-5"
+                   title="Name des Baskets"
                    [formControlName]="i">
 
             <!-- Anzahl der Titel in dieser Merkliste -->
@@ -283,10 +291,11 @@
 
             <!-- Auswahl des Suchfeldtyps (Freitext, Titel, Person,...) -->
             <div class="input-group-btn">
-              <select class="btn btn-sm"
+              <select class="btn btn-sm" title="Suchfeldtyp"
                       [formControlName]="'selectSearchField_' + field">
                 <option *ngFor="let key of mainConfig.searchFields.options | objectKeys"
-                        [value]="key">{{mainConfig.searchFields.options[key]}}</option>
+                        [value]="key">{{mainConfig.searchFields.options[key]}}
+                </option>
               </select>
             </div>
 
@@ -348,12 +357,12 @@
              class="nav-link text-sm-center px-2 py-0"
              [ngClass]="'order-' + mainConfig.facetFields[key].order"
              [class.active]="mainConfig.facetFields[key].order == 1"
-             id="facet-pills-{{key}}-tab"
+             [id]="'facet-pills-'+key+'-tab'"
              data-toggle="pill"
-             href="#facet-pills-{{key}}"
+             [href]="'#facet-pills-'+key"
              role="tab"
-             attr.aria-controls="pills-{{key}}"
-             attr.aria-expanded="true">{{mainConfig.facetFields[key].label}}</a>
+             aria-controls="'pills-'+key"
+             aria-expanded="true">{{mainConfig.facetFields[key].label}}</a>
 
           <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
           <a *ngFor="let key of rangeData | objectKeys"
@@ -364,8 +373,8 @@
              data-toggle="pill"
              href="#facet-pills-{{key}}"
              role="tab"
-             attr.aria-controls="facet-pills-{{key}}"
-             attr.aria-expanded="true">{{mainConfig.rangeFields[key].label}}</a>
+             aria-controls="'facet-pills-'+key"
+             aria-expanded="true">{{mainConfig.rangeFields[key].label}}</a>
         </nav>
 
         <!-- DIV-Container fuer Tab-Inhalte -->
@@ -379,7 +388,7 @@
                class="tab-pane list-group"
                id="facet-pills-{{key}}"
                role="tabpanel"
-               attr.aria-labelledby="facet-pills-{{key}}-tab">
+               aria-labelledby="'facet-pills-'+key+'-tab'">
 
             <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
             Werte werden per
@@ -388,11 +397,12 @@
 
             <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
             <ng-template #operatorSelect>
-              <select *ngIf="mainConfig.facetFields[key].operators.length > 1"
+              <select title="Verknüpfungsart" *ngIf="mainConfig.facetFields[key].operators.length > 1"
                       class="btn btn-sm"
                       [formControlName]="'operatorSelect_' + key">
                 <option *ngFor="let operator of mainConfig.facetFields[key].operators"
-                        [value]="operator">{{operator}}</option>
+                        [value]="operator">{{operator}}
+                </option>
               </select>
             </ng-template>
 
@@ -421,9 +431,9 @@
           <div *ngFor="let key of rangeData | objectKeys"
                class="tab-pane list-group"
                [class.active]="mainConfig.rangeFields[key].order == 1"
-               id="facet-pills-{{key}}"
+               [id]="'facet-pills-' + key"
                role="tabpanel"
-               attr.aria-labelledby="facet-pills-{{key}}-tab">
+               aria-labelledby="'facet-pills-' + key + '-tab'">
 
             <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
             <label class="btn btn-sm btn-outline-primary px-2 py-1 mb-3"
@@ -459,10 +469,10 @@
             <div class="curtain_div">
               <div class="curtain_container">
                 <div class="curtain"
-                     style="background-color: rgba(10, 10, 10, .3); left: 0px"
+                     style="background-color: rgba(10, 10, 10, .3); left: 0"
                      [style.width]="rangeData[key].curtainLeft"></div>
                 <div class="curtain"
-                     style="background-color: rgba(10, 10, 10, .3); right: 0px"
+                     style="background-color: rgba(10, 10, 10, .3); right: 0"
                      [style.width]="rangeData[key].curtainRight"></div>
               </div>
             </div>
@@ -476,11 +486,11 @@
                                 [from]="rangeData[key].from"
                                 [to]="rangeData[key].to"
                                 [max]="rangeData[key].max"
-                                grid="true"
-                                grid_num="10"
+                                [grid]="true"
+                                [grid_num]="10"
                                 [prefix]="rangeData[key].label + ' '"
-                                prettify_enabled="false"
-                                hide_min_max="true"
+                                [prettify_enabled]="false"
+                                [hide_min_max]="true"
                                 (onChange)="updateSlider($event, key)"></ion-range-slider>
             </div>
           </div>
@@ -503,8 +513,8 @@
            data-toggle="pill"
            href="#results-pills-search"
            role="tab"
-           attr.aria-controls="pills-search"
-           attr.aria-expanded="true">Ergebnisse
+           aria-controls="pills-search"
+           aria-expanded="true">Ergebnisse
           <!-- Treffer-Anzahl in Trefferliste -->
           <strong>({{count}})</strong>
         </a>
@@ -515,8 +525,8 @@
            data-toggle="pill"
            href="#results-pills-basket"
            role="tab"
-           attr.aria-controls="pills-basket"
-           attr.aria-expanded="true">Merkliste
+           aria-controls="pills-basket"
+           aria-expanded="true">Merkliste
           <!-- Treffer-Anzahl in Merkliste -->
           <strong>({{basketSize}})</strong>
         </a>
@@ -530,7 +540,7 @@
         <div class="tab-pane list-group active"
              id="results-pills-search"
              role="tabpanel"
-             attr.aria-labelledby="facet-pills-search-tab">
+             aria-labelledby="facet-pills-search-tab">
 
           <!-- Zeile aus Treffer-Anzahl, Select Treffer pro Seite, Pagination der Treffertabelle -->
           <div class="d-flex justify-content-start flex-wrap">
@@ -541,19 +551,20 @@
 
               <!-- Link fuer export -->
               <a *ngIf="mainConfig.showExportList.table"
-              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
-              [href]="exportListData"
-              (click)="exportList(docs)"
-              download="export-trefferliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
+                 class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
+                 [href]="exportListData"
+                 (click)="exportList(docs)"
+                 download="export-trefferliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
 
               <!-- Select Treffer pro Seite -->
               <div class="form-inline mr-2 mb-2 mb-md-0">
 
                 <!-- Select: Rows -->
                 <select class="form-control form-control-sm"
-                        formControlName="rows">
+                        formControlName="rows" id="rows">
                   <option *ngFor="let rowOpt of mainConfig.rowOpts"
-                          [value]="rowOpt">{{rowOpt}}</option>
+                          [value]="rowOpt">{{rowOpt}}
+                  </option>
                 </select>
 
                 <!-- Label: Treffer pro Seite -->
@@ -694,24 +705,25 @@
                   <label class="d-sm-none font-weight-bold text-right mr-2">Add</label>
 
                   <!-- Star-Symbol  -->
-                  <span class="col text-sm-center">
-                    <div class="fa"
+                  <div class="col text-sm-center">
+                    <span class="fa"
                          [ngClass]="{
                           'fa-star-o text-warning' : !isInBasket(doc.id),
                            'text-warning fa-star' : isInBasket(doc.id)
                          }">
-                    </div>
-                  </span>
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <!-- Link auf Landing Page und Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
-              <div *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo" 
-              class="d-flex d-sm-none" style="margin:auto">
-              <!-- Link auf Landing Page -->
+              <div
+                *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo"
+                class="d-flex d-sm-none" style="margin:auto">
+                <!-- Link auf Landing Page -->
                 <a *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage === true"
-                class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
-                  [routerLink]="['/doc', doc.id]"></a>
+                   class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
+                   [routerLink]="['/doc', doc.id]"></a>
 
                 <!-- Button zum Einblenden der zusaetzlichen Infos -->
                 <button *ngIf="mainConfig.generatedConfig.tableFieldsDisplayExtraInfo === true"
@@ -747,7 +759,8 @@
                           *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
-                      <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
+                      <ng-container
+                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                         <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>
@@ -767,7 +780,7 @@
         <div class="tab-pane list-group"
              id="results-pills-basket"
              role="tabpanel"
-             attr.aria-labelledby="facet-pills-basket-tab">
+             aria-labelledby="facet-pills-basket-tab">
 
           <!-- Zeile aus Treffer-Anzahl und Pagination der Merkliste -->
           <div class="d-flex justify-content-start flex-wrap">
@@ -778,10 +791,10 @@
 
               <!-- Link fuer export -->
               <a *ngIf="mainConfig.showExportList.basket"
-              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
-              [href]="exportListData"
-              (click)="exportList(basketDocs)"
-              download="export-merkliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
+                 class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
+                 [href]="exportListData"
+                 (click)="exportList(basketDocs)"
+                 download="export-merkliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
 
               <!-- Paging fuer Merklisten-Treffertabelle -->
               <div class="btn-group btn-group-sm mb-2 mb-md-0"
@@ -916,21 +929,22 @@
                   <label class="d-sm-none font-weight-bold text-right mr-2">Add</label>
 
                   <!-- Button "Merken" fuegt ID ein oder loescht sie aus aktiver Merkliste -->
-                  <span class="col text-sm-center">
+                  <div class="col text-sm-center">
 
                     <!-- Bei Merkliste imm ein ausgefuellten Stern anzeigen -->
-                    <div class="text-warning fa fa-star"></div>
-                  </span>
+                    <span class="text-warning fa fa-star"></span>
+                  </div>
                 </div>
               </div>
 
               <!-- Link auf Landing Page und Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
-              <div *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo" 
-              class="d-flex d-sm-none" style="margin:auto">
-              <!-- Link auf Landing Page -->
+              <div
+                *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo"
+                class="d-flex d-sm-none" style="margin:auto">
+                <!-- Link auf Landing Page -->
                 <a *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage === true"
-                class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
-                  [routerLink]="['/doc', doc.id]"></a>
+                   class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
+                   [routerLink]="['/doc', doc.id]"></a>
 
                 <!-- Button zum Einblenden der zusaetzlichen Infos -->
                 <button *ngIf="mainConfig.generatedConfig.tableFieldsDisplayExtraInfo === true"
@@ -966,7 +980,8 @@
                           *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
-                      <ng-container *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
+                      <ng-container
+                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                         <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>

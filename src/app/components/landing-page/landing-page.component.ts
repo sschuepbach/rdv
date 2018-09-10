@@ -5,16 +5,17 @@ import { BackendSearchService } from 'app/services/elastic-search.service';
 
 @Component({
   selector: 'app-landing-page',
-  templateUrl: './landing-page.component.html',
-  styleUrls: ['./landing-page.component.css']
+  templateUrl: './landing-page.component.html'
 })
 export class LandingPageComponent implements OnInit {
 
   //ID des Eintrags. String um flexibel zu sein (123 vs. 234_b)
   id: string;
+  // TODO: Interface definieren
   landingpageData;
 
-  constructor(private backendSearchService: BackendSearchService, private route: ActivatedRoute) { }
+  constructor(private backendSearchService: BackendSearchService, private route: ActivatedRoute) {
+  }
 
   ngOnInit() {
 
@@ -26,7 +27,6 @@ export class LandingPageComponent implements OnInit {
 
       //LandingPage Daten per Service holen
       this.backendSearchService.getBackendDetailData(this.id, true).subscribe(
-
         //LandingPage Daten speichern fuer Anzeige
         res => this.landingpageData = res);
     });
