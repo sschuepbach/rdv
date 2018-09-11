@@ -5,8 +5,6 @@ import { BackendSearchService } from 'app/services/elastic-search.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-// FIXME: Replace HttpModule with HttpClient
-import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
@@ -36,7 +34,6 @@ import { ClipboardModule } from 'ngx-clipboard';
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    HttpModule,
     HttpClientModule,
     RouterModule.forRoot([
       {path: '', component: SearchComponent},

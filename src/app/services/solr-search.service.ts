@@ -1,14 +1,13 @@
 import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
-// FIXME: Replace HttpModule with HttpClient
-import { Http, URLSearchParams } from "@angular/http";
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/config/query-format";
 
 import { BasketFormat } from 'app/config/basket-format';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable()
 export class BackendSearchService {
@@ -28,7 +27,7 @@ export class BackendSearchService {
   basketRows: number;
 
   //Http Service injekten
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
 
     //Main-Config laden
     const mainConfig = environment;
@@ -77,7 +76,7 @@ export class BackendSearchService {
   getBackendDataComplex(queryFormat: QueryFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    const myParams = new URLSearchParams();
+    const myParams = new HttpParams();
 
     //Suchanfrage zusammenbauen
     const queryArray = [];
@@ -175,14 +174,15 @@ export class BackendSearchService {
       .post(this.proxyUrl, myParams)
 
       //Antwort als JSON weiterreichen
-      .map(response => response.json() as any);
+      // TODO: Überprüfen, ob valides JSON erstellt wird
+      .map((response: any) => response);
   }
 
   //Detail-Daten aus Solr holen (abstract,...)
   getBackendDetailData(id: string, fullRecord = false): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    const myParams = new URLSearchParams();
+    const myParams = new HttpParams();
 
     //Doppelpunkt in ID für Solr-Abfrage escapen (oai:opus.uni-hohenheim.de:1 -> oai\:opus.uni-hohenheim.de\:1)
     const clean_id = id.toString().replace(/:/g, "\\:");
@@ -202,14 +202,14 @@ export class BackendSearchService {
       .post(this.proxyUrl, myParams)
 
       //das 1. Dokument als JSON weiterreichen
-      .map(response => response.json().response.docs[0] as any);
+      .map((response: any) => response.response.docs[0]);
   }
 
   //Merklisten-Daten in Solr suchen
   getBackendDataBasket(basket: BasketFormat): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
-    const myParams = new URLSearchParams();
+    const myParams = new HttpParams();
 
     //ID sammeln
     const idArray = [];
@@ -244,7 +244,8 @@ export class BackendSearchService {
       .post(this.proxyUrl, myParams)
 
       //von JSON-Antwort nur die Dokument weiterreichen
-      .map(response => response.json() as any);
+      // TODO: Überprüfen, ob JSON zurückgeliefert wird
+      .map(response => response as any);
   }
 
 }

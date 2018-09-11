@@ -1,13 +1,12 @@
 import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
-// FIXME: Replace HttpModule with HttpClient
-import { Http } from "@angular/http";
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/config/query-format";
 import { BasketFormat } from 'app/config/basket-format';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class BackendSearchService {
@@ -22,7 +21,7 @@ export class BackendSearchService {
   detailFields: string[] = [];
 
   //Http Service injekten
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
 
     //Main-Config laden
     const mainConfig = environment;
@@ -190,7 +189,7 @@ export class BackendSearchService {
       .post(this.proxyUrl, JSON.stringify(complexQueryFormat))
 
       //Antwort als JSON weiterreichen
-      .map(response => response.json() as any);
+      .map((response: any) => response);
   }
 
   //Detail-Daten aus Elasticsearch fuer zusaetzliche Zeile holen (abstract,...)
@@ -217,7 +216,7 @@ export class BackendSearchService {
       .post(this.proxyUrl, JSON.stringify(detailQueryFormat))
 
       //das 1. Dokument als JSON weiterreichen
-      .map(response => response.json().response.docs[0] as any);
+      .map((response: any) => response.response.docs[0]);
   }
 
   //Merklisten-Daten in Elasticsearch suchen (ueber IDs)
@@ -243,7 +242,7 @@ export class BackendSearchService {
       .post(this.proxyUrl, JSON.stringify(basketQueryFormat))
 
       //von JSON-Antwort nur die Dokument weiterreichen
-      .map(response => response.json() as any);
+      .map((response: any) => response);
   }
 
 }
