@@ -1,23 +1,27 @@
-import { MainConfig } from 'app/config/main-config-elastic';
+import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
-// FIXME: Replace HttpModule with HttpClient
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { QueryFormat } from 'app/config/query-format';
+import { Subject } from 'rxjs/Rx';
 
 @Injectable()
 export class UserConfigService {
 
+  private configSource = new Subject<any>();
+  config$ = this.configSource.asObservable();
+
   //MainConfig erstellen (z.B. Felder der Treffer liste)
-  config: MainConfig = new MainConfig();
+  config = {
+    ...environment,
+    generatedConfig: {},
+  };
 
   //Http-Service laden
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
   }
 
-  //Config an Anwendung ausliefern
-  async getConfig(): Promise<MainConfig> {
-
+  getConfig() {
     // falls ein tableField extraInfo gesetzt hat, generatedConfig['tableFieldsDisplayExtraInfo'] auf true setzen
     this.config.generatedConfig['tableFieldsDisplayExtraInfo'] = false;
     for (const field of this.config.tableFields) {
@@ -41,21 +45,13 @@ export class UserConfigService {
 
       //Wenn bei Filter eine URL hinterlegt ist, muessen Optionen dynamisch geholt werden
       if (this.config.filterFields[key].url) {
-
         //Optionen per URL holen
-        this.config = await this.http.get(this.config.filterFields[key].url).toPromise().then(response => {
-
-          //Filter-Auswaehlmoeglichkeiten in Filterdatenbereich der Config schreiben (war bisher leer)
-          this.config.filterFields[key].options = response.json();
-
-          //Config zurueckgeben
-          return this.config;
-        });
+        this.http.get(this.config.filterFields[key].url).subscribe(res => this.config.filterFields[key].options = res)
       }
     }
 
-    //ggf. angepasste Config an Anwendung geben
-    return this.config;
+    this.configSource.next(this.config);
+
   }
 
   //QueryFormat aus Config erstellen

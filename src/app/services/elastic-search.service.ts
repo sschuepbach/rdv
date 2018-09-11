@@ -1,4 +1,4 @@
-import { MainConfig } from "app/config/main-config-elastic";
+import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 // FIXME: Replace HttpModule with HttpClient
@@ -25,7 +25,7 @@ export class BackendSearchService {
   constructor(private http: Http) {
 
     //Main-Config laden
-    const mainConfig = new MainConfig();
+    const mainConfig = environment;
 
     //proxyUrl setzen
     this.proxyUrl = mainConfig.proxyUrl;

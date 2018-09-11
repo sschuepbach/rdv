@@ -1,10 +1,7 @@
 //Fuer Config anpassen
 //import { BackendSearchService } from "app/services/solr-search.service";
 import { BackendSearchService } from "app/services/elastic-search.service";
-//import { MainConfig } from "app/config/main-config-freidok"
-//import { MainConfig } from "app/config/main-config-bwsts"
-//import { MainConfig } from "app/config/main-config-elastic-mh"
-import { MainConfig } from "app/config/main-config-elastic";
+import { environment } from '../../../environments/environment';
 
 import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 // Observable operators
@@ -124,7 +121,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   //Config-Objekt (z.B. Felder der Trefferliste)
-  mainConfig: MainConfig;
+  mainConfig = {
+    ...environment,
+    generatedConfig: {}
+  };
 
   //Such-Form
   searchForm: FormGroup;
@@ -205,6 +205,8 @@ export class SearchComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private userConfigService: UserConfigService,
               private sanitizer: DomSanitizer) {
+    userConfigService.getConfig();
+    userConfigService.config$.subscribe(res => this.mainConfig = res);
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -222,11 +224,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.writeToLocalStorage();
   }
 
-  //Component-Init (async)
-  async ngOnInit() {
-
-    //Config ueber Service laden (z.B. dynamische Werte fuer Filter holen), await fuer async-Behandlung des Aufrufs
-    this.mainConfig = await this.userConfigService.getConfig();
+  //Component-Init
+  ngOnInit() {
 
     //QueryFormat erzeugen lassen
     this.queryFormat = this.userConfigService.getQueryFormat();

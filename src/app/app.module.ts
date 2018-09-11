@@ -7,6 +7,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 // FIXME: Replace HttpModule with HttpClient
 import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -36,6 +37,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     BrowserModule,
     ReactiveFormsModule,
     HttpModule,
+    HttpClientModule,
     RouterModule.forRoot([
       {path: '', component: SearchComponent},
       {path: 'doc/:id', component: LandingPageComponent},

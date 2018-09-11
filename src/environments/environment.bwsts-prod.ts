@@ -1,4 +1,4 @@
-import { environment as dev } from './environment';
+import { environment as dev } from './environment.bwsts';
 
 export const environment = {
   ...dev,

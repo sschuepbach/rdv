@@ -1,4 +1,4 @@
-import { environment as dev } from './environment';
+import { environment as dev } from './environment.freidok';
 
 export const environment = {
   ...dev,

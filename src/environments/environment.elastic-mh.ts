@@ -1,13 +1,15 @@
-export class MainConfig {
+export const environment = {
+
+  production: false,
 
   // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
-  baseUrl = "http://localhost:4200";
+  baseUrl: "http://localhost:4200",
 
   //Wo liegt Proxy-Skript, das mit Elasticsearch spricht?
-  proxyUrl = "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php";
+  proxyUrl: "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php",
 
   //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
-  searchFields = {
+  searchFields: {
     "options": {
       "all_text": "Freitext",
       "Titel": "Titel",
@@ -16,10 +18,10 @@ export class MainConfig {
 
     },
     "preselect": ["all_text", "Titel", "Person"]
-  };
+  },
 
   //Infos zu Filtern (z.B. Filterung nach Einrichtung)
-  filterFields = {
+  filterFields: {
     "ort": {
       "label": "Ort",
       "field": "Ort.keyword",
@@ -56,11 +58,11 @@ export class MainConfig {
         }
       ]
     }
-  };
+  },
 
   //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
   //order gilt fuer Facetten und Ranges
-  facetFields = {
+  facetFields: {
     "doctype": {
       "field": "Dokumenttyp.keyword",
       "label": "Dokumenttyp",
@@ -82,11 +84,11 @@ export class MainConfig {
       "operator": "OR",
       "order": 4
     }
-  };
+  },
 
   //Infos zu Ranges (z.B. Label)
   //order gilt fuer Facetten und Ranges
-  rangeFields = {
+  rangeFields: {
     "year": {
       "field": "Jahr",
       "label": "Jahr",
@@ -107,34 +109,31 @@ export class MainConfig {
       "max": 20,
       "showMissingValues": true
     }
-  };
+  },
 
-  //Optionen fuer Anzahl der Treffer Treffertabelle
-  rowOpts = [5, 10, 20, 50];
-
-  queryParams = {
-    "rows": 10,
+  queryParams: {
+    "rows": 10, // 5, 10, 20, 50
     "start": 0,
     "sortField": "_uid",
     "sortDir": "asc"
-  };
+  },
 
   //Config fuer Merkliste
-  basketConfig = {
+  basketConfig: {
     "queryParams": {
       "rows": 10,
       "sortField": "_uid",
       "sortDir": "asc"
     }
-  };
+  },
 
-  showExportList = {
+  showExportList: {
     "basket": true,
     "table": false
-  };
+  },
 
   //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)
-  tableFields = [
+  tableFields: [
     {
       "field": "id",
       "label": "ID",
@@ -188,17 +187,14 @@ export class MainConfig {
       "css": "col-sm-2 col-lg-2 text-left",
     }
 
-  ];
+  ],
 
   //Welche Felder sollen in zusaetzlicher Zeile angezeigt werden
-  extraInfos = {
+  extraInfos: {
     "ort": {
       "field": "Ort",
       "label": "Ort",
       "display": "text"
     }
-  };
-
-  /** Nicht löschen, wird von user-config-service befüllt */
-  generatedConfig = {};
-}
+  },
+};

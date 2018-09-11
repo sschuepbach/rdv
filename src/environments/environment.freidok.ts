@@ -1,27 +1,29 @@
-export class MainConfig {
+export const environment = {
+
+  production: false,
 
   // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
-  baseUrl = "http://localhost:4200";
+  baseUrl: "http://localhost:4200",
 
   //Wo liegt Proxy-Skript, das mit Solr spricht?
-  proxyUrl = "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_freidok.php";
+  proxyUrl: "http://localhost/mh1018/test/php/solr/angularx_solr_proxy_freidok.php",
 
   //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
-  searchFields = {
+  searchFields: {
     "options": {
       "all_text": "Freitext",
       "ti_all_text": "Titel",
       "person_all_text": "Person"
     },
     "preselect": ["all_text", "ti_all_text", "person_all_text"]
-  };
+  },
 
   //Infos zu Filtern (z.B. Filterung nach Einrichtung)
-  filterFields = {};
+  filterFields: {},
 
   //Infos zu Facetten (z.B. mit welchen Operatoren die Facettenwere einer Facette verknuepft werden koennen)
   //order gilt fuer Facetten und Ranges
-  facetFields = {
+  facetFields: {
     "language": {
       "field": "language_all_facet",
       "label": "Sprache",
@@ -36,11 +38,11 @@ export class MainConfig {
       "operator": "OR",
       "order": 3
     }
-  };
+  },
 
   //Infos zu Ranges (z.B. Label)
   //order gilt fuer Facetten und Ranges
-  rangeFields = {
+  rangeFields: {
     "year": {
       "field": "py_int",
       "label": "Jahr",
@@ -62,34 +64,31 @@ export class MainConfig {
       "max": 20,
       "showMissingValues": true
     }
-  };
+  },
 
-  //Optionen fuer Anzahl der Treffer Treffertabelle
-  rowOpts = [5, 10, 20, 50];
-
-  queryParams = {
-    "rows": 10,
+  queryParams: {
+    "rows": 10, // 5, 10, 20, 50
     "start": 0,
     "sortField": "id_int",
     "sortDir": "asc"
-  };
+  },
 
   //Config fuer Merkliste
-  basketConfig = {
+  basketConfig: {
     "queryParams": {
       "rows": 10,
       "sortField": "id_int",
       "sortDir": "asc"
     }
-  };
+  },
 
-  showExportList = {
+  showExportList: {
     "basket": true,
     "table": true
-  };
+  },
 
   //Tabellenspalten mit Sortierkriterium (Solr-Feld oder false)
-  tableFields = [
+  tableFields: [
     {
       "field": "id",
       "label": "ID",
@@ -116,10 +115,10 @@ export class MainConfig {
       "sort": "py_string",
       "css": "col-sm-2 col-lg-1 text-sm-center",
     }
-  ];
+  ],
 
   //Welche Felder sollen in zusaetzlicher Zeile angezeigt werden
-  extraInfos = {
+  extraInfos: {
     "keywords": {
       "field": "keyword_all_string",
       "label": "Schlagwörter",
@@ -130,8 +129,5 @@ export class MainConfig {
       "label": "Quelle",
       "display": "text"
     }
-  };
-
-  /** Nicht löschen, wird von user-config-service befüllt */
-  generatedConfig = {};
-}
+  },
+};
