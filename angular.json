@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "solr-search": {
+    "rdv": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -133,36 +133,36 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "solr-search:build"
+            "browserTarget": "rdv:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "solr-search:build:production"
+              "browserTarget": "rdv:build:production"
             },
             "bwsts": {
-              "browserTarget": "solr-search:build:bwsts"
+              "browserTarget": "rdv:build:bwsts"
             },
             "bwsts-prod": {
-              "browserTarget": "solr-search:build:bwsts-prod"
+              "browserTarget": "rdv:build:bwsts-prod"
             },
             "freidok": {
-              "browserTarget": "solr-search:build:freidok"
+              "browserTarget": "rdv:build:freidok"
             },
             "freidok-prod": {
-              "browserTarget": "solr-search:build:freidok-prod"
+              "browserTarget": "rdv:build:freidok-prod"
             },
             "elastic-mh": {
-              "browserTarget": "solr-search:build:elastic-mh"
+              "browserTarget": "rdv:build:elastic-mh"
             },
             "elastic-mh-prod": {
-              "browserTarget": "solr-search:build:elastic-mh-prod"
+              "browserTarget": "rdv:build:elastic-mh-prod"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "solr-search:build"
+            "browserTarget": "rdv:build"
           }
         },
         "test": {
@@ -204,7 +204,7 @@
         }
       }
     },
-    "solr-search-e2e": {
+    "rdv-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -213,7 +213,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "solr-search:serve"
+            "devServerTarget": "rdv:serve"
           }
         },
         "lint": {
@@ -228,7 +228,7 @@
       }
     }
   },
-  "defaultProject": "solr-search",
+  "defaultProject": "rdv",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
