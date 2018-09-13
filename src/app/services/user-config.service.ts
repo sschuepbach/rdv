@@ -2,7 +2,7 @@ import { environment } from '../../environments/environment';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { QueryFormat } from 'app/config/query-format';
+import { QueryFormat } from 'app/models/query-format';
 import { Subject } from 'rxjs/Rx';
 
 @Injectable()

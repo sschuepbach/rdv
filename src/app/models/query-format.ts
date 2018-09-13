@@ -9,7 +9,4 @@ export class QueryFormat {
     "sortField": "",
     "sortDir": ""
   };
-
-  constructor() {
-  }
 }

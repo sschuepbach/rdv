@@ -13,9 +13,9 @@ import { BehaviorSubject } from "rxjs/BehaviorSubject";
 //Forms
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 //eigene Format-Klassen
-import { QueryFormat } from "app/config/query-format";
-import { SavedQueryFormat } from "app/config/saved-query-format";
-import { BasketFormat } from 'app/config/basket-format';
+import { QueryFormat } from "app/models/query-format";
+import { SavedQueryFormat } from "app/search-form/models/saved-query-format";
+import { BasketFormat } from 'app/search-form/models/basket-format';
 //Config
 import { UserConfigService } from 'app/services/user-config.service';
 //Slider-Plugin

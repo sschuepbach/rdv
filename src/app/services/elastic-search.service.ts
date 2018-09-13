@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
-import { QueryFormat } from "app/config/query-format";
-import { BasketFormat } from 'app/config/basket-format';
+import { QueryFormat } from "app/models/query-format";
+import { BasketFormat } from 'app/search-form/models/basket-format';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
