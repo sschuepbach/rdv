@@ -1,15 +1,15 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
-import { BackendSearchService } from './elastic-search.service';
+import { ElasticBackendSearchService } from './elastic-search.service';
 
-describe('BackendSearchService', () => {
+describe('ElasticBackendSearchService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BackendSearchService]
+      providers: [ElasticBackendSearchService]
     });
   });
 
-  it('should be created', inject([BackendSearchService], (service: BackendSearchService) => {
+  it('should be created', inject([ElasticBackendSearchService], (service: ElasticBackendSearchService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -1,7 +1,3 @@
-//Fuer Config anpassen
-//import { BackendSearchService } from 'app/services/solr-search.service';
-import { BackendSearchService } from 'app/services/elastic-search.service';
-
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
@@ -14,6 +10,7 @@ import { LandingPageComponent } from './containers/landing-page/landing-page.com
 
 import { UserConfigService } from 'app/services/user-config.service';
 import { SearchFormModule } from './search-form/search-form.module';
+import { backendSearchServiceProvider } from './services/backend-search.service.provider';
 
 @NgModule({
   declarations: [
@@ -33,7 +30,7 @@ import { SearchFormModule } from './search-form/search-form.module';
     ]),
   ],
   providers: [
-    BackendSearchService,
+    backendSearchServiceProvider,
     UserConfigService],
   bootstrap: [AppComponent]
 })

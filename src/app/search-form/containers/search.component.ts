@@ -1,6 +1,3 @@
-//Fuer Config anpassen
-//import { BackendSearchService } from "app/services/solr-search.service";
-import { BackendSearchService } from "app/services/elastic-search.service";
 import { environment } from '../../../environments/environment';
 
 import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
@@ -22,6 +19,7 @@ import { UserConfigService } from 'app/services/user-config.service';
 import { IonRangeSliderComponent } from "ng2-ion-range-slider";
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
+import { BackendSearchService } from '../../services/backend-search.service';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -602,7 +600,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.detailDataArray[id] === undefined) {
 
       //Infos aus Backend holen und lokal speichern. Eintrag sichtbar machen
-      this.backendSearchService.getBackendDetailData(id).subscribe(
+      this.backendSearchService.getBackendDetailData(id, false).subscribe(
         res => this.detailDataArray[id] = {"data": res, "visible": true});
     } else {
 

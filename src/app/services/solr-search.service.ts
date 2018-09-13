@@ -8,26 +8,29 @@ import { QueryFormat } from "app/models/query-format";
 
 import { BasketFormat } from 'app/search-form/models/basket-format';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { BackendSearchService } from './backend-search.service';
 
 @Injectable()
-export class BackendSearchService {
+export class SolrBackendSearchService extends BackendSearchService {
 
   //URL auf PHP-Proxy
   private proxyUrl: string;
 
   //Felder, die bei normaler Suche fuer die Treffertabelle geholt werden, schon direkt als koma-getrennter String ->
   //id,person_all_string,ti_all_string,py_string
-  tableFields: string;
+  private tableFields: string;
 
   //Felder, die bei der Detailsuche geholt werden, schon direkt als komma-getrenner String ->
   //keyword_all_string,source_title_all_string,pages_string
-  detailFields: string;
+  private detailFields: string;
 
   //Anzahl der Treffer pro Merklisten-Anfrage
-  basketRows: number;
+  private basketRows: number;
 
   //Http Service injekten
   constructor(private http: HttpClient) {
+
+    super();
 
     //Main-Config laden
     const mainConfig = environment;

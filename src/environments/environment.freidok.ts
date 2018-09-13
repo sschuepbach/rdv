@@ -2,6 +2,8 @@ export const environment = {
 
   production: false,
 
+  backend: "solr",
+
   // unter welcher Domaine (und Verzeichnis) läuft der RDV (wird benutzt um Links zu generieren)
   baseUrl: "http://localhost:4200",
 

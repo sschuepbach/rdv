@@ -12,3 +12,5 @@ Der Research Data Viewer kann mit verschiedenen Konfigurationen gestartet werden
 
 Eine Konfiguration abweichend vom Standard kann mit `ng serve -c konfiguration` bzw.
 `ng build -c konfiguration` ausgewählt werden.
+
+Anpassungen für index / type von Elasticsearch müssen auch in `angularx_elasticsearch_proxy_unibas.php` nachvollzogen werden.
