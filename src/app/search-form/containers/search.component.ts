@@ -47,11 +47,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     generatedConfig: {}
   };
 
-  //Infos aus Link laden, verhindern, dass Link-Query von localStorage ueberschrieben wird
-  private loadFromLink = false;
-  private basketFromLinkData = "";
   private activeBasket: Basket;
   private indexOfActiveBasket: number;
+
 
   constructor(private backendSearchService: BackendSearchService,
               public updateQueryService: UpdateQueryService,
@@ -72,9 +70,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
   @HostListener('window:beforeunload', ['$event'])
-  beforeUnloadHander() {
-
-    //Werte in Localstorage speichern, damit sie beim Zurueckkehren wieder da sind
+  beforeUnloadHandler() {
     this.writeToLocalStorage();
   }
 
@@ -83,49 +79,21 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-    this.updateQueryService.getData();
-
-    //Query-Parameter aus URL auslesen
     this.route.queryParamMap.subscribe(params => {
-
-      //Wenn Query-Parameter gesetzt ist (?search=dfewjSDFjklh)
       if (params.get("search")) {
-
-        //diesen zu queryFormat dekodieren
-        this.updateQueryService.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
-
-        //Flag setzen, damit nicht Wert aus localstorage genommen wird
-        this.loadFromLink = true;
-      }
-
-      //Wenn Merklisten-Parameter gesetzt ist (?basket=WEdszuig)
-      if (params.get("basket")) {
-        this.basketFromLinkData = params.get("basket");
+        this.loadQueryFromUrl(params);
+      } else if (params.get("basket")) {
+        const compressedBasket = params.get("basket");
+        const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
+        this.basketsService.createBasket(true, basketFromLink);
+      } else if (localStorage.getItem("userQuery")) {
+        this.loadQueryFromLocalStorage();
       }
     });
 
-    //Wenn keine Anfrage per Link geschickt wurde
-    if (!this.loadFromLink) {
-
-      //versuchen letzte Suche aus localstorage zu laden
-      const localStorageUserQuery = localStorage.getItem("userQuery");
-
-      //Wenn Suchanfrage aus localstorage geladen werden konnte
-      if (localStorageUserQuery) {
-
-        //Anfrage-Format laden
-        this.updateQueryService.queryFormat = JSON.parse(localStorageUserQuery);
-      }
-    }
-
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     const localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
-
-    //wenn gespeicherte Suchen aus localstorage geladen wurden
     if (localStorageSavedUserQueries) {
-
-      //gespeicherte Suchen aus localstorage holen
       this.queriesStoreService.savedQueries = JSON.parse(localStorageSavedUserQueries);
     }
 
@@ -148,15 +116,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           this.basketsService.createBasket(true, lsBasket);
         }
       }
-    }
-
-    if (this.basketFromLinkData !== "") {
-
-      //diesen dekodieren
-      const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(this.basketFromLinkData));
-
-      //daraus Merkliste erstellen
-      this.basketsService.createBasket(true, basketFromLink);
     }
 
     //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
@@ -195,6 +154,14 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     //Array der Merklisten speichern
     localStorage.setItem("savedBaskets", JSON.stringify(this.basketsStoreService.savedBasketItems));
+  }
+
+  private loadQueryFromUrl(params: any) {
+    this.updateQueryService.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
+  }
+
+  private loadQueryFromLocalStorage() {
+    this.updateQueryService.queryFormat = JSON.parse(localStorage.getItem("userQuery"));
   }
 
 }

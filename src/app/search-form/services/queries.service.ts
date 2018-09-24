@@ -10,7 +10,6 @@ import { SavedQueryFormat } from '../models/saved-query';
 })
 export class QueriesService {
 
-
   constructor(private formService: FormService,
               private updateQueryService: UpdateQueryService,
               private sliderService: SliderService,

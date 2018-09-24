@@ -48,7 +48,7 @@ export class VisualSearchComponent implements OnInit {
     this.setRangeData();
     //Slider Werte setzen
     this.sliderService.resetSlider$.subscribe(res => this.sliderInit(res));
-    // this.sliderService.resetSlider();
+    this.sliderService.resetSlider();
   }
 
   //min- / max-Werte fuer Ranges setzen
@@ -157,6 +157,7 @@ export class VisualSearchComponent implements OnInit {
 
     //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys
     const keys = key ? [key] : Object.keys(this.updateQueryService.queryFormat.rangeFields);
+    console.log(keys);
 
     //Ueber Rangewerte gehen
     for (const k of keys) {
@@ -168,6 +169,7 @@ export class VisualSearchComponent implements OnInit {
       //Vorhangwerte setzen
       this.rangeData[k].curtainLeft =
         ((1 - (this.rangeData[k].max - this.rangeData[k].from) / (this.rangeData[k].max - this.rangeData[k].min)) * 100) + '%';
+      console.log(this.rangeData[k].curtainLeft);
       this.rangeData[k].curtainRight =
         ((this.rangeData[k].max - this.rangeData[k].to) / (this.rangeData[k].max - this.rangeData[k].min) * 100) + '%';
     }
