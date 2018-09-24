@@ -1,0 +1,150 @@
+<ng-container [formGroup]="parentFormGroup">
+  <!-- DIV-Container fuer Tab-Links -->
+  <nav class="nav nav-pills"
+       id="facet-pills-tab"
+       role="tablist">
+
+    <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
+    <a *ngFor="let key of updateQueryService.queryFormat.facetFields | objectKeys"
+       class="nav-link text-sm-center px-2 py-0"
+       [ngClass]="'order-' + mainConfig.facetFields[key].order"
+       [class.active]="mainConfig.facetFields[key].order == 1"
+       [id]="'facet-pills-'+key+'-tab'"
+       data-toggle="pill"
+       [href]="'#facet-pills-'+key"
+       role="tab"
+       aria-controls="'pills-'+key"
+       aria-expanded="true">{{mainConfig.facetFields[key].label}}</a>
+
+    <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
+    <a *ngFor="let key of rangeData | objectKeys"
+       class="nav-link text-sm-center px-2 py-0"
+       [ngClass]="'order-' + mainConfig.rangeFields[key].order"
+       [class.active]="mainConfig.rangeFields[key].order == 1"
+       id="facet-pills-{{key}}-tab"
+       data-toggle="pill"
+       href="#facet-pills-{{key}}"
+       role="tab"
+       aria-controls="'facet-pills-'+key"
+       aria-expanded="true">{{mainConfig.rangeFields[key].label}}</a>
+  </nav>
+
+  <!-- DIV-Container fuer Tab-Inhalte -->
+  <div style="height: 300px; overflow-y: scroll;"
+       class="tab-content mt-2"
+       id="facet-pills-tabContent">
+
+    <!-- DIV pro Facette fuer Facettenwerte -->
+    <div *ngFor="let key of updateQueryService.queryFormat.facetFields | objectKeys"
+         [class.active]="mainConfig.facetFields[key].order == 1"
+         class="tab-pane list-group"
+         id="facet-pills-{{key}}"
+         role="tabpanel"
+         aria-labelledby="'facet-pills-'+key+'-tab'">
+
+      <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
+      Werte werden per
+      <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
+      <div *ngIf="mainConfig.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
+
+      <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
+      <ng-template #operatorSelect>
+        <select title="Verknüpfungsart" *ngIf="mainConfig.facetFields[key].operators.length > 1"
+                class="btn btn-sm"
+                [formControlName]="'operatorSelect_' + key">
+          <option *ngFor="let operator of mainConfig.facetFields[key].operators"
+                  [value]="operator">{{operator}}
+          </option>
+        </select>
+      </ng-template>
+
+      <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
+      <ng-template #singleOperator>{{updateQueryService.queryFormat.facetFields[key].operator}}</ng-template>
+
+      verküpft
+
+      <!-- Liste der Facettenwerte dieser Facette -->
+      <ng-container *ngFor="let value of facets[updateQueryService.queryFormat.facetFields[key].field]">
+
+        <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
+        <button *ngIf="updateQueryService.queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
+                (click)="selectFacet(key, value[0])"
+                type="button"
+                class="list-group-item list-group-item-action p-1">
+                <span class="justify-content-between align-items-center d-flex">
+                  <span style="word-break: break-word">{{value[0]}}</span>
+                  <span class="badge badge-pill badge-secondary">{{value[1]}}</span>
+                </span>
+        </button>
+      </ng-container>
+    </div>
+
+    <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
+    <div *ngFor="let key of rangeData | objectKeys"
+         class="tab-pane list-group"
+         [class.active]="mainConfig.rangeFields[key].order == 1"
+         [id]="'facet-pills-' + key"
+         role="tabpanel"
+         aria-labelledby="'facet-pills-' + key + '-tab'">
+
+      <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
+      <label class="btn btn-sm btn-outline-primary px-2 py-1 mb-3"
+             [class.active]="showMissingCheckbox.checked">
+
+        <!-- Anhak-Symbol -->
+        <span class="fa"
+              [class.fa-check-circle]="showMissingCheckbox.checked"
+              [class.fa-circle-thin]="!showMissingCheckbox.checked"></span>
+
+        <!-- Text "x Titel ohne Jahr anzeigen" -->
+        <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
+
+        <!-- unsichtbare Checkbox -->
+        <input class="d-none"
+               #showMissingCheckbox
+               type="checkbox"
+               [formControlName]="'showMissing_' + key">
+      </label>
+
+      <!-- Chart -->
+      <div style="height: 180px;">
+        <canvas baseChart
+                [chartType]="'bar'"
+                [datasets]="rangeData[key].chartData"
+                [labels]="rangeData[key].chartLabels"
+                [options]="rangeData[key].chartOptions"
+                [legend]="false">
+        </canvas>
+      </div>
+
+      <!-- Vorhang ueber Chart -->
+      <div class="curtain_div">
+        <div class="curtain_container">
+          <div class="curtain"
+               style="background-color: rgba(10, 10, 10, .3); left: 0"
+               [style.width]="rangeData[key].curtainLeft"></div>
+          <div class="curtain"
+               style="background-color: rgba(10, 10, 10, .3); right: 0"
+               [style.width]="rangeData[key].curtainRight"></div>
+        </div>
+      </div>
+
+      <!-- Slider -->
+      <div class="rangeslider_div">
+        <ion-range-slider #sliderElement
+                          [id]="key"
+                          type="double"
+                          [min]="rangeData[key].min"
+                          [from]="rangeData[key].from"
+                          [to]="rangeData[key].to"
+                          [max]="rangeData[key].max"
+                          [grid]="true"
+                          [grid_num]="10"
+                          [prefix]="rangeData[key].label + ' '"
+                          [prettify_enabled]="false"
+                          [hide_min_max]="true"
+                          (onChange)="updateSlider($event, key)"></ion-range-slider>
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,4 +1,4 @@
-import { QueryFormat } from "app/models/query-format";
+import { QueryFormat } from '../../models/query-format';
 
 export class SavedQueryFormat {
 

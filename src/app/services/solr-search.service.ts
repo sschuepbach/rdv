@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/models/query-format";
 
-import { BasketFormat } from 'app/search-form/models/basket-format';
+import { Basket } from 'app/search-form/models/basket';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BackendSearchService } from './backend-search.service';
 
@@ -209,7 +209,7 @@ export class SolrBackendSearchService extends BackendSearchService {
   }
 
   //Merklisten-Daten in Solr suchen
-  getBackendDataBasket(basket: BasketFormat): Observable<any> {
+  getBackendDataBasket(basket: Basket): Observable<any> {
 
     //Suchparameter sammeln und dem Proxy-Skript uebergeben
     const myParams = new HttpParams();

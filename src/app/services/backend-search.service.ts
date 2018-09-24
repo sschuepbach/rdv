@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryFormat } from '../models/query-format';
 import { Observable } from 'rxjs/Rx';
-import { BasketFormat } from '../search-form/models/basket-format';
+import { Basket } from '../search-form/models/basket';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,6 @@ export abstract class BackendSearchService {
   abstract getBackendDetailData(id: string, fullRecord: boolean): Observable<any>;
 
   //Merklisten-Daten in Elasticsearch suchen (ueber IDs)
-  abstract getBackendDataBasket(basket: BasketFormat): Observable<any>;
+  abstract getBackendDataBasket(basket: Basket): Observable<any>;
 
 }

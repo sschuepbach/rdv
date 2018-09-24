@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/models/query-format";
-import { BasketFormat } from 'app/search-form/models/basket-format';
+import { Basket } from 'app/search-form/models/basket';
 import { HttpClient } from '@angular/common/http';
 import { BackendSearchService } from './backend-search.service';
 
@@ -223,7 +223,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
   }
 
   //Merklisten-Daten in Elasticsearch suchen (ueber IDs)
-  getBackendDataBasket(basket: BasketFormat): Observable<any> {
+  getBackendDataBasket(basket: Basket): Observable<any> {
 
     //Anfrage-Objekt erstellen
     const basketQueryFormat = {};

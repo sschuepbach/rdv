@@ -1,0 +1,92 @@
+<!-- Ueberschrift -->
+<div class="h6">Aktuelle Suche</div>
+
+<!-- Info "Alle Titel suchen" anzeigen, wenn kein sonstiges Textfeld belegt ist -->
+<div class="d-flex no-gutters mh-lh" *ngIf="searchFieldsAreEmpty">
+
+  <!-- Label "Suche" -->
+  <label>Suche:</label>
+
+  <!-- "Alle Titel anzeigen" -->
+  <div class="col">alle Titel anzeigen</div>
+</div>
+
+<!-- Suchfelder: Ueber Suchfeld gehen -->
+<div *ngFor="let key of updateQueryService.queryFormat.searchFields | objectKeys"
+     class="d-flex no-gutters mh-lh">
+
+  <!-- Wenn in diesem Suchfeld etwas steht -->
+  <ng-container *ngIf="updateQueryService.queryFormat.searchFields[key].value.length > 0">
+
+    <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
+    <label>{{mainConfig.searchFields.options[updateQueryService.queryFormat.searchFields[key].field]}}:</label>
+
+    <!-- Suchwert -->
+    <div class="col">
+      <span>{{updateQueryService.queryFormat.searchFields[key].value}}</span>
+      <!-- Undo-Button -->
+      <button (click)="resetTerm(key)"
+              class="btn p-1 fa fa-trash"></button>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Ausgewaehlte Ranges: Ueber Rangefelder gehen -->
+<div *ngFor="let key of updateQueryService.queryFormat.rangeFields | objectKeys"
+     class="d-flex no-gutters mh-lh">
+
+  <!-- Label (Jahr:) -->
+  <label>{{mainConfig.rangeFields[key].label}}:</label>
+
+  <!-- Div mit aktuellem Wertebereich (1955-1972) -->
+  <div class="col">
+
+    <!-- Range-Bereich -->
+    <span>{{updateQueryService.queryFormat.rangeFields[key].from}} - {{updateQueryService.queryFormat.rangeFields[key].to}}</span>
+
+    <!-- Reset-Button (Range wieder auf Extrem-Werte setzen) -->
+    <button
+      *ngIf="updateQueryService.queryFormat.rangeFields[key].from != updateQueryService.queryFormat.rangeFields[key].min || updateQueryService.queryFormat.rangeFields[key].to != updateQueryService.queryFormat.rangeFields[key].max"
+      (click)="resetRange(key)"
+      class="btn p-1 fa fa-undo"></button>
+
+    <span *ngIf="updateQueryService.queryFormat.rangeFields[key].showMissingValues">
+              <span> / auch Einträge ohne {{mainConfig.rangeFields[key].label}} anzeigen</span>
+
+      <!-- Undo-Button -->
+              <button (click)="resetRangeValues(key)"
+                      class="btn p-1 fa fa-trash"></button>
+            </span>
+  </div>
+</div>
+
+<!-- Ausgewaehlte Facetenwerte: Ueber Facettenfelder gehen -->
+<div *ngFor="let key of updateQueryService.queryFormat.facetFields | objectKeys"
+     class="d-flex no-gutters mh-lh">
+
+  <!-- Wenn es ausgewaehlte Werte dieser Facette gibt -->
+  <ng-container *ngIf="updateQueryService.queryFormat.facetFields[key].values.length > 0">
+
+    <!-- Name der Facette (Dokumenttyp: ) -->
+    <label>{{mainConfig.facetFields[key].label}}:</label>
+
+    <!-- Div mit Werten -->
+    <div class="col">
+
+      <!-- Ueber Werte der Facetten gehen -->
+      <ng-container *ngFor="let facetVal of updateQueryService.queryFormat.facetFields[key].values; first as first">
+
+        <!-- ab 2. Eintrag Operator ausgeben (... OR eng) -->
+        <span *ngIf="!first">{{updateQueryService.queryFormat.facetFields[key].operator}}</span>
+
+        <!-- Facettenwert -->
+        <span>{{facetVal}}</span>
+
+        <!-- Remove-Button -->
+        <button (click)="removeFacet(key, facetVal)"
+                class="btn p-1 fa fa-trash"></button>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>
+
