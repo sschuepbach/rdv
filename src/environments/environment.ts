@@ -55,7 +55,7 @@ export const environment = {
         },
         {
           "value": "Widerstand",
-          "label": "Wiederstand"
+          "label": "Widerstand"
         }
       ]
     }
