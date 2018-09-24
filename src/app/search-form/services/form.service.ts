@@ -1,36 +1,38 @@
-import { Injectable } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Directive, forwardRef, Injectable } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, NG_VALIDATORS, Validators } from '@angular/forms';
 import { UpdateQueryService } from './update-query.service';
 import { QueriesStoreService } from './queries-store.service';
 import { environment } from '../../../environments/environment';
 import { UserConfigService } from '../../services/user-config.service';
 import { BasketsStoreService } from './baskets-store.service';
 import { Basket } from '../models/basket';
-import { SavedQueryFormat } from '../models/saved-query';
 
-//Validator-Funktion stellt sicher, dass jede gespeicherte Suche einen eindeutigen Namen hat
-function uniqueQueryNameValidator(savedQueries: SavedQueryFormat[]) {
+function queryNameIsUniqueValidatorFactory(queriesStore: QueriesStoreService) {
   return (control: FormControl) => {
+    return queriesStore.savedQueries.filter(q => q.name === control.value).length > 0 ?
+      {uniqueQueryName: {valid: false}} : null;
+  }
+}
 
-    //Error-Objekt
-    let error = null;
-    console.log(savedQueries);
+// For explanations on the reason why using a directive as validator see
+// https://blog.thoughtram.io/angular/2016/03/14/custom-validators-in-angular-2.html#custom-validators-with-dependencies
+@Directive({
+  selector: '[app-validateUniqueQueryName][formControl]',
+  providers: [
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => QueryNameIsUniqueValidatorDirective), multi: true}
+  ]
+})
+export class QueryNameIsUniqueValidatorDirective {
 
-    //Ueber gespeicherte Anfragen gehen
-    savedQueries.forEach(function (query) {
+  validator: Function;
 
-      //Wenn Name bereits vorhanden
-      if (control.value === query.name) {
+  constructor(queriesStore: QueriesStoreService) {
+    this.validator = queryNameIsUniqueValidatorFactory(queriesStore);
+  }
 
-        //Fehlerobjekt setzen
-        error = {
-          uniqueQueryName: {valid: false}
-        };
-      }
-    });
-
-    //Fehlerobjekt zurueckgeben (null, wenn kein Fehler)
-    return error;
+  // noinspection JSUnusedGlobalSymbols
+  validate(c: FormControl) {
+    return this.validator(c);
   }
 }
 
@@ -82,7 +84,7 @@ export class FormService {
       //Eingabefeld fuer Name der zu speichernden Suche
       saveQuery: [
         'Meine Suche ' + (this.queriesStoreService.savedQueries.length + 1),
-        [Validators.required, Validators.minLength(3), uniqueQueryNameValidator(this.queriesStoreService.savedQueries)]
+        [Validators.required, Validators.minLength(3), new QueryNameIsUniqueValidatorDirective(this.queriesStoreService)]
       ]
     });
 
