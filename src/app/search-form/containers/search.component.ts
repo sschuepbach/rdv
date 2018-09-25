@@ -50,6 +50,13 @@ export class SearchComponent implements OnInit, OnDestroy {
   private activeBasket: Basket;
   private indexOfActiveBasket: number;
 
+  private static loadQueryFromUrl(params: any) {
+    return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
+  }
+
+  private static loadQueryFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("userQuery"));
+  }
 
   constructor(private backendSearchService: BackendSearchService,
               public updateQueryService: UpdateQueryService,
@@ -62,7 +69,6 @@ export class SearchComponent implements OnInit, OnDestroy {
               private _fb: FormBuilder,
               private route: ActivatedRoute,
               private userConfigService: UserConfigService) {
-    userConfigService.getConfig();
     userConfigService.config$.subscribe(res => this.mainConfig = res);
     this.basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
     this.basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
@@ -81,13 +87,20 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(params => {
       if (params.get("search")) {
-        this.loadQueryFromUrl(params);
-      } else if (params.get("basket")) {
+        this.updateQueryService.queryFormat = SearchComponent.loadQueryFromUrl(params);
+      } else if (localStorage.getItem("userQuery")) {
+        this.updateQueryService.queryFormat = SearchComponent.loadQueryFromLocalStorage();
+      } else {
+        this.updateQueryService.queryFormat = this.userConfigService.getQueryFormat();
+      }
+      this.formService.createForms();
+      this.updateQueryService.sendRequest();
+
+      if (params.get("basket")) {
         const compressedBasket = params.get("basket");
         const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
         this.basketsService.createBasket(true, basketFromLink);
-      } else if (localStorage.getItem("userQuery")) {
-        this.loadQueryFromLocalStorage();
+
       }
     });
 
@@ -125,8 +138,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       this.basketsService.createBasket(true);
     }
 
-    //Suche starten
-    this.updateQueryService.getData();
   }
 
   resetSearch() {
@@ -140,7 +151,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.sliderService.resetSlider();
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
@@ -154,14 +165,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
     //Array der Merklisten speichern
     localStorage.setItem("savedBaskets", JSON.stringify(this.basketsStoreService.savedBasketItems));
-  }
-
-  private loadQueryFromUrl(params: any) {
-    this.updateQueryService.queryFormat = JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
-  }
-
-  private loadQueryFromLocalStorage() {
-    this.updateQueryService.queryFormat = JSON.parse(localStorage.getItem("userQuery"));
   }
 
 }

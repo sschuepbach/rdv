@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { UpdateQueryService } from '../services/update-query.service';
 import { SliderService } from '../services/slider.service';
 import { UserConfigService } from '../../services/user-config.service';
-import { environment } from '../../../environments/environment';
 import { FormService } from '../services/form.service';
 import { FormGroup } from '@angular/forms';
 
@@ -22,11 +21,7 @@ import { FormGroup } from '@angular/forms';
 export class ParamsSetComponent {
 
   @Input() parentFormGroup: FormGroup;
-
-  mainConfig = {
-    ...environment,
-    generatedConfig: {},
-  };
+  @Input() mainConfig: any;
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;
@@ -35,8 +30,6 @@ export class ParamsSetComponent {
               private sliderService: SliderService,
               private userConfigService: UserConfigService,
               private formService: FormService) {
-    userConfigService.getConfig();
-    userConfigService.config$.subscribe(res => this.mainConfig = res);
     this.searchFieldsAreEmpty = formService.checkIfSearchFieldsAreEmpty();
   }
 
@@ -52,7 +45,7 @@ export class ParamsSetComponent {
     this.updateQueryService.queryFormat.facetFields[field]["values"].splice(index, 1);
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   //Slider auf Anfangswerte zuruecksetzen
@@ -65,7 +58,7 @@ export class ParamsSetComponent {
     this.sliderService.resetSlider(key);
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   resetTerm(key) {

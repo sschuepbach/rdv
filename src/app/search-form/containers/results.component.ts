@@ -74,7 +74,7 @@ export class ResultsComponent {
               private userConfigService: UserConfigService,
               private backendSearchService: BackendSearchService,
               private sanitizer: DomSanitizer) {
-    updateQueryService.complexSearchTerms$.subscribe(res => {
+    updateQueryService.request$.subscribe(res => {
         this.count = res.response.numFound;
         //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
         this.setSortColumnIndex();
@@ -119,7 +119,7 @@ export class ResultsComponent {
         this.updateQueryService.queryFormat.queryParams.start = newStart;
 
         //Suche starten
-        this.updateQueryService.getData();
+        this.updateQueryService.sendRequest();
         break;
 
       //Merklistentabelle
@@ -331,7 +331,7 @@ export class ResultsComponent {
         this.updateQueryService.queryFormat.queryParams.start = 0;
 
         //Suche starten
-        this.updateQueryService.getData();
+        this.updateQueryService.sendRequest();
         break;
 
       //Merkliste

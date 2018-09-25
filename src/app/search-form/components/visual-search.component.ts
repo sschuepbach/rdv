@@ -31,7 +31,7 @@ export class VisualSearchComponent implements OnInit {
 
   constructor(private sliderService: SliderService,
               private updateQueryService: UpdateQueryService) {
-    updateQueryService.complexSearchTerms$.subscribe(res => {
+    updateQueryService.request$.subscribe(res => {
       //Facetten-Ranges Werte
       this.ranges = res.facet_counts.facet_ranges;
       //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
@@ -157,7 +157,6 @@ export class VisualSearchComponent implements OnInit {
 
     //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys
     const keys = key ? [key] : Object.keys(this.updateQueryService.queryFormat.rangeFields);
-    console.log(keys);
 
     //Ueber Rangewerte gehen
     for (const k of keys) {
@@ -169,7 +168,6 @@ export class VisualSearchComponent implements OnInit {
       //Vorhangwerte setzen
       this.rangeData[k].curtainLeft =
         ((1 - (this.rangeData[k].max - this.rangeData[k].from) / (this.rangeData[k].max - this.rangeData[k].min)) * 100) + '%';
-      console.log(this.rangeData[k].curtainLeft);
       this.rangeData[k].curtainRight =
         ((this.rangeData[k].max - this.rangeData[k].to) / (this.rangeData[k].max - this.rangeData[k].min) * 100) + '%';
     }
@@ -191,7 +189,7 @@ export class VisualSearchComponent implements OnInit {
     this.updateQueryService.queryFormat.queryParams.start = 0;
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   //Facette speichern
@@ -204,7 +202,7 @@ export class VisualSearchComponent implements OnInit {
     this.updateQueryService.queryFormat.queryParams.start = 0;
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   //Anzahl der Eintraege ohne ein Merkmal (z.B. Titel ohne Jahr)

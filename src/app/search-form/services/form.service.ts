@@ -61,13 +61,11 @@ export class FormService {
               private userConfigService: UserConfigService,
               private basketsStoreService: BasketsStoreService,
               private queriesStoreService: QueriesStoreService) {
-    userConfigService.getConfig();
     userConfigService.config$.subscribe(res => this.mainConfig = res);
-    this.createForms();
   }
 
   //FormControls fuer Suchanfragen und Speicherung von Suchanfragen anlgen
-  private createForms(): any {
+  createForms(): any {
 
     //Such-Form
     this.searchForm = this.formBuilder.group({
@@ -98,7 +96,7 @@ export class FormService {
       this.updateQueryService.queryFormat.queryParams.start = 0;
 
       //Suche starten
-      this.updateQueryService.getData();
+      this.updateQueryService.sendRequest();
     });
 
     //FormControls fuer Suchfelder und deren Auswahlselects festlegen
@@ -114,7 +112,7 @@ export class FormService {
         this.updateQueryService.queryFormat.searchFields[key].field = value;
 
         //Suche starten
-        this.updateQueryService.getData();
+        this.updateQueryService.sendRequest();
       });
 
       //Suchfeld einfuegen und direkt mit Wert belegen
@@ -130,7 +128,7 @@ export class FormService {
         this.updateQueryService.queryFormat.queryParams.start = 0;
 
         //Suche starten
-        this.updateQueryService.getData();
+        this.updateQueryService.sendRequest();
 
         //Pruefen, ob alle Suchfelder leer sind (in diesem Fall wird oben der Hinweis "alle Titel anzeigen" angezeigt)
         this.checkIfSearchFieldsAreEmpty();
@@ -152,7 +150,7 @@ export class FormService {
         this.updateQueryService.queryFormat.rangeFields[key].showMissingValues = checked;
 
         //Suche starten
-        this.updateQueryService.getData();
+        this.updateQueryService.sendRequest();
       });
     }
 
@@ -172,7 +170,7 @@ export class FormService {
           this.updateQueryService.queryFormat.facetFields[key].operator = value;
 
           //Suche starten
-          this.updateQueryService.getData();
+          this.updateQueryService.sendRequest();
         })
       }
     }
@@ -224,7 +222,7 @@ export class FormService {
                 }
 
                 //Neue Suchabschicken
-                this.updateQueryService.getData();
+                this.updateQueryService.sendRequest();
               }
             )
           }

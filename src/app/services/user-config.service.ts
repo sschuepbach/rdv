@@ -3,12 +3,12 @@ import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { QueryFormat } from 'app/models/query-format';
-import { Subject } from 'rxjs/Rx';
+import { ReplaySubject } from 'rxjs/Rx';
 
 @Injectable()
 export class UserConfigService {
 
-  private configSource = new Subject<any>();
+  private configSource = new ReplaySubject<any>(1);
   config$ = this.configSource.asObservable();
 
   //MainConfig erstellen (z.B. Felder der Treffer liste)
@@ -19,9 +19,10 @@ export class UserConfigService {
 
   //Http-Service laden
   constructor(private http: HttpClient) {
+    this.getConfig();
   }
 
-  getConfig() {
+  private getConfig() {
     // falls ein tableField extraInfo gesetzt hat, generatedConfig['tableFieldsDisplayExtraInfo'] auf true setzen
     this.config.generatedConfig['tableFieldsDisplayExtraInfo'] = false;
     for (const field of this.config.tableFields) {

@@ -45,7 +45,7 @@ export class QueriesService {
     this.sliderService.resetSlider();
 
     //Suche starten
-    this.updateQueryService.getData();
+    this.updateQueryService.sendRequest();
   }
 
   delete(index: number) {
