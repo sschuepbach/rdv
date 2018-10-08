@@ -5,7 +5,7 @@
        role="tablist">
 
     <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-    <a *ngFor="let key of updateQueryService.queryFormat.facetFields | objectKeys"
+    <a *ngFor="let key of query.facetFields | objectKeys"
        class="nav-link text-sm-center px-2 py-0"
        [ngClass]="'order-' + mainConfig.facetFields[key].order"
        [class.active]="mainConfig.facetFields[key].order == 1"
@@ -35,7 +35,7 @@
        id="facet-pills-tabContent">
 
     <!-- DIV pro Facette fuer Facettenwerte -->
-    <div *ngFor="let key of updateQueryService.queryFormat.facetFields | objectKeys"
+    <div *ngFor="let key of query.facetFields | objectKeys"
          [class.active]="mainConfig.facetFields[key].order == 1"
          class="tab-pane list-group"
          id="facet-pills-{{key}}"
@@ -59,15 +59,15 @@
       </ng-template>
 
       <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
-      <ng-template #singleOperator>{{updateQueryService.queryFormat.facetFields[key].operator}}</ng-template>
+      <ng-template #singleOperator>{{query.facetFields[key].operator}}</ng-template>
 
       verküpft
 
       <!-- Liste der Facettenwerte dieser Facette -->
-      <ng-container *ngFor="let value of facets[updateQueryService.queryFormat.facetFields[key].field]">
+      <ng-container *ngFor="let value of facets[query.facetFields[key].field]">
 
         <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
-        <button *ngIf="updateQueryService.queryFormat.facetFields[key].values.indexOf(value[0]) == -1"
+        <button *ngIf="query.facetFields[key].values.indexOf(value[0]) == -1"
                 (click)="selectFacet(key, value[0])"
                 type="button"
                 class="list-group-item list-group-item-action p-1">

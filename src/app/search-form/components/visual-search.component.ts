@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
-import { SliderService } from '../services/slider.service';
-import { FormGroup } from '@angular/forms';
-import { IonRangeSliderComponent } from 'ng2-ion-range-slider';
+import {Component, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {UpdateQueryService} from '../services/update-query.service';
+import {SliderService} from '../services/slider.service';
+import {FormGroup} from '@angular/forms';
+import {IonRangeSliderComponent} from 'ng2-ion-range-slider';
+import {QueryFormat} from "../../models/query-format";
 
 @Component({
   selector: 'app-visual-search',
@@ -28,10 +29,12 @@ export class VisualSearchComponent implements OnInit {
 
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
+  query: QueryFormat;
 
   constructor(private sliderService: SliderService,
               private updateQueryService: UpdateQueryService) {
-    updateQueryService.request$.subscribe(res => {
+    updateQueryService.query$.subscribe(q => this.query = q);
+    updateQueryService.response$.subscribe(res => {
       //Facetten-Ranges Werte
       this.ranges = res.facet_counts.facet_ranges;
       //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
@@ -55,18 +58,18 @@ export class VisualSearchComponent implements OnInit {
   private setRangeData() {
 
     //Ueber Felder des Abfrage-Formats gehen
-    for (const key of Object.keys(this.updateQueryService.queryFormat.rangeFields)) {
+    for (const key of Object.keys(this.query.rangeFields)) {
 
       //leeren Wert fuer rangeMissingValues anlegen (da sonst undefined)
-      this.rangeMissingValues['{!ex=' + this.updateQueryService.queryFormat.rangeFields[key].field + '}' +
-      this.updateQueryService.queryFormat.rangeFields[key].field + ':0'] = 0;
+      this.rangeMissingValues['{!ex=' + this.query.rangeFields[key].field + '}' +
+      this.query.rangeFields[key].field + ':0'] = 0;
 
       //Objekt fuer diese Range (z.B. Jahr) anelegen
       this.rangeData[key] = {};
 
       //Min und Max-Werte aus Query-Format holen
-      this.rangeData[key].min = this.updateQueryService.queryFormat.rangeFields[key].min;
-      this.rangeData[key].max = this.updateQueryService.queryFormat.rangeFields[key].max;
+      this.rangeData[key].min = this.query.rangeFields[key].min;
+      this.rangeData[key].max = this.query.rangeFields[key].max;
 
       //Leeres Datenarray anlegen
       this.rangeData[key].chartData = [{data: []}];
@@ -130,11 +133,11 @@ export class VisualSearchComponent implements OnInit {
   private createCharts() {
 
     //Chartdata erstellen
-    for (const key of Object.keys(this.updateQueryService.queryFormat.rangeFields)) {
+    for (const key of Object.keys(this.query.rangeFields)) {
 
       //Werte sammeln
       const barData = [];
-      const backendData = this.ranges[this.updateQueryService.queryFormat.rangeFields[key].field].counts;
+      const backendData = this.ranges[this.query.rangeFields[key].field].counts;
 
       //Ranges kommen als Array von Arrays [["1800", 2]["1801", 0]["1802", 6],...],
       for (let i = 0; i < backendData.length; i++) {
@@ -156,14 +159,14 @@ export class VisualSearchComponent implements OnInit {
     }
 
     //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys
-    const keys = key ? [key] : Object.keys(this.updateQueryService.queryFormat.rangeFields);
+    const keys = key ? [key] : Object.keys(this.query.rangeFields);
 
     //Ueber Rangewerte gehen
     for (const k of keys) {
 
       //Von und bis Werte fuer Slider setzen
-      this.rangeData[k].from = this.updateQueryService.queryFormat.rangeFields[k].from;
-      this.rangeData[k].to = this.updateQueryService.queryFormat.rangeFields[k].to;
+      this.rangeData[k].from = this.query.rangeFields[k].from;
+      this.rangeData[k].to = this.query.rangeFields[k].to;
 
       //Vorhangwerte setzen
       this.rangeData[k].curtainLeft =
@@ -181,36 +184,27 @@ export class VisualSearchComponent implements OnInit {
     this.rangeData[key].curtainLeft = $event.from_percent + '%';
     this.rangeData[key].curtainRight = (100 - $event.to_percent) + '%';
 
-    //fq-Werte setzen
-    this.updateQueryService.queryFormat.rangeFields[key].from = $event.from;
-    this.updateQueryService.queryFormat.rangeFields[key].to = $event.to;
-
-    //Start der Trefferliste auf Anfang setzen
-    this.updateQueryService.queryFormat.queryParams.start = 0;
-
-    //Suche starten
-    this.updateQueryService.sendRequest();
+    const query = JSON.parse(JSON.stringify(this.query));
+    query.rangeFields[key].from = $event.from;
+    query.rangeFields[key].to = $event.to;
+    query.queryParams.start = 0;
+    this.updateQueryService.updateQuery(query);
   }
 
   //Facette speichern
   selectFacet(field, value) {
-
-    //Facettenwert in Array speichern
-    this.updateQueryService.queryFormat.facetFields[field]["values"].push(value);
-
-    //Start der Trefferliste auf Anfang setzen
-    this.updateQueryService.queryFormat.queryParams.start = 0;
-
-    //Suche starten
-    this.updateQueryService.sendRequest();
+    const query = JSON.parse(JSON.stringify(this.query));
+    query.facetFields[field]["values"].push(value);
+    query.queryParams.start = 0;
+    this.updateQueryService.updateQuery(query);
   }
 
   //Anzahl der Eintraege ohne ein Merkmal (z.B. Titel ohne Jahr)
   getMissingCount(key) {
 
     //lokal gespeicherten Wert zurueckliefern
-    return this.rangeMissingValues['{!ex=' + this.updateQueryService.queryFormat.rangeFields[key].field + '}' +
-    this.updateQueryService.queryFormat.rangeFields[key].field + ':0'];
+    return this.rangeMissingValues['{!ex=' + this.query.rangeFields[key].field + '}' +
+    this.query.rangeFields[key].field + ':0'];
   }
 
 }

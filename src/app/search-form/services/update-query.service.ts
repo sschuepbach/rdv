@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { QueryFormat } from '../../models/query-format';
-import { Observable, Subject } from 'rxjs/Rx';
-import { BackendSearchService } from '../../services/backend-search.service';
+import {Injectable} from '@angular/core';
+import {QueryFormat} from '../../models/query-format';
+import {Subject} from 'rxjs/Rx';
+import {BackendSearchService} from '../../services/backend-search.service';
+import {BehaviorSubject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -9,16 +10,27 @@ import { BackendSearchService } from '../../services/backend-search.service';
 export class UpdateQueryService {
 
   private requestSource = new Subject<QueryFormat>();
-  request$: Observable<any> = this.requestSource
-    .asObservable()
-    .switchMap((q: QueryFormat) => this.backendSearchService.getBackendDataComplex(q));
-  queryFormat: QueryFormat;
+  private querySource = new BehaviorSubject<QueryFormat>(new QueryFormat());
+
+  request$ = this.requestSource.asObservable();
+
+  response$;
+  query$ = this.querySource.asObservable();
 
   constructor(private backendSearchService: BackendSearchService) {
+    this.query$.subscribe(
+      q => this.request(q)
+    );
+    this.response$ = this.request$
+      .switchMap((q: QueryFormat) => this.backendSearchService.getBackendDataComplex(q))
   }
 
-  sendRequest() {
-    this.requestSource.next(this.queryFormat);
+  private request(q: QueryFormat) {
+    this.requestSource.next(q);
+  }
+
+  updateQuery(q: QueryFormat) {
+    this.querySource.next(q);
   }
 
 }

@@ -1,6 +1,6 @@
 <!-- Trefferlisten (Suche und Merkliste) als Tabs (Pills) -->
 <div class="d-flex flex-column p-2 col-md mt-2 mb-2"
-     style="border: 1px solid grey; border-radius:3px;">
+     style="border: 1px solid grey; border-radius:3px;" [formGroup]="parentFormGroup">
 
   <!-- DIV-Container fuer Tab-Links -->
   <nav class="nav nav-pills "
@@ -28,7 +28,7 @@
        aria-controls="pills-basket"
        aria-expanded="true">Merkliste
       <!-- Treffer-Anzahl in Merkliste -->
-      <strong>({{basketSize}})</strong>
+      <strong>({{getBasketSize()}})</strong>
     </a>
   </nav>
 
@@ -80,13 +80,13 @@
             <!-- 1. Seite -->
             <button class="btn btn-primary fa fa-angle-double-left"
                     (click)="updateStart('first')"
-                    [disabled]="updateQueryService.queryFormat.queryParams.start == 0">
+                    [disabled]="query.queryParams.start == 0">
             </button>
 
             <!-- nach links blaettern -->
             <button class="btn btn-primary fa fa-angle-left"
                     (click)="updateStart(-1)"
-                    [disabled]="updateQueryService.queryFormat.queryParams.start == 0">
+                    [disabled]="query.queryParams.start == 0">
             </button>
 
             <!-- aktuelle Seite von insgesamt x Seiten -->
@@ -260,7 +260,7 @@
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container
-                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
+                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; last as isLast;">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                         <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>
@@ -286,7 +286,7 @@
       <div class="d-flex justify-content-start flex-wrap">
 
         <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
-        <div *ngIf="basketSize"
+        <div *ngIf="getBasketSize()"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <!-- Link fuer export -->
@@ -330,7 +330,7 @@
       </div>
 
       <!-- Merklisten-Treffertabelle -->
-      <div *ngIf="basketSize"
+      <div *ngIf="getBasketSize()"
            class="mt-2 mh-table-view">
 
         <!-- Tabellenheader -->
@@ -481,7 +481,7 @@
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container
-                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; first as isFirst">
+                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; last as isLast">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                         <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>
@@ -496,6 +496,7 @@
         </div>
       </div>
     </div>
+
   </div>
 
 </div>

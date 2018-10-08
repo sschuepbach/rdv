@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BasketsStoreService } from './baskets-store.service';
-import { FormService } from './form.service';
-import { UserConfigService } from '../../services/user-config.service';
-import { environment } from '../../../environments/environment';
-import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs/Rx';
-import { Basket } from '../models/basket';
+import {Injectable} from '@angular/core';
+import {BasketsStoreService} from './baskets-store.service';
+import {FormService} from './form.service';
+import {UserConfigService} from '../../services/user-config.service';
+import {environment} from '../../../environments/environment';
+import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
+import {Basket} from '../models/basket';
 
 @Injectable({
   providedIn: 'root'
@@ -17,16 +17,17 @@ export class BasketsService {
     generatedConfig: {}
   };
 
+  private _activeBasket: Basket;
+  private _indexOfActiveBasket = 0;
+
   private indexOfActiveBasketSource = new BehaviorSubject<number>(0);
   private activeBasketSource = new ReplaySubject<Basket>(1);
-  private basketSearchTermsSource = new Subject<Basket>();
+  private basketSearchTermsSource = new BehaviorSubject<Basket>(this._activeBasket);
 
   indexOfActiveBasket$ = this.indexOfActiveBasketSource.asObservable();
   activeBasket$ = this.activeBasketSource.asObservable();
   basketSearchTerms$ = this.basketSearchTermsSource.asObservable();
 
-  private _activeBasket: Basket;
-  private _indexOfActiveBasket = 0;
 
   get basketSize(): number {
     return this.basketsStoreService.savedBasketItems.length ? this._activeBasket.ids.length : 0;
@@ -43,6 +44,18 @@ export class BasketsService {
     });
   }
 
+  private loadBasketByIndex(index: number) {
+    this.indexOfActiveBasketSource.next(index);
+  }
+
+  private loadBasketByBasket(basket: Basket) {
+    this.activeBasketSource.next(basket);
+  }
+
+  private initializeBasketSearch() {
+    this.basketSearchTermsSource.next(this._activeBasket);
+  }
+
   basketsExist() {
     return !!this.basketsStoreService.savedBasketItems.length;
   }
@@ -52,27 +65,19 @@ export class BasketsService {
       // TODO: Implement better error handling
       console.log("ERROR: New basket index is out of bounds!")
     } else {
-      this.activeBasketSource.next(this.basketsStoreService.savedBasketItems[index]);
+      this.loadBasketByBasket(this.basketsStoreService.savedBasketItems[index]);
     }
   }
 
   // TODO: Better naming
-  // FIXME: Replace this.activeBasket with Observable
   propagateBasketSearchTermsFromActiveBasket() {
-    this.basketSearchTermsSource.next(this._activeBasket);
+    this.initializeBasketSearch();
   }
 
-  //Merkliste laden
   loadBasket(index: number) {
-
-    //Diese Merkliste zur aktiven machen
-    this.indexOfActiveBasketSource.next(index);
-
-    //Merklisten-Suche starten
-    this.basketSearchTermsSource.next(this._activeBasket);
+    this.loadBasketByIndex(index);
   }
 
-  //ID zu Merkliste hinzufuegen oder entfernen
   addOrRemoveBasketItem(id: string) {
 
     //Wenn ID bereits in der Merkliste ist
@@ -86,8 +91,7 @@ export class BasketsService {
       this._activeBasket.ids.push(id);
     }
 
-    //Suchanfrage abschicken
-    this.basketSearchTermsSource.next(this._activeBasket);
+    this.initializeBasketSearch();
   }
 
   //pruefen ob eine ID in der aktiven Merkliste ist
@@ -118,13 +122,11 @@ export class BasketsService {
     this.formService.addBasketToFormArray(newBasket);
 
     //Neuer Basket (ganz hinten einfuegt) ist gleich aktiv
-    this.indexOfActiveBasketSource.next(this.formService.baskets.length - 1);
+    this.loadBasketByIndex(this.formService.baskets.length - 1);
 
-    //Wenn es sich nicht um den Init-Aufruf handelt
     if (!init) {
-
       //Merklisten-Suche abschicken (liefert leere Treffermenge, da noch keine ID in Merkliste gespeichert ist)
-      this.propagateBasketSearchTermsFromActiveBasket();
+      this.initializeBasketSearch();
     }
   }
 
@@ -134,18 +136,14 @@ export class BasketsService {
 
     //Wenn der geloeschte Basket vor dem aktivem Basket kommt
     if (index < this._indexOfActiveBasket) {
-
-      //Variable noch unten anpassen
-      this.indexOfActiveBasketSource.next(this._indexOfActiveBasket - 1);
+      this.loadBasketByIndex(this._indexOfActiveBasket - 1);
     } else if (index === this._indexOfActiveBasket) {
-
-      //1. Basket aktiv stellen
-      this.indexOfActiveBasketSource.next(0);
+      this.loadBasketByIndex(0);
     }
 
     //Wenn es nach dem Loeschen noch Merklisten gibt
     if (this.basketsStoreService.savedBasketItems.length) {
-      this.propagateBasketSearchTermsFromActiveBasket();
+      this.initializeBasketSearch();
     } else {
       this.createBasket();
     }

@@ -28,7 +28,7 @@
             Link kopieren
             <app-copy-link
               [baseUrl]="mainConfig.baseUrl"
-              [data]="updateQueryService.queryFormat"
+              [data]="query"
               [small]="true">
             </app-copy-link>
           </div>
@@ -58,7 +58,7 @@
         <app-free-text-search
           [mainConfig]="mainConfig"
           [parentFormGroup]="formService.searchForm"
-          [searchFields]="updateQueryService.queryFormat.searchFields">
+          [searchFields]="query.searchFields">
         </app-free-text-search>
 
         <app-filter-search

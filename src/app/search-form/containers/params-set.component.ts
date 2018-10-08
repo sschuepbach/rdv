@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
-import { SliderService } from '../services/slider.service';
-import { UserConfigService } from '../../services/user-config.service';
-import { FormService } from '../services/form.service';
-import { FormGroup } from '@angular/forms';
+import {Component, Input} from '@angular/core';
+import {UpdateQueryService} from '../services/update-query.service';
+import {SliderService} from '../services/slider.service';
+import {UserConfigService} from '../../services/user-config.service';
+import {FormService} from '../services/form.service';
+import {FormGroup} from '@angular/forms';
+import {QueryFormat} from "../../models/query-format";
 
 @Component({
   selector: 'app-params-set',
@@ -25,11 +26,13 @@ export class ParamsSetComponent {
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;
+  query: QueryFormat;
 
   constructor(public updateQueryService: UpdateQueryService,
               private sliderService: SliderService,
               private userConfigService: UserConfigService,
               private formService: FormService) {
+    updateQueryService.query$.subscribe(q => this.query = q);
     this.searchFieldsAreEmpty = formService.checkIfSearchFieldsAreEmpty();
   }
 
@@ -37,28 +40,27 @@ export class ParamsSetComponent {
   removeFacet(field, value) {
 
     //Index der ausgewaehlten Facette finden anhand des Namens
-    const index = this.updateQueryService.queryFormat.facetFields[field]["values"].indexOf(value);
+    const index = this.query.facetFields[field]["values"].indexOf(value);
 
     //TODO an Start der Trefferliste springen?
 
-    //in Array loeschen
-    this.updateQueryService.queryFormat.facetFields[field]["values"].splice(index, 1);
-
-    //Suche starten
-    this.updateQueryService.sendRequest();
+    const query = JSON.parse(JSON.stringify(this.query));
+    query.facetFields[field]["values"].splice(index, 1);
+    this.updateQueryService.updateQuery(query);
   }
 
   //Slider auf Anfangswerte zuruecksetzen
   resetRange(key) {
 
     //Wert in Queryformat anpassen
-    this.updateQueryService.queryFormat.rangeFields[key].from = this.updateQueryService.queryFormat.rangeFields[key].min;
-    this.updateQueryService.queryFormat.rangeFields[key].to = this.updateQueryService.queryFormat.rangeFields[key].max;
+    const query = JSON.parse(JSON.stringify(this.query));
+    query.rangeFields[key].from = this.query.rangeFields[key].min;
+    query.rangeFields[key].to = this.query.rangeFields[key].max;
 
     this.sliderService.resetSlider(key);
 
     //Suche starten
-    this.updateQueryService.sendRequest();
+    this.updateQueryService.updateQuery(query);
   }
 
   resetTerm(key) {

@@ -1,21 +1,22 @@
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
-import { FormBuilder } from "@angular/forms";
-import { BasketsStoreService } from 'app/search-form/services/baskets-store.service';
-import { UserConfigService } from 'app/services/user-config.service';
-import { ActivatedRoute } from '@angular/router';
-import { BackendSearchService } from '../../services/backend-search.service';
-import { UpdateQueryService } from '../services/update-query.service';
-import { QueriesService } from '../services/queries.service';
-import { FormService } from '../services/form.service';
-import { QueriesStoreService } from '../services/queries-store.service';
-import { BasketsService } from '../services/baskets.service';
-import { Basket } from '../models/basket';
-import { SliderService } from '../services/slider.service';
+import {FormBuilder} from "@angular/forms";
+import {BasketsStoreService} from 'app/search-form/services/baskets-store.service';
+import {UserConfigService} from 'app/services/user-config.service';
+import {ActivatedRoute} from '@angular/router';
+import {BackendSearchService} from '../../services/backend-search.service';
+import {UpdateQueryService} from '../services/update-query.service';
+import {QueriesService} from '../services/queries.service';
+import {FormService} from '../services/form.service';
+import {QueriesStoreService} from '../services/queries-store.service';
+import {BasketsService} from '../services/baskets.service';
+import {Basket} from '../models/basket';
+import {SliderService} from '../services/slider.service';
+import {QueryFormat} from "../../models/query-format";
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -49,6 +50,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private activeBasket: Basket;
   private indexOfActiveBasket: number;
+  private query: QueryFormat;
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -70,8 +72,9 @@ export class SearchComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private userConfigService: UserConfigService) {
     userConfigService.config$.subscribe(res => this.mainConfig = res);
-    this.basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
-    this.basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
+    basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
+    basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
+    updateQueryService.query$.subscribe(q => this.query = q);
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -85,16 +88,15 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.route.queryParamMap.subscribe(params => {
       if (params.get("search")) {
-        this.updateQueryService.queryFormat = SearchComponent.loadQueryFromUrl(params);
+        this.updateQueryService.updateQuery(SearchComponent.loadQueryFromUrl(params));
       } else if (localStorage.getItem("userQuery")) {
-        this.updateQueryService.queryFormat = SearchComponent.loadQueryFromLocalStorage();
+        this.updateQueryService.updateQuery(SearchComponent.loadQueryFromLocalStorage());
       } else {
-        this.updateQueryService.queryFormat = this.userConfigService.getQueryFormat();
+        this.updateQueryService.updateQuery(this.userConfigService.getQueryFormat());
       }
-      this.formService.createForms();
-      this.updateQueryService.sendRequest();
 
       if (params.get("basket")) {
         const compressedBasket = params.get("basket");
@@ -143,22 +145,20 @@ export class SearchComponent implements OnInit, OnDestroy {
   resetSearch() {
 
     //Anfrage-Format neu erzeugen lassen
-    this.updateQueryService.queryFormat = this.userConfigService.getQueryFormat();
+    this.updateQueryService.updateQuery(this.userConfigService.getQueryFormat());
 
     //Input-Felder in Template zureucksetzen
     this.formService.setFormInputValues();
 
     this.sliderService.resetSlider();
-
-    //Suche starten
-    this.updateQueryService.sendRequest();
   }
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
   private writeToLocalStorage() {
+    console.log("Write to local storage!");
 
     //aktuelle UserQuery speichern
-    localStorage.setItem("userQuery", JSON.stringify(this.updateQueryService.queryFormat));
+    localStorage.setItem("userQuery", JSON.stringify(this.query));
 
     //Array der gespeicherten UserQueries speichern
     localStorage.setItem("savedUserQueries", JSON.stringify(this.queriesStoreService.savedQueries));

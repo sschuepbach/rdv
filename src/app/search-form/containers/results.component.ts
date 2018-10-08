@@ -1,11 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { Basket } from '../models/basket';
-import { UserConfigService } from '../../services/user-config.service';
-import { UpdateQueryService } from '../services/update-query.service';
-import { BasketsService } from '../services/baskets.service';
-import { FormGroup } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { BackendSearchService } from '../../services/backend-search.service';
+import {Component, Input} from '@angular/core';
+import {Basket} from '../models/basket';
+import {UserConfigService} from '../../services/user-config.service';
+import {UpdateQueryService} from '../services/update-query.service';
+import {BasketsService} from '../services/baskets.service';
+import {FormGroup} from '@angular/forms';
+import {DomSanitizer} from '@angular/platform-browser';
+import {BackendSearchService} from '../../services/backend-search.service';
+import {QueryFormat} from "../../models/query-format";
 
 @Component({
   selector: 'app-results',
@@ -33,12 +34,13 @@ export class ResultsComponent {
   basketDocs: any[];
 
   private activeBasket: Basket;
+  query: QueryFormat;
 
   //Anzahl der Seiten gesamt
   get pages(): number {
 
     //Anzahl der Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.count / this.updateQueryService.queryFormat.queryParams.rows);
+    return Math.ceil(this.count / this.query.queryParams.rows);
   }
 
   //Anzahl der Merklisten-Seiten gesamt
@@ -52,7 +54,7 @@ export class ResultsComponent {
   get page(): number {
 
     //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-    return Math.floor(this.updateQueryService.queryFormat.queryParams.start / this.updateQueryService.queryFormat.queryParams.rows) + 1;
+    return Math.floor(this.query.queryParams.start / this.query.queryParams.rows) + 1;
   }
 
   //aktuelle Merklisten-Seite beim Blaettern
@@ -74,8 +76,10 @@ export class ResultsComponent {
               private userConfigService: UserConfigService,
               private backendSearchService: BackendSearchService,
               private sanitizer: DomSanitizer) {
-    updateQueryService.request$.subscribe(res => {
+    updateQueryService.query$.subscribe(q => this.query = q);
+    updateQueryService.response$.subscribe(res => {
         this.count = res.response.numFound;
+      this.docs = res.response.docs;
         //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
         this.setSortColumnIndex();
       }
@@ -88,7 +92,8 @@ export class ResultsComponent {
         //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
         this.setSortColumnIndex('basket');
         //Array der Treffer-Dokumente
-        this.docs = res.response.docs;
+        // this.docs = res.response.docs;
+        console.log(res.response.docs);
         this.basketDocs = res.response.docs;
       });
   }
@@ -107,19 +112,18 @@ export class ResultsComponent {
 
         //auf letzte Seite springen
         if (offset === 'last') {
-          newStart = (this.updateQueryService.queryFormat.queryParams.rows * (this.pages - 1));
+          newStart = (this.query.queryParams.rows * (this.pages - 1));
         } else if (offset === 'first') {
           newStart = 0;
         } else {
-          newStart = this.updateQueryService.queryFormat.queryParams.start +
-            (offset * this.updateQueryService.queryFormat.queryParams.rows);
+          newStart = this.query.queryParams.start +
+            (offset * this.query.queryParams.rows);
         }
 
         //Start anpassen
-        this.updateQueryService.queryFormat.queryParams.start = newStart;
-
-        //Suche starten
-        this.updateQueryService.sendRequest();
+        const query = JSON.parse(JSON.stringify(this.query));
+        query.queryParams.start = newStart;
+        this.updateQueryService.updateQuery(query);
         break;
 
       //Merklistentabelle
@@ -145,7 +149,7 @@ export class ResultsComponent {
 
   //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
   // noinspection JSMethodCanBeStatic
-  getType(obj) {
+  private getType(obj) {
 
     //Wert ist nicht gesetzt
     if (!obj) {
@@ -200,7 +204,7 @@ export class ResultsComponent {
         this.mainConfig.tableFields.forEach((item, index) => {
 
           //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
-          if (item.sort === this.updateQueryService.queryFormat.queryParams.sortField) {
+          if (item.sort === this.query.queryParams.sortField) {
 
             //diesen Index merken
             this.sortColumnSearch = index;
@@ -261,10 +265,10 @@ export class ResultsComponent {
       case 'search':
 
         //wenn nach diesem Feld sortiert wird
-        if (field === this.updateQueryService.queryFormat.queryParams.sortField) {
+        if (field === this.query.queryParams.sortField) {
 
           //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
-          cssClass = this.updateQueryService.queryFormat.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
+          cssClass = this.query.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
         }
         break;
 
@@ -312,26 +316,19 @@ export class ResultsComponent {
       //Treffertabelle
       case 'search':
 
+        const query = JSON.parse(JSON.stringify(this.query));
+
         //wenn bereits nach diesem Feld sortiert wird
-        if (sortField === this.updateQueryService.queryFormat.queryParams.sortField) {
-
-          //Sortierrichtung umdrehen
-          this.updateQueryService.queryFormat.queryParams.sortDir =
-            this.updateQueryService.queryFormat.queryParams.sortDir === "desc" ? "asc" : "desc";
+        if (sortField === this.query.queryParams.sortField) {
+          query.queryParams.sortDir = this.query.queryParams.sortDir === "desc" ? "asc" : "desc";
         } else {
-
-          //Sortierfeld setzen
-          this.updateQueryService.queryFormat.queryParams.sortField = sortField;
-
-          //Sortierrichtung aufsteigend setzen
-          this.updateQueryService.queryFormat.queryParams.sortDir = 'asc';
+          query.queryParams.sortField = sortField;
+          query.queryParams.sortDir = 'asc';
         }
 
         //Trefferliste wieder von vorne anzeigen
-        this.updateQueryService.queryFormat.queryParams.start = 0;
-
-        //Suche starten
-        this.updateQueryService.sendRequest();
+        query.queryParams.start = 0;
+        this.updateQueryService.updateQuery(query);
         break;
 
       //Merkliste
@@ -355,5 +352,17 @@ export class ResultsComponent {
         this.basketsService.propagateBasketSearchTermsFromActiveBasket();
         break;
     }
+  }
+
+  itemIsInBasket(id: string) {
+    return this.basketsService.itemIsInBasket(id);
+  }
+
+  addOrRemoveBasketItem(id: string) {
+    return this.basketsService.addOrRemoveBasketItem(id);
+  }
+
+  getBasketSize() {
+    return this.basketsService.basketSize;
   }
 }
