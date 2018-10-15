@@ -11,6 +11,10 @@ import { LandingPageComponent } from './containers/landing-page/landing-page.com
 import { UserConfigService } from 'app/services/user-config.service';
 import { SearchFormModule } from './search-form/search-form.module';
 import { backendSearchServiceProvider } from './services/backend-search.service.provider';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -28,6 +32,8 @@ import { backendSearchServiceProvider } from './services/backend-search.service.
       {path: 'about', component: AboutComponent},
       {path: '**', component: SearchComponent}
     ]),
+    StoreModule.forRoot(reducers, { metaReducers }),
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
   ],
   providers: [
     backendSearchServiceProvider,
