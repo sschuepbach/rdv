@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from './containers/search.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ObjectKeysPipe } from '../pipes/object-keys.pipe';
+import { ObjectKeysPipe } from '../shared/pipes/object-keys.pipe';
 import { ChartsModule } from 'ng2-charts';
 import { IonRangeSliderModule } from 'ng2-ion-range-slider';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -25,6 +25,7 @@ import { FormService } from './services/form.service';
 import { QueriesService } from './services/queries.service';
 import { UpdateQueryService } from './services/update-query.service';
 import { SliderService } from './services/slider.service';
+import { PipesModule } from '../shared/pipes';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { SliderService } from './services/slider.service';
     BrowserAnimationsModule,
     NgxChartsModule,
     ClipboardModule,
+    PipesModule,
     RouterModule,
   ],
   declarations: [
