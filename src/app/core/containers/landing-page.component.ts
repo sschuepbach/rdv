@@ -4,7 +4,31 @@ import { BackendSearchService } from '../../services/backend-search.service';
 
 @Component({
   selector: 'app-landing-page',
-  templateUrl: './landing-page.component.html'
+  template: `
+    <div class="container mt-2"
+         *ngIf="landingpageData">
+      <div class="no-gutters p-2 bg-info text-white rounded">
+
+        <!-- Data: {{landingpageData | json}} -->
+
+        <h3>{{landingpageData.Titel}}</h3>
+        <!--
+        <h5>
+          <div ="let person of landingpageData.Person">
+            {{person}} [Autor]
+          </div>
+        </h5>
+      -->
+        <ul>
+          <li>Verfasser/in: {{landingpageData['Verfasser\/in']}}</li>
+          <li>Sprache: {{landingpageData.Sprache}}</li>
+          <li>Form: {{landingpageData.Form}}</li>
+          <li>Jahr: {{landingpageData.Jahr}}</li>
+          <li>Kommentar: {{landingpageData.Kommentar}}</li>
+        </ul>
+      </div>
+    </div>
+  `
 })
 export class LandingPageComponent implements OnInit {
 
