@@ -24,26 +24,29 @@ declare var LZString: any;
 
 @Component({
   selector: 'app-search',
-  templateUrl: './search.component.html',
-  styles: [`
-    .mh-lh {
-      line-height: 30px
-    }
+  template: `
+    <div class="container mt-2">
 
-    .query-overview label {
-      width: 140px;
-    }
+      <form *ngIf="formService.searchForm"
+            [formGroup]="formService.searchForm"
+            class="mt-2">
 
-    label {
-      margin-bottom: 0;
-    }
-  `],
+        <!-- <pre style="position: fixed; right: 10px; top: 10px">{{updateQueryService.queryFormat | json}}</pre> -->
+        <!-- <pre style="position: fixed; right: 10px; top: 10px">{{savedBaskets | json}}</pre> -->
+
+        <app-manage-search [parentFormGroup]="formService.searchForm" (resetSearch)="resetSearch()"></app-manage-search>
+
+        <app-search-params [parentFormGroup]="formService.searchForm"></app-search-params>
+
+        <app-results [parentFormGroup]="formService.searchForm">
+        </app-results>
+
+      </form>
+    </div>
+  `,
 })
 
 export class SearchComponent implements OnInit, OnDestroy {
-  filterFieldsConfig$: Observable<any>;
-  searchFieldsOptionsConfig$: Observable<any>;
-  baseUrl$: Observable<string>;
 
   private activeBasket: Basket;
   private indexOfActiveBasket: number;
@@ -69,9 +72,6 @@ export class SearchComponent implements OnInit, OnDestroy {
               private _fb: FormBuilder,
               private route: ActivatedRoute,
               private rootStore: Store<fromRoot.State>) {
-    this.filterFieldsConfig$ = rootStore.pipe(select(fromRoot.getFilterFields));
-    this.searchFieldsOptionsConfig$ = rootStore.pipe(select(fromRoot.getSearchFieldsOptions));
-    this.baseUrl$ = rootStore.pipe(select(fromRoot.getBaseUrl));
 
     rootStore.pipe(select(fromRoot.getQueryFormat)).subscribe(qF => this.queryFormat = qF);
     basketsService.activeBasket$.subscribe(res => this.activeBasket = res);

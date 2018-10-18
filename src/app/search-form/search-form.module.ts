@@ -28,6 +28,8 @@ import { SliderService } from './services/slider.service';
 import { PipesModule } from '../shared/pipes';
 import { StoreModule } from '@ngrx/store';
 import * as fromSearch from './reducers';
+import { ManageSearchComponent } from './containers/manage-search.component';
+import { SearchParamsComponent } from './containers/search-params.component';
 
 @NgModule({
   imports: [
@@ -44,6 +46,8 @@ import * as fromSearch from './reducers';
   ],
   declarations: [
     SearchComponent,
+    ManageSearchComponent,
+    SearchParamsComponent,
     ParamsSetComponent,
     CopyLinkComponent,
     SaveQueryComponent,
