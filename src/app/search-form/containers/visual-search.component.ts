@@ -195,8 +195,8 @@ export class VisualSearchComponent implements OnInit {
     this.rangeData[key].curtainRight = (100 - $event.to_percent) + '%';
 
     const query = JSON.parse(JSON.stringify(this.query));
-    query.rangeFieldsConfig[key].from = $event.from;
-    query.rangeFieldsConfig[key].to = $event.to;
+    query.rangeFields[key].from = $event.from;
+    query.rangeFields[key].to = $event.to;
     query.queryParams.start = 0;
     this.updateQueryService.updateQuery(query);
   }
