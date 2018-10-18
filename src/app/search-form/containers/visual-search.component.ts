@@ -1,9 +1,12 @@
-import {Component, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {UpdateQueryService} from '../services/update-query.service';
-import {SliderService} from '../services/slider.service';
-import {FormGroup} from '@angular/forms';
-import {IonRangeSliderComponent} from 'ng2-ion-range-slider';
-import {QueryFormat} from "../../models/query-format";
+import { Component, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { UpdateQueryService } from '../services/update-query.service';
+import { SliderService } from '../services/slider.service';
+import { FormGroup } from '@angular/forms';
+import { IonRangeSliderComponent } from 'ng2-ion-range-slider';
+import { QueryFormat } from "../../shared/models/query-format";
+import * as fromRoot from "../../reducers/index";
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-visual-search',
@@ -12,7 +15,6 @@ import {QueryFormat} from "../../models/query-format";
 })
 export class VisualSearchComponent implements OnInit {
 
-  @Input() mainConfig: any;
   @Input() parentFormGroup: FormGroup;
 
   //Variable fuer SliderElemente -> bei Reset zuruecksetzen
@@ -30,9 +32,17 @@ export class VisualSearchComponent implements OnInit {
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
   query: QueryFormat;
+  facetFieldsByKey$: Observable<any>;
+  rangeFieldsByKey$: Observable<any>;
+  private rangeFieldsConfig: any;
 
   constructor(private sliderService: SliderService,
-              private updateQueryService: UpdateQueryService) {
+              private updateQueryService: UpdateQueryService,
+              private rootState: Store<fromRoot.State>) {
+    this.facetFieldsByKey$ = rootState.pipe(select(fromRoot.getFacetFieldsByKey));
+    this.rangeFieldsByKey$ = rootState.pipe(select(fromRoot.getRangeFieldsByKey));
+    this.rangeFieldsByKey$.subscribe(x => this.rangeFieldsConfig = x);
+
     updateQueryService.query$.subscribe(q => this.query = q);
     updateQueryService.response$.subscribe(res => {
       //Facetten-Ranges Werte
@@ -88,7 +98,7 @@ export class VisualSearchComponent implements OnInit {
       this.rangeData[key].chartLabels = labelArray;
 
       //Prefix fuer Slider
-      this.rangeData[key].label = this.mainConfig.rangeFields[key].label;
+      this.rangeData[key].label = this.rangeFieldsConfig(key).label;
 
       //Chart Optionen
       this.rangeData[key].chartOptions = {
@@ -185,8 +195,8 @@ export class VisualSearchComponent implements OnInit {
     this.rangeData[key].curtainRight = (100 - $event.to_percent) + '%';
 
     const query = JSON.parse(JSON.stringify(this.query));
-    query.rangeFields[key].from = $event.from;
-    query.rangeFields[key].to = $event.to;
+    query.rangeFieldsConfig[key].from = $event.from;
+    query.rangeFieldsConfig[key].to = $event.to;
     query.queryParams.start = 0;
     this.updateQueryService.updateQuery(query);
   }

@@ -1,12 +1,14 @@
-import {Component, Input} from '@angular/core';
-import {Basket} from '../models/basket';
-import {UserConfigService} from '../../services/user-config.service';
-import {UpdateQueryService} from '../services/update-query.service';
-import {BasketsService} from '../services/baskets.service';
-import {FormGroup} from '@angular/forms';
-import {DomSanitizer} from '@angular/platform-browser';
-import {BackendSearchService} from '../../services/backend-search.service';
-import {QueryFormat} from "../../models/query-format";
+import { Component, Input } from '@angular/core';
+import { Basket } from '../models/basket';
+import { UpdateQueryService } from '../services/update-query.service';
+import { BasketsService } from '../services/baskets.service';
+import { FormGroup } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
+import { BackendSearchService } from '../../shared/services/backend-search.service';
+import { QueryFormat } from "../../shared/models/query-format";
+import { select, Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-results',
@@ -15,7 +17,6 @@ import {QueryFormat} from "../../models/query-format";
 })
 export class ResultsComponent {
 
-  @Input() mainConfig: any;
   @Input() parentFormGroup: FormGroup;
 
   exportListData;
@@ -35,6 +36,15 @@ export class ResultsComponent {
 
   private activeBasket: Basket;
   query: QueryFormat;
+  extraInfos$: Observable<any>;
+  extraInfosByKey$: Observable<any>;
+  showExportListTable$: Observable<any>;
+  showExportListBasket$: Observable<any>;
+  tableFields$: Observable<any>;
+  tableFieldsDisplayLandingpage$: Observable<boolean>;
+  tableFieldsDisplayExtraInfo$: Observable<boolean>;
+  private tableFields: any;
+  private basketQueryParamsRows: number;
 
   //Anzahl der Seiten gesamt
   get pages(): number {
@@ -47,7 +57,7 @@ export class ResultsComponent {
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.basketsService.basketSize / this.mainConfig.basketConfig.queryParams.rows);
+    return Math.ceil(this.basketsService.basketSize / this.basketQueryParamsRows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -63,7 +73,7 @@ export class ResultsComponent {
     if (this.basketsService.basketsExist()) {
 
       //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      return Math.floor(this.activeBasket.queryParams.start / this.mainConfig.basketConfig.queryParams.rows) + 1;
+      return Math.floor(this.activeBasket.queryParams.start / this.basketQueryParamsRows) + 1;
     } else {
 
       //0 zurueck
@@ -73,13 +83,23 @@ export class ResultsComponent {
 
   constructor(private basketsService: BasketsService,
               private updateQueryService: UpdateQueryService,
-              private userConfigService: UserConfigService,
               private backendSearchService: BackendSearchService,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              private rootState: Store<fromRoot.State>) {
+    this.extraInfos$ = rootState.pipe(select(fromRoot.getExtraInfos));
+    this.extraInfosByKey$ = rootState.pipe(select(fromRoot.getExtraInfosByKey));
+    this.showExportListTable$ = rootState.pipe(select(fromRoot.getShowExportListTable));
+    this.showExportListBasket$ = rootState.pipe(select(fromRoot.getShowExportListBasket));
+    this.tableFields$ = rootState.pipe(select(fromRoot.getTableFields));
+    this.tableFieldsDisplayLandingpage$ = rootState.pipe(select(fromRoot.getTableFieldsDisplayLandingpage));
+    this.tableFieldsDisplayExtraInfo$ = rootState.pipe(select(fromRoot.getTableFieldsDisplayExtraInfo));
+    this.tableFields$.subscribe(x => this.tableFields = x);
+    rootState.pipe(select(fromRoot.getBasketQueryParamsRows)).subscribe(x => this.basketQueryParamsRows = x);
+
     updateQueryService.query$.subscribe(q => this.query = q);
     updateQueryService.response$.subscribe(res => {
         this.count = res.response.numFound;
-      this.docs = res.response.docs;
+        this.docs = res.response.docs;
         //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
         this.setSortColumnIndex();
       }
@@ -131,11 +151,11 @@ export class ResultsComponent {
 
         //auf letzte Seite springen
         if (offset === 'last') {
-          newStart = (this.mainConfig.basketConfig.queryParams.rows * (this.basketPages - 1));
+          newStart = (this.basketQueryParamsRows * (this.basketPages - 1));
         } else if (offset === 'first') {
           newStart = 0;
         } else {
-          newStart = this.activeBasket.queryParams.start + (offset * this.mainConfig.basketConfig.queryParams.rows);
+          newStart = this.activeBasket.queryParams.start + (offset * this.basketQueryParamsRows);
         }
 
         //Start anpassen
@@ -165,14 +185,14 @@ export class ResultsComponent {
     let dataString = "data:application/octet-stream,";
 
     // Header hinzufügen
-    for (const field of this.mainConfig.tableFields) {
+    for (const field of this.tableFields) {
       dataString += encodeURIComponent(field.label) + "%09";
     }
     dataString += "%0A";
 
     // Daten hinzufügen
     for (const doc of docs) {
-      for (const field of this.mainConfig.tableFields) {
+      for (const field of this.tableFields) {
         switch (this.getType(doc[field.field])) {
           case 'unset':
             dataString += "ohne%09";
@@ -201,7 +221,7 @@ export class ResultsComponent {
       case 'search':
 
         //Ueber Felder der Tabelle gehen
-        this.mainConfig.tableFields.forEach((item, index) => {
+        this.tableFields.forEach((item, index) => {
 
           //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
           if (item.sort === this.query.queryParams.sortField) {
@@ -216,7 +236,7 @@ export class ResultsComponent {
       case 'basket':
 
         //Ueber Felder der Tabelle gehen
-        this.mainConfig.tableFields.forEach((item, index) => {
+        this.tableFields.forEach((item, index) => {
 
           //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
           if (item.sort === this.activeBasket.queryParams.sortField) {

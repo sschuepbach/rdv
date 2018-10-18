@@ -1,4 +1,4 @@
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { ElasticBackendSearchService } from './elastic-search.service';
 import { HttpClient } from '@angular/common/http';
 import { SolrBackendSearchService } from './solr-search.service';

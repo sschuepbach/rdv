@@ -4,7 +4,7 @@ import {FormService} from './form.service';
 import {UpdateQueryService} from './update-query.service';
 import {SliderService} from './slider.service';
 import {SavedQueryFormat} from '../models/saved-query';
-import {QueryFormat} from "../../models/query-format";
+import {QueryFormat} from "../../shared/models/query-format";
 
 @Injectable({
   providedIn: 'root'

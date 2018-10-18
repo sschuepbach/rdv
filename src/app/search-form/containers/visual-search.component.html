@@ -7,26 +7,26 @@
     <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
     <a *ngFor="let key of query.facetFields | objectKeys"
        class="nav-link text-sm-center px-2 py-0"
-       [ngClass]="'order-' + mainConfig.facetFields[key].order"
-       [class.active]="mainConfig.facetFields[key].order == 1"
+       [ngClass]="'order-' + (facetFieldsByKey$ | async)(key).order"
+       [class.active]="(facetFieldsByKey$ | async)(key).order == 1"
        [id]="'facet-pills-'+key+'-tab'"
        data-toggle="pill"
        [href]="'#facet-pills-'+key"
        role="tab"
        aria-controls="'pills-'+key"
-       aria-expanded="true">{{mainConfig.facetFields[key].label}}</a>
+       aria-expanded="true">{{(facetFieldsByKey$ | async)(key).label}}</a>
 
     <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
     <a *ngFor="let key of rangeData | objectKeys"
        class="nav-link text-sm-center px-2 py-0"
-       [ngClass]="'order-' + mainConfig.rangeFields[key].order"
-       [class.active]="mainConfig.rangeFields[key].order == 1"
+       [ngClass]="'order-' + (rangeFieldsByKey$ | async)(key).order"
+       [class.active]="(rangeFieldsByKey$ | async)(key).order == 1"
        id="facet-pills-{{key}}-tab"
        data-toggle="pill"
        href="#facet-pills-{{key}}"
        role="tab"
        aria-controls="'facet-pills-'+key"
-       aria-expanded="true">{{mainConfig.rangeFields[key].label}}</a>
+       aria-expanded="true">{{(rangeFieldsByKey$ | async)(key).label}}</a>
   </nav>
 
   <!-- DIV-Container fuer Tab-Inhalte -->
@@ -36,7 +36,7 @@
 
     <!-- DIV pro Facette fuer Facettenwerte -->
     <div *ngFor="let key of query.facetFields | objectKeys"
-         [class.active]="mainConfig.facetFields[key].order == 1"
+         [class.active]="(facetFieldsByKey$ | async)(key).order == 1"
          class="tab-pane list-group"
          id="facet-pills-{{key}}"
          role="tabpanel"
@@ -45,14 +45,14 @@
       <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
       Werte werden per
       <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
-      <div *ngIf="mainConfig.facetFields[key].operators.length > 1;then operatorSelect else singleOperator"></div>
+      <div *ngIf="(facetFieldsByKey$ | async)(key).operators.length > 1;then operatorSelect else singleOperator"></div>
 
       <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
       <ng-template #operatorSelect>
-        <select title="Verknüpfungsart" *ngIf="mainConfig.facetFields[key].operators.length > 1"
+        <select title="Verknüpfungsart" *ngIf="(facetFieldsByKey$ | async)(key).operators.length > 1"
                 class="btn btn-sm"
                 [formControlName]="'operatorSelect_' + key">
-          <option *ngFor="let operator of mainConfig.facetFields[key].operators"
+          <option *ngFor="let operator of (facetFieldsByKey$ | async)(key).operators"
                   [value]="operator">{{operator}}
           </option>
         </select>
@@ -82,7 +82,7 @@
     <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
     <div *ngFor="let key of rangeData | objectKeys"
          class="tab-pane list-group"
-         [class.active]="mainConfig.rangeFields[key].order == 1"
+         [class.active]="(rangeFieldsByKey$ | async)(key).order == 1"
          [id]="'facet-pills-' + key"
          role="tabpanel"
          aria-labelledby="'facet-pills-' + key + '-tab'">

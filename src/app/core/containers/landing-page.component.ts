@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BackendSearchService } from '../../services/backend-search.service';
+import { BackendSearchService } from '../../shared/services/backend-search.service';
 
 @Component({
   selector: 'app-landing-page',

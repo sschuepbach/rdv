@@ -1,12 +1,12 @@
-import {Directive, forwardRef, Injectable} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, NG_VALIDATORS, Validators} from '@angular/forms';
-import {UpdateQueryService} from './update-query.service';
-import {QueriesStoreService} from './queries-store.service';
-import {environment} from '../../../environments/environment';
-import {UserConfigService} from '../../services/user-config.service';
-import {BasketsStoreService} from './baskets-store.service';
-import {Basket} from '../models/basket';
-import {QueryFormat} from "../../models/query-format";
+import { Directive, forwardRef, Injectable } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, NG_VALIDATORS, Validators } from '@angular/forms';
+import { UpdateQueryService } from './update-query.service';
+import { QueriesStoreService } from './queries-store.service';
+import { BasketsStoreService } from './baskets-store.service';
+import { Basket } from '../models/basket';
+import { QueryFormat } from '../../shared/models/query-format';
+import * as fromRoot from '../../reducers';
+import { select, Store } from '@ngrx/store';
 
 function queryNameIsUniqueValidatorFactory(queriesStore: QueriesStoreService) {
   return (control: FormControl) => {
@@ -44,6 +44,10 @@ export class FormService {
 
   searchForm;
   private query: QueryFormat;
+  private queryParamsRows: number;
+  private facetFieldsByKey: any;
+  private filterFields: any;
+  private filterFieldsByKey: any;
 
   //Liste der Merklistennamen erhalten
   get baskets(): FormArray {
@@ -53,18 +57,16 @@ export class FormService {
   }
 
 
-  private mainConfig = {
-    ...environment,
-    generatedConfig: {},
-  };
-
   constructor(private formBuilder: FormBuilder,
               private updateQueryService: UpdateQueryService,
-              private userConfigService: UserConfigService,
               private basketsStoreService: BasketsStoreService,
-              private queriesStoreService: QueriesStoreService) {
+              private queriesStoreService: QueriesStoreService,
+              private rootState: Store<fromRoot.State>) {
     this.initializeForm();
-    userConfigService.config$.subscribe(res => this.mainConfig = res);
+    rootState.pipe(select(fromRoot.getQueryParamsRows)).subscribe(x => this.queryParamsRows = x);
+    rootState.pipe(select(fromRoot.getFacetFieldsByKey)).subscribe(x => this.facetFieldsByKey = x);
+    rootState.pipe(select(fromRoot.getFilterFields)).subscribe(x => this.filterFields = x);
+    rootState.pipe(select(fromRoot.getFilterFieldsByKey)).subscribe(x => this.filterFieldsByKey = x);
     updateQueryService.query$.subscribe(
       q => {
         this.query = q;
@@ -94,7 +96,7 @@ export class FormService {
 
   private initializeForm() {
     this.searchForm = this.formBuilder.group({
-      rows: this.mainConfig.queryParams.rows,
+      rows: this.queryParamsRows,
       baskets: this.formBuilder.array([]),
       filters: this.formBuilder.group({}),
       // TODO: Implement update from this.queriesStoreService.savedQueries.length + 1
@@ -172,7 +174,7 @@ export class FormService {
     for (const key of Object.keys(this.query.facetFields)) {
 
       //FormControl nur erstellen, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
-      if (this.mainConfig.facetFields[key].operators.length > 1) {
+      if (this.facetFieldsByKey(key).operators.length > 1) {
 
         //FormControl anlegen und direkt mit Wert belegen
         this.searchForm.addControl('operatorSelect_' + key, new FormControl(this.query.facetFields[key].operator));
@@ -193,13 +195,13 @@ export class FormService {
 
   private initializeFilterFields() {
     //FormControls fuer Filter selbst (=FormArray) und einzelne Checkboxen der Filterauswahlmoeglichkeiten (=FormControl) setzen
-    for (const filter of Object.keys(this.mainConfig.filterFields)) {
+    for (const filter of Object.keys(this.filterFields)) {
 
       //FormArray anlegen pro Filter (z.B. 1. Filter Institutionsauswahl, 2. Filter mit/ohne Datei-Auswahl)
       (this.searchForm.controls['filters'] as FormGroup).addControl(filter, new FormArray([]));
 
       //Ueber moegliche Filterwerte dieses Filters gehen
-      for (const filter_data of this.mainConfig.filterFields[filter].options) {
+      for (const filter_data of this.filterFieldsByKey(filter).options) {
 
         //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
         const checked = this.query.filterFields[filter].values.indexOf(filter_data.value) > -1;
@@ -222,7 +224,7 @@ export class FormService {
                 const index = ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
 
                 //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
-                const value = this.mainConfig.filterFields[filter].options[index].value;
+                const value = this.filterFieldsByKey(filter).options[index].value;
 
                 const query = JSON.parse(JSON.stringify(this.query));
 
@@ -230,14 +232,14 @@ export class FormService {
                 if (control.value) {
 
                   //Suchwert in QueryFormat speichern
-                  query.filterFields[filter].values.push(value);
+                  query.filterFieldsOptionsConfig[filter].values.push(value);
                 } else {
 
                   //Stelle in QueryFormat finden, wo der Suchwert steht
                   const removeIndex = this.query.filterFields[filter].values.indexOf(value);
 
                   //Suchwert aus QueryFormat entfernen
-                  query.filterFields[filter].values.splice(removeIndex, 1);
+                  query.filterFieldsOptionsConfig[filter].values.splice(removeIndex, 1);
                 }
 
                 //Neue Suchabschicken
@@ -250,28 +252,6 @@ export class FormService {
     }
   }
 
-  //FormControls fuer Suchanfragen und Speicherung von Suchanfragen anlgen
-  createForms(): any {
-
-    /*    //Such-Form
-        this.searchForm = this.formBuilder.group({
-
-          //Anzahl der Zeilen in der Treffertabelle mit Wert aus queryFormat belegen
-          rows: this.updateQueryService.queryFormat.queryParams.rows,
-
-          //Merklisten als FormArray
-          baskets: this.formBuilder.array([]),
-
-          //Objekt fuer Filter (Filter 1: Auswahl der Einrichtung, Filter 2 mit/ohne Upload,...)
-          filters: this.formBuilder.group({}),
-
-          //Eingabefeld fuer Name der zu speichernden Suche
-          saveQuery: [
-            'Meine Suche ' + (this.queriesStoreService.savedQueries.length + 1),
-            [Validators.required, Validators.minLength(3), new QueryNameIsUniqueValidatorDirective(this.queriesStoreService)]
-          ]
-        });*/
-  }
 
   //prueft, ob in mind. 1 der Text-Suchfelder etwas steht
   checkIfSearchFieldsAreEmpty(): boolean {
@@ -319,7 +299,7 @@ export class FormService {
     for (const key of Object.keys(this.query.facetFields)) {
 
       //Es existiert nur dann ein FormControl, wenn es eine Auswahlmoeglichkeit gibt (OR, AND)
-      if (this.mainConfig.facetFields[key].operators.length > 1) {
+      if (this.facetFieldsByKey(key).operators.length > 1) {
 
         //Wert aus QueryFormat holen und in Template setzen -> kein Event ausloesen, da sonst Mehrfachsuche
         this.searchForm.get('operatorSelect_' + key)
@@ -336,10 +316,10 @@ export class FormService {
     }
 
     //Checkboxen bei Filtern anhaken, dazu ueber Filter gehen (Filter 1: Institutionsfilter, Filter 2: mit/ohne Datei-Filter,...)
-    for (const key of Object.keys(this.mainConfig.filterFields)) {
+    for (const key of Object.keys(this.filterFields)) {
 
       //Ueber moegliche Filterwerte eines Filters gehen (Institutionen: [UB Freiburg, KIT,...])
-      this.mainConfig.filterFields[key].options.forEach((filter_data, index) => {
+      this.filterFieldsByKey(key).options.forEach((filter_data, index) => {
 
         //Pruefen ob Wert in QueryFormat angehakt ist
         const checked = this.query.filterFields[key].values.indexOf(filter_data.value) > -1;

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {QueryFormat} from '../../models/query-format';
+import {QueryFormat} from '../../shared/models/query-format';
 import {Subject} from 'rxjs/Rx';
-import {BackendSearchService} from '../../services/backend-search.service';
+import {BackendSearchService} from '../../shared/services/backend-search.service';
 import {BehaviorSubject} from "rxjs";
 
 @Injectable({

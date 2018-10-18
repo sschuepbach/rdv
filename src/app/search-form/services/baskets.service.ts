@@ -1,21 +1,15 @@
-import {Injectable} from '@angular/core';
-import {BasketsStoreService} from './baskets-store.service';
-import {FormService} from './form.service';
-import {UserConfigService} from '../../services/user-config.service';
-import {environment} from '../../../environments/environment';
-import {BehaviorSubject, ReplaySubject} from 'rxjs/Rx';
-import {Basket} from '../models/basket';
+import { Injectable } from '@angular/core';
+import { BasketsStoreService } from './baskets-store.service';
+import { FormService } from './form.service';
+import { BehaviorSubject, ReplaySubject } from 'rxjs/Rx';
+import { Basket } from '../models/basket';
+import { select, Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BasketsService {
-
-  //Config-Objekt (z.B. Felder der Trefferliste)
-  mainConfig = {
-    ...environment,
-    generatedConfig: {}
-  };
 
   private _activeBasket: Basket;
   private _indexOfActiveBasket = 0;
@@ -27,6 +21,9 @@ export class BasketsService {
   indexOfActiveBasket$ = this.indexOfActiveBasketSource.asObservable();
   activeBasket$ = this.activeBasketSource.asObservable();
   basketSearchTerms$ = this.basketSearchTermsSource.asObservable();
+  private basketQueryParamsSortField: string;
+  private basketQueryParamsSortDir: string;
+  private basketQueryParamsRows: number;
 
 
   get basketSize(): number {
@@ -34,9 +31,11 @@ export class BasketsService {
   }
 
   constructor(private formService: FormService,
-              private userConfigService: UserConfigService,
-              private basketsStoreService: BasketsStoreService) {
-    userConfigService.config$.subscribe(res => this.mainConfig = res);
+              private basketsStoreService: BasketsStoreService,
+              private rootState: Store<fromRoot.State>) {
+    rootState.pipe(select(fromRoot.getBasketQueryParamsSortField)).subscribe(x => this.basketQueryParamsSortField = x);
+    rootState.pipe(select(fromRoot.getBasketQueryParamsSortDir)).subscribe(x => this.basketQueryParamsSortDir = x);
+    rootState.pipe(select(fromRoot.getBasketQueryParamsRows)).subscribe(x => this.basketQueryParamsRows = x);
     this.indexOfActiveBasket$.subscribe(res => this.pickBasket(res));
     this.activeBasket$.subscribe(res => {
       this.basketSearchTermsSource.next(res);
@@ -112,9 +111,9 @@ export class BasketsService {
   createBasket(init: boolean = false, basket: Basket = null) {
 
     const newBasket = basket ? basket : new Basket("Meine Merkliste " + (this.formService.baskets.length + 1),
-      this.mainConfig.basketConfig.queryParams.sortField,
-      this.mainConfig.basketConfig.queryParams.sortDir,
-      this.mainConfig.basketConfig.queryParams.rows);
+      this.basketQueryParamsSortField,
+      this.basketQueryParamsSortDir,
+      this.basketQueryParamsRows);
 
     //Merkliste in Array der lokalen Merklisten einfuegen
     this.basketsStoreService.savedBasketItems.push(newBasket);

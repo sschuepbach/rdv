@@ -1,10 +1,10 @@
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 import { Injectable } from '@angular/core';
 
 import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
-import { QueryFormat } from "app/models/query-format";
+import { QueryFormat } from "app/shared/models/query-format";
 
 import { Basket } from 'app/search-form/models/basket';
 import { HttpClient, HttpParams } from '@angular/common/http';

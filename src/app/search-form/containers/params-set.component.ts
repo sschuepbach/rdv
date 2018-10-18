@@ -1,10 +1,12 @@
-import {Component, Input} from '@angular/core';
-import {UpdateQueryService} from '../services/update-query.service';
-import {SliderService} from '../services/slider.service';
-import {UserConfigService} from '../../services/user-config.service';
-import {FormService} from '../services/form.service';
-import {FormGroup} from '@angular/forms';
-import {QueryFormat} from "../../models/query-format";
+import { Component, Input, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { UpdateQueryService } from '../services/update-query.service';
+import { SliderService } from '../services/slider.service';
+import { FormService } from '../services/form.service';
+import { QueryFormat } from "../../shared/models/query-format";
+import * as fromRoot from "../../reducers";
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-params-set',
@@ -22,18 +24,24 @@ import {QueryFormat} from "../../models/query-format";
 export class ParamsSetComponent {
 
   @Input() parentFormGroup: FormGroup;
-  @Input() mainConfig: any;
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;
   query: QueryFormat;
 
+  rangeFieldsByKey$: Observable<any>;
+  searchFieldsOptions$: Observable<any>;
+  facetFieldsByKey$: Observable<any>;
+
   constructor(public updateQueryService: UpdateQueryService,
               private sliderService: SliderService,
-              private userConfigService: UserConfigService,
-              private formService: FormService) {
+              private formService: FormService,
+              private rootState: Store<fromRoot.State>) {
     updateQueryService.query$.subscribe(q => this.query = q);
     this.searchFieldsAreEmpty = formService.checkIfSearchFieldsAreEmpty();
+    this.rangeFieldsByKey$ = rootState.pipe(select(fromRoot.getRangeFieldsByKey));
+    this.facetFieldsByKey$ = rootState.pipe(select(fromRoot.getFacetFieldsByKey));
+    this.searchFieldsOptions$ = rootState.pipe(select(fromRoot.getSearchFieldsOptionsByKey))
   }
 
   //Facette entfernen

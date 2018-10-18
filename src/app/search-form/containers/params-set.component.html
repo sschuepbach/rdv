@@ -19,7 +19,7 @@
   <ng-container *ngIf="query.searchFields[key].value.length > 0">
 
     <!-- Name des ausgewaehlte Suchfelds (Freitext: ) -->
-    <label>{{mainConfig.searchFields.options[query.searchFields[key].field]}}:</label>
+    <label>{{(searchFieldsOptions$ | async)(query.searchFields[key].field)}}:</label>
 
     <!-- Suchwert -->
     <div class="col">
@@ -36,7 +36,7 @@
      class="d-flex no-gutters mh-lh">
 
   <!-- Label (Jahr:) -->
-  <label>{{mainConfig.rangeFields[key].label}}:</label>
+  <label>{{(rangeFieldsByKey$ | async)(key).label}}:</label>
 
   <!-- Div mit aktuellem Wertebereich (1955-1972) -->
   <div class="col">
@@ -51,7 +51,7 @@
       class="btn p-1 fa fa-undo"></button>
 
     <span *ngIf="query.rangeFields[key].showMissingValues">
-              <span> / auch Einträge ohne {{mainConfig.rangeFields[key].label}} anzeigen</span>
+              <span> / auch Einträge ohne {{(rangeFieldsByKey$ | async)(key).label}} anzeigen</span>
 
       <!-- Undo-Button -->
               <button (click)="resetRangeValues(key)"
@@ -68,7 +68,7 @@
   <ng-container *ngIf="query.facetFields[key].values.length > 0">
 
     <!-- Name der Facette (Dokumenttyp: ) -->
-    <label>{{mainConfig.facetFields[key].label}}:</label>
+    <label>{{(facetFieldsByKey$ | async)(key).label}}:</label>
 
     <!-- Div mit Werten -->
     <div class="col">

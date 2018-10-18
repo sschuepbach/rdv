@@ -19,7 +19,7 @@
       <!-- Uebersicht der aktuellen Suchparameter, Link der Suche, Suche speichern -->
       <div class="no-gutters">
 
-        <app-params-set [parentFormGroup]="formService.searchForm" [mainConfig]="mainConfig"></app-params-set>
+        <app-params-set [parentFormGroup]="formService.searchForm"></app-params-set>
 
         <div class="d-flex no-gutters mh-lh">
 
@@ -27,7 +27,7 @@
           <div class="col">
             Link kopieren
             <app-copy-link
-              [baseUrl]="mainConfig.baseUrl"
+              [baseUrl]="(baseUrl$ | async)"
               [data]="query"
               [small]="true">
             </app-copy-link>
@@ -39,7 +39,6 @@
       </div>
 
       <app-list-saved-queries
-        [mainConfig]="mainConfig"
         [parentFormGroup]="formService.searchForm">
       </app-list-saved-queries>
 
@@ -56,13 +55,13 @@
            style="border: 1px solid grey; border-radius:3px; margin-right: 20px;">
 
         <app-free-text-search
-          [mainConfig]="mainConfig"
+          [searchFieldsOptionsConfig]="searchFieldsOptionsConfig$ | async"
           [parentFormGroup]="formService.searchForm"
           [searchFields]="query.searchFields">
         </app-free-text-search>
 
         <app-filter-search
-          [mainConfig]="mainConfig"
+          [filterFieldsOptionsConfig]="filterFieldsConfig$ | async"
           [parentFormGroup]="formService.searchForm">
         </app-filter-search>
 
@@ -72,18 +71,14 @@
       <div class="d-flex flex-column p-2 col-md"
            style="border: 1px solid grey; border-radius:3px;">
 
-        <app-visual-search
-          [mainConfig]="mainConfig"
-          [parentFormGroup]="formService.searchForm">
+        <app-visual-search [parentFormGroup]="formService.searchForm">
         </app-visual-search>
 
       </div>
 
     </div>
 
-    <app-results
-      [parentFormGroup]="formService.searchForm"
-      [mainConfig]="mainConfig">
+    <app-results [parentFormGroup]="formService.searchForm">
     </app-results>
 
   </form>

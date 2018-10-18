@@ -2,6 +2,9 @@ import { Component, Input } from '@angular/core';
 import { QueriesService } from '../services/queries.service';
 import { QueriesStoreService } from '../services/queries-store.service';
 import { FormGroup } from '@angular/forms';
+import { select, Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-list-saved-queries',
@@ -25,7 +28,7 @@ import { FormGroup } from '@angular/forms';
                  [value]=savedQuery.name>
           <span class="input-group-btn">
               <app-copy-link
-                [baseUrl]="mainConfig.baseUrl"
+                [baseUrl]="baseUrl$ | async"
                 [data]="savedQuery.query">
               </app-copy-link>
             </span>
@@ -44,13 +47,15 @@ import { FormGroup } from '@angular/forms';
     }
   `],
 })
-export class ListSavedQueriesComponent {
+export class ManageSavedQueriesComponent {
 
-  @Input() mainConfig: any;
   @Input() parentFormGroup: FormGroup;
+  baseUrl$: Observable<string>;
 
   constructor(private queriesService: QueriesService,
-              private queriesStoreService: QueriesStoreService) {
+              private queriesStoreService: QueriesStoreService,
+              private rootState: Store<fromRoot.State>) {
+    this.baseUrl$ = rootState.pipe(select(fromRoot.getBaseUrl));
   }
 
   loadUserQuery(index: number) {

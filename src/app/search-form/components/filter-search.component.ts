@@ -8,18 +8,18 @@ import {FormGroup} from '@angular/forms';
 
       <!-- Ueber Filter gehen (z.B. Institionenauswahl, mit/ohne Datei-Auswahl) -->
       <ng-container *ngIf="parentFormGroup.get('filters').length > 0">
-        <div *ngFor="let filter of mainConfig.filterFields | objectKeys"
+        <div *ngFor="let filter of filterFieldsOptionsConfig.filterFieldsOptionsConfig | objectKeys"
              formGroupName="filters"
              class="filterBlock">
 
           <!-- Name des Filter -->
-          <div class="h6">{{mainConfig.filterFields[filter].label}}</div>
+          <div class="h6">{{filterFieldsOptionsConfig[filter].label}}</div>
 
           <!-- Auswahlmoeglichkeiten dieses Filters (z.B. [Uni Freiburg, KIT,...]) -->
           <label [formArrayName]="filter"
                  class="btn btn-sm btn-outline-primary mr-1"
                  [class.active]="filterCheckbox.checked"
-                 *ngFor="let filter_data of mainConfig.filterFields[filter].options; index as i">
+                 *ngFor="let filter_data of filterFieldsOptionsConfig[filter].options; index as i">
 
             <!-- Anhak-Symbol -->
             <span class="fa"
@@ -50,6 +50,6 @@ import {FormGroup} from '@angular/forms';
   `],
 })
 export class FilterSearchComponent {
-  @Input() mainConfig: any;
+  @Input() filterFieldsOptionsConfig: any;
   @Input() parentFormGroup: FormGroup;
 }

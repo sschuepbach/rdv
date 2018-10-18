@@ -1,22 +1,22 @@
-import {environment} from '../../../environments/environment';
-
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
-import {FormBuilder} from "@angular/forms";
-import {BasketsStoreService} from 'app/search-form/services/baskets-store.service';
-import {UserConfigService} from 'app/services/user-config.service';
-import {ActivatedRoute} from '@angular/router';
-import {BackendSearchService} from '../../services/backend-search.service';
-import {UpdateQueryService} from '../services/update-query.service';
-import {QueriesService} from '../services/queries.service';
-import {FormService} from '../services/form.service';
-import {QueriesStoreService} from '../services/queries-store.service';
-import {BasketsService} from '../services/baskets.service';
-import {Basket} from '../models/basket';
-import {SliderService} from '../services/slider.service';
-import {QueryFormat} from "../../models/query-format";
+import { FormBuilder } from "@angular/forms";
+import { BasketsStoreService } from 'app/search-form/services/baskets-store.service';
+import { ActivatedRoute } from '@angular/router';
+import { BackendSearchService } from '../../shared/services/backend-search.service';
+import { UpdateQueryService } from '../services/update-query.service';
+import { QueriesService } from '../services/queries.service';
+import { FormService } from '../services/form.service';
+import { QueriesStoreService } from '../services/queries-store.service';
+import { BasketsService } from '../services/baskets.service';
+import { Basket } from '../models/basket';
+import { SliderService } from '../services/slider.service';
+import { QueryFormat } from "../../shared/models/query-format";
+import { select, Store } from '@ngrx/store';
+import * as fromRoot from '../../reducers';
+import { Observable } from 'rxjs/Rx';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -41,16 +41,14 @@ declare var LZString: any;
 })
 
 export class SearchComponent implements OnInit, OnDestroy {
-
-  //Config-Objekt (z.B. Felder der Trefferliste)
-  mainConfig = {
-    ...environment,
-    generatedConfig: {}
-  };
+  filterFieldsConfig$: Observable<any>;
+  searchFieldsOptionsConfig$: Observable<any>;
+  baseUrl$: Observable<string>;
 
   private activeBasket: Basket;
   private indexOfActiveBasket: number;
   private query: QueryFormat;
+  private queryFormat: QueryFormat;
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -70,8 +68,12 @@ export class SearchComponent implements OnInit, OnDestroy {
               private sliderService: SliderService,
               private _fb: FormBuilder,
               private route: ActivatedRoute,
-              private userConfigService: UserConfigService) {
-    userConfigService.config$.subscribe(res => this.mainConfig = res);
+              private rootStore: Store<fromRoot.State>) {
+    this.filterFieldsConfig$ = rootStore.pipe(select(fromRoot.getFilterFields));
+    this.searchFieldsOptionsConfig$ = rootStore.pipe(select(fromRoot.getSearchFieldsOptions));
+    this.baseUrl$ = rootStore.pipe(select(fromRoot.getBaseUrl));
+
+    rootStore.pipe(select(fromRoot.getQueryFormat)).subscribe(qF => this.queryFormat = qF);
     basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
     basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
     updateQueryService.query$.subscribe(q => this.query = q);
@@ -95,7 +97,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       } else if (localStorage.getItem("userQuery")) {
         this.updateQueryService.updateQuery(SearchComponent.loadQueryFromLocalStorage());
       } else {
-        this.updateQueryService.updateQuery(this.userConfigService.getQueryFormat());
+        this.updateQueryService.updateQuery(this.queryFormat);
       }
 
       if (params.get("basket")) {
@@ -145,7 +147,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   resetSearch() {
 
     //Anfrage-Format neu erzeugen lassen
-    this.updateQueryService.updateQuery(this.userConfigService.getQueryFormat());
+    this.updateQueryService.updateQuery(this.queryFormat);
 
     //Input-Felder in Template zureucksetzen
     this.formService.setFormInputValues();

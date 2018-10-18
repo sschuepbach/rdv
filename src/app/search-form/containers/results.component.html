@@ -50,7 +50,7 @@
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <!-- Link fuer export -->
-          <a *ngIf="mainConfig.showExportList.table"
+          <a *ngIf="showExportListTable$ | async"
              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
              [href]="exportListData"
              (click)="exportList(docs)"
@@ -113,7 +113,7 @@
         <div class="d-flex mh-table-header font-weight-bold">
 
           <!-- Ueber Spaltenfelder gehen -->
-          <ng-container *ngFor="let field of mainConfig.tableFields; index as index">
+          <ng-container *ngFor="let field of (tableFields$ | async); index as index">
 
             <!-- Wenn es ein sortierbares Feld ist, Sortierfunktionen setzen -->
             <div *ngIf="field.sort"
@@ -147,7 +147,7 @@
           <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
             <!-- Ueber Spaltenfelder gehen -->
-            <ng-container *ngFor="let field of mainConfig.tableFields; first as first; index as index">
+            <ng-container *ngFor="let field of (tableFields$ | async); first as first; index as index">
 
               <!-- Spalte -->
               <div [class]="field.css + ' d-flex no-gutters py-1 px-2'"
@@ -218,15 +218,15 @@
 
           <!-- Link auf Landing Page und Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
           <div
-            *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo"
+            *ngIf="(tableFieldsDisplayLandingpage$ | async) || (tableFieldsDisplayExtraInfo$ | async)"
             class="d-flex d-sm-none" style="margin:auto">
             <!-- Link auf Landing Page -->
-            <a *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage === true"
+            <a *ngIf="(tableFieldsDisplayLandingpage$ | async) === true"
                class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
                [routerLink]="['/doc', doc.id]"></a>
 
             <!-- Button zum Einblenden der zusaetzlichen Infos -->
-            <button *ngIf="mainConfig.generatedConfig.tableFieldsDisplayExtraInfo === true"
+            <button *ngIf="(tableFieldsDisplayExtraInfo$ | async) === true"
                     class="btn btn-primary btn-sm p-1 fa mb-1 ml-2"
                     [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
                     [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
@@ -239,31 +239,31 @@
                *ngIf="detailDataArray[doc.id]?.visible">
 
             <!-- Ueber Felder der Config gehen -->
-            <ng-container *ngFor="let key of mainConfig.extraInfos | objectKeys">
+            <ng-container *ngFor="let key of (extraInfos$ | async | objectKeys)">
 
               <!-- 1 grosse Zelle fuer Inhalt, anzeigen, wenn es Daten zu diesem Feld gibt -->
               <div class="col-12 d-flex no-gutters"
-                   *ngIf="detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]?.length">
+                   *ngIf="detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]?.length">
 
                 <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
-                <label class="font-weight-bold text-right mr-2">{{mainConfig.extraInfos[key].label}}</label>
+                <label class="font-weight-bold text-right mr-2">{{(extraInfosByKey$ | async)(key).label}}</label>
 
                 <!-- Wenn es ein Einzeltwert ist, Wert ausgeben und mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                 <span class="col"
-                      *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'single'"
-                      [innerHTML]="formatValue(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field], mainConfig.extraInfos[key].display)">
+                      *ngIf="getType(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]) === 'single'"
+                      [innerHTML]="formatValue(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field], (extraInfosByKey$ | async)(key).display)">
                     </span>
 
                 <!-- Wenn es ein Multiwert ist -->
                 <span class="col"
-                      *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
+                      *ngIf="getType(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container
-                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; last as isLast;">
+                        *ngFor="let value of detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]; last as isLast;">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
-                        <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>
+                        <span [innerHTML]="formatValue(value, (extraInfosByKey$ | async)(key).display)"></span>
 
                         <!-- Zeilenumbruch, wenn nicht der letzte Wert -->
                         <br *ngIf="!isLast">
@@ -290,7 +290,7 @@
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <!-- Link fuer export -->
-          <a *ngIf="mainConfig.showExportList.basket"
+          <a *ngIf="showExportListBasket$ | async"
              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
              [href]="exportListData"
              (click)="exportList(basketDocs)"
@@ -337,7 +337,7 @@
         <div class="d-flex mh-table-header font-weight-bold">
 
           <!-- Ueber Spaltenfelder gehen -->
-          <ng-container *ngFor="let field of mainConfig.tableFields; index as index">
+          <ng-container *ngFor="let field of (tableFields$ | async); index as index">
 
             <!-- Wenn es ein sortierbares Feld ist, Sortierfunktionen setzen -->
             <div *ngIf="field.sort"
@@ -371,7 +371,7 @@
           <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">
 
             <!-- Ueber Spaltenfelder gehen -->
-            <ng-container *ngFor="let field of mainConfig.tableFields; first as first; index as index">
+            <ng-container *ngFor="let field of (tableFields$ | async); first as first; index as index">
 
               <!-- Spalte -->
               <div [class]="field.css + ' d-flex no-gutters py-1 px-2'"
@@ -439,15 +439,15 @@
 
           <!-- Link auf Landing Page und Button zum Einblenden der zusaetzlichen Infos, nur bei schmalster Breite sichtbar -->
           <div
-            *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage || mainConfig.generatedConfig.tableFieldsDisplayExtraInfo"
+            *ngIf="(tableFieldsDisplayLandingpage$ | async) || (tableFieldsDisplayExtraInfo$ | async)"
             class="d-flex d-sm-none" style="margin:auto">
             <!-- Link auf Landing Page -->
-            <a *ngIf="mainConfig.generatedConfig.tableFieldsDisplayLandingpage === true"
+            <a *ngIf="(tableFieldsDisplayLandingpage$ | async) === true"
                class="btn btn-primary btn-sm p-1 fa fa-info mb-1"
                [routerLink]="['/doc', doc.id]"></a>
 
             <!-- Button zum Einblenden der zusaetzlichen Infos -->
-            <button *ngIf="mainConfig.generatedConfig.tableFieldsDisplayExtraInfo === true"
+            <button *ngIf="(tableFieldsDisplayExtraInfo$ | async) === true"
                     class="btn btn-primary btn-sm p-1 fa mb-1 ml-2"
                     [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
                     [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
@@ -460,31 +460,31 @@
                *ngIf="detailDataArray[doc.id]?.visible">
 
             <!-- Ueber Felder der Config gehen -->
-            <ng-container *ngFor="let key of mainConfig.extraInfos | objectKeys">
+            <ng-container *ngFor="let key of (extraInfos$ | async | objectKeys)">
 
               <!-- 1 grosse Zelle fuer Inhalt, anzeigen, wenn es Daten zu diesem Feld gibt -->
               <div class="col-12 d-flex no-gutters"
-                   *ngIf="detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]?.length">
+                   *ngIf="detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]?.length">
 
                 <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
-                <label class="font-weight-bold text-right mr-2">{{mainConfig.extraInfos[key].label}}</label>
+                <label class="font-weight-bold text-right mr-2">{{(extraInfosByKey$ | async)(key).label}}</label>
 
                 <!-- Wenn es ein Einzeltwert ist, Wert ausgeben und mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                 <span class="col"
-                      *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'single'"
-                      [innerHTML]="formatValue(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field], mainConfig.extraInfos[key].display)">
+                      *ngIf="getType(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]) === 'single'"
+                      [innerHTML]="formatValue(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field], (extraInfosByKey$ | async)(key).display)">
                     </span>
 
                 <!-- Wenn es ein Multiwert ist -->
                 <span class="col"
-                      *ngIf="getType(detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]) === 'multi'">
+                      *ngIf="getType(detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container
-                        *ngFor="let value of detailDataArray[doc.id]?.data[mainConfig.extraInfos[key].field]; last as isLast">
+                        *ngFor="let value of detailDataArray[doc.id]?.data[(extraInfosByKey$ | async)(key).field]; last as isLast">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
-                        <span [innerHTML]="formatValue(value, mainConfig.extraInfos[key].display)"></span>
+                        <span [innerHTML]="formatValue(value, (extraInfosByKey$ | async)(key).display)"></span>
 
                         <!-- Zeilenumbruch, wenn nicht der letzte Wert -->
                         <br *ngIf="!isLast">

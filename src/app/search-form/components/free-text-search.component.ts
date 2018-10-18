@@ -14,8 +14,8 @@ import { FormGroup } from '@angular/forms';
         <div class="input-group-btn">
           <select class="btn btn-sm" title="Suchfeldtyp"
                   [formControlName]="'selectSearchField_' + field">
-            <option *ngFor="let key of mainConfig.searchFields.options | objectKeys"
-                    [value]="key">{{mainConfig.searchFields.options[key]}}
+            <option *ngFor="let key of searchFieldsOptionsConfig | objectKeys"
+                    [value]="key">{{searchFieldsOptionsConfig[key]}}
             </option>
           </select>
         </div>
@@ -44,7 +44,7 @@ import { FormGroup } from '@angular/forms';
   `],
 })
 export class FreeTextSearchComponent {
-  @Input() mainConfig: any;
+  @Input() searchFieldsOptionsConfig: any;
   @Input() parentFormGroup: FormGroup;
   @Input() searchFields: any;
 }

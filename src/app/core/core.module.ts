@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AboutComponent } from './components/about.component';
-import { AppComponent } from './components/app.component';
+import { AppComponent } from './containers/app.component';
 import { LandingPageComponent } from './containers/landing-page.component';
 import { RouterModule } from '@angular/router';
 import { FooterComponent } from './components/footer.component';
