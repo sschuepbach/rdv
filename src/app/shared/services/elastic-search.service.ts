@@ -96,7 +96,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
         if (searchfield_data.field !== "all_text") {
 
           //Passendes Suchfeld setzen
-          queryString["query_string"]["fields"] = [searchfield_data.field]
+          queryString["query_string"]["searchFields"] = [searchfield_data.field]
         }
 
         //Bool-Queries sammeln

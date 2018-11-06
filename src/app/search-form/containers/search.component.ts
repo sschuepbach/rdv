@@ -16,7 +16,6 @@ import { SliderService } from '../services/slider.service';
 import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
-import { Observable } from 'rxjs/Rx';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -36,7 +35,7 @@ declare var LZString: any;
 
         <app-manage-search [parentFormGroup]="formService.searchForm" (resetSearch)="resetSearch()"></app-manage-search>
 
-        <app-search-params [parentFormGroup]="formService.searchForm"></app-search-params>
+        <app-search-params></app-search-params>
 
         <app-results [parentFormGroup]="formService.searchForm">
         </app-results>

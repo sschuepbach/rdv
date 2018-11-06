@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchComponent } from './containers/search.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ObjectKeysPipe } from '../shared/pipes/object-keys.pipe';
 import { ChartsModule } from 'ng2-charts';
 import { IonRangeSliderModule } from 'ng2-ion-range-slider';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,8 +14,8 @@ import { SaveQueryComponent } from './containers/save-query.component';
 import { ManageSavedQueriesComponent } from './containers/manage-saved-queries.component';
 import { BasketListComponent } from './containers/basket-list.component';
 import { ResultsComponent } from './containers/results.component';
-import { FreeTextSearchComponent } from './components/free-text-search.component';
-import { FilterSearchComponent } from './components/filter-search.component';
+import { FieldsComponent } from './components/fields.component';
+import { FiltersComponent } from './components/filters.component';
 import { VisualSearchComponent } from './containers/visual-search.component';
 import { QueriesStoreService } from './services/queries-store.service';
 import { BasketsService } from './services/baskets.service';
@@ -30,6 +29,12 @@ import { StoreModule } from '@ngrx/store';
 import * as fromSearch from './reducers';
 import { ManageSearchComponent } from './containers/manage-search.component';
 import { SearchParamsComponent } from './containers/search-params.component';
+import { EffectsModule } from '@ngrx/effects';
+import { FormEffects } from './effects/form.effects';
+import { QueryEffects } from './effects/query.effects';
+import { OptionSelectorComponent } from './components/option-selector.component';
+import { FacetsComponent } from './containers/facets.component';
+import { RangesComponent } from './containers/ranges.component';
 
 @NgModule({
   imports: [
@@ -43,6 +48,7 @@ import { SearchParamsComponent } from './containers/search-params.component';
     PipesModule,
     RouterModule,
     StoreModule.forFeature('search', fromSearch.reducers),
+    EffectsModule.forFeature([FormEffects, QueryEffects]),
   ],
   declarations: [
     SearchComponent,
@@ -54,9 +60,12 @@ import { SearchParamsComponent } from './containers/search-params.component';
     ManageSavedQueriesComponent,
     BasketListComponent,
     ResultsComponent,
-    FreeTextSearchComponent,
-    FilterSearchComponent,
+    FieldsComponent,
+    FiltersComponent,
     VisualSearchComponent,
+    OptionSelectorComponent,
+    FacetsComponent,
+    RangesComponent,
   ],
   exports: [
     SearchComponent

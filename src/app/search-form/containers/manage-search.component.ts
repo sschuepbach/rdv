@@ -3,9 +3,9 @@ import { FormGroup } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 
 import * as fromRoot from '../../reducers';
-import { Observable } from 'rxjs/Rx';
 import { UpdateQueryService } from '../services/update-query.service';
 import { QueryFormat } from '../../shared/models/query-format';
+import { Observable } from 'rxjs/Rx';
 
 @Component({
   selector: 'app-manage-search',
@@ -68,8 +68,8 @@ export class ManageSearchComponent {
   @Input() parentFormGroup: FormGroup;
   @Output() resetSearch = new EventEmitter<boolean>();
 
-  baseUrl$: Observable<string>;
   query: QueryFormat;
+  baseUrl$: Observable<string>;
 
 
   constructor(private rootState: Store<fromRoot.State>,

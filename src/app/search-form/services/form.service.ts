@@ -87,10 +87,10 @@ export class FormService {
       .skipWhile(p => Object.keys(p.facetFields).length < 1)
       .take(1)
       .subscribe(() => this.initializeFacetFields());
-    updateQueryService.query$
-      .skipWhile(p => Object.keys(p.filterFields).length < 1)
-      .take(1)
-      .subscribe(() => this.initializeFilterFields());
+    /*  updateQueryService.query$
+        .skipWhile(p => Object.keys(p.filterFields).length < 1)
+        .take(1)
+        .subscribe(() => this.initializeFilterFields());*/
     this.updateQueryOnRowNumChange();
   }
 
@@ -193,64 +193,64 @@ export class FormService {
     }
   }
 
-  private initializeFilterFields() {
-    //FormControls fuer Filter selbst (=FormArray) und einzelne Checkboxen der Filterauswahlmoeglichkeiten (=FormControl) setzen
-    for (const filter of Object.keys(this.filterFields)) {
+  /*  private initializeFilterFields() {
+      //FormControls fuer Filter selbst (=FormArray) und einzelne Checkboxen der Filterauswahlmoeglichkeiten (=FormControl) setzen
+      for (const filter of Object.keys(this.filterFields)) {
 
-      //FormArray anlegen pro Filter (z.B. 1. Filter Institutionsauswahl, 2. Filter mit/ohne Datei-Auswahl)
-      (this.searchForm.controls['filters'] as FormGroup).addControl(filter, new FormArray([]));
+        //FormArray anlegen pro Filter (z.B. 1. Filter Institutionsauswahl, 2. Filter mit/ohne Datei-Auswahl)
+        (this.searchForm.controls['filterFields'] as FormGroup).addControl(filter, new FormArray([]));
 
-      //Ueber moegliche Filterwerte dieses Filters gehen
-      for (const filter_data of this.filterFieldsByKey(filter).options) {
+        //Ueber moegliche Filterwerte dieses Filters gehen
+        for (const filter_data of this.filterFieldsByKey(filter).options) {
 
-        //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
-        const checked = this.query.filterFields[filter].values.indexOf(filter_data.value) > -1;
+          //pruefen, ob Filter im QueryFormat als ausgewaehlt hinterlegt ist
+          const isChecked = this.query.filterFields[filter].values.indexOf(filter_data.value) > -1;
 
-        //FormControl fuer moeligche Filterwerte als Checkbox (z.B. Instiutionen: [UB Freiburg, KIT,...])
-        ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).push(this.formBuilder.control(checked));
+          //FormControl fuer moeligche Filterwerte als Checkbox (z.B. Instiutionen: [UB Freiburg, KIT,...])
+          ((this.searchForm.controls['filterFields'] as FormGroup).controls[filter] as FormArray).push(this.formBuilder.control(isChecked));
 
-        //Aenderungen des Checkbox-Inputs verfolgen, dazu ueber Controls gehen
-        ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.forEach(control => {
+          //Aenderungen des Checkbox-Inputs verfolgen, dazu ueber Controls gehen
+          ((this.searchForm.controls['filterFields'] as FormGroup).controls[filter] as FormArray).controls.forEach(control => {
 
-          //Bei letztem Control = neue eingefuegtes
-          if (((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control) ===
-            ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.length - 1) {
+            //Bei letztem Control = neue eingefuegtes
+            if (((this.searchForm.controls['filterFields'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control) ===
+              ((this.searchForm.controls['filterFields'] as FormGroup).controls[filter] as FormArray).controls.length - 1) {
 
-            //Aenderungen verfolgen
-            control.valueChanges.subscribe(
-              () => {
+              //Aenderungen verfolgen
+              control.valueChanges.subscribe(
+                () => {
 
-                //Index des Controls in FormArray finden
-                const index = ((this.searchForm.controls['filters'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
+                  //Index des Controls in FormArray finden
+                  const index = ((this.searchForm.controls['filterFields'] as FormGroup).controls[filter] as FormArray).controls.indexOf(control);
 
-                //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
-                const value = this.filterFieldsByKey(filter).options[index].value;
+                  //Ueber den Index den konkreten Suchewert in Config finden, der an Backend geschickt wird
+                  const value = this.filterFieldsByKey(filter).options[index].value;
 
-                const query = JSON.parse(JSON.stringify(this.query));
+                  const query = JSON.parse(JSON.stringify(this.query));
 
-                //Wenn Checkbox angehakt wurde
-                if (control.value) {
+                  //Wenn Checkbox angehakt wurde
+                  if (control.value) {
 
-                  //Suchwert in QueryFormat speichern
-                  query.filterFieldsOptionsConfig[filter].values.push(value);
-                } else {
+                    //Suchwert in QueryFormat speichern
+                    query.filterFieldsOptionsConfig[filter].values.push(value);
+                  } else {
 
-                  //Stelle in QueryFormat finden, wo der Suchwert steht
-                  const removeIndex = this.query.filterFields[filter].values.indexOf(value);
+                    //Stelle in QueryFormat finden, wo der Suchwert steht
+                    const removeIndex = this.query.filterFields[filter].values.indexOf(value);
 
-                  //Suchwert aus QueryFormat entfernen
-                  query.filterFieldsOptionsConfig[filter].values.splice(removeIndex, 1);
+                    //Suchwert aus QueryFormat entfernen
+                    query.filterFieldsOptionsConfig[filter].values.splice(removeIndex, 1);
+                  }
+
+                  //Neue Suchabschicken
+                  this.updateQueryService.updateQuery(query);
                 }
-
-                //Neue Suchabschicken
-                this.updateQueryService.updateQuery(query);
-              }
-            )
-          }
-        });
+              )
+            }
+          });
+        }
       }
-    }
-  }
+    }*/
 
 
   //prueft, ob in mind. 1 der Text-Suchfelder etwas steht
@@ -325,7 +325,7 @@ export class FormService {
         const checked = this.query.filterFields[key].values.indexOf(filter_data.value) > -1;
 
         //Checkbox anhakden (falls gesetzt) -> kein Event ausloesen, da sonst Mehrfach-Anfrage an Backend
-        ((this.searchForm.controls['filters'] as FormGroup).controls[key] as FormArray).at(index).setValue(checked, {emitEvent: false});
+        ((this.searchForm.controls['filterFields'] as FormGroup).controls[key] as FormArray).at(index).setValue(checked, {emitEvent: false});
       });
     }
 
