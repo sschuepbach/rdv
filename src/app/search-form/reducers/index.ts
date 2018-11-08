@@ -41,6 +41,16 @@ export const getRangeValuesByKey = createSelector(
   (rangeFields) => memoize((key: string) => rangeFields[key]),
 );
 
+export const getFacetValues = createSelector(
+  getFormValues,
+  (v) => v.facetFields,
+);
+
+export const getFacetValuesByKey = createSelector(
+  getFacetValues,
+  (facetFields) => memoize((key: string) => facetFields[key]),
+);
+
 export const getShownFacetOrRange = createSelector(
   getLayout,
   (state) => state.shownFacetOrRange,

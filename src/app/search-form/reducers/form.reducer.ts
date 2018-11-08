@@ -60,10 +60,15 @@ export function reducer(state = initialState, action: FormActions): State {
         searchFields: action.payload,
       };
 
-    case FormActionTypes.UpdateFacets:
+    case FormActionTypes.UpdateFacetOperator:
       return {
         ...state,
-        facetFields: action.payload,
+        facetFields: Object.keys(state['facetFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.facet ?
+            {...state.facetFields[k], operator: action.payload.value} :
+            state['facetFields'][k];
+          return agg;
+        }, {}),
       };
 
     case FormActionTypes.UpdateRangeBoundaries:

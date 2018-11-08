@@ -5,18 +5,17 @@ import { SliderService } from '../services/slider.service';
 import { UpdateQueryService } from '../services/update-query.service';
 import { select, Store } from '@ngrx/store';
 
-import * as fromRoot from "../../reducers/index";
 import * as fromSearch from "../reducers";
 import * as fromFormActions from "../actions/form.actions"
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-facets',
   template: `
-    <ng-container *ngFor="let key of facetFields$ | async | objectKeys" [formGroup]="form">
+    <ng-container *ngFor="let key of facetFieldsConfig | objectKeys">
       <!-- DIV pro Facette fuer Facettenwerte -->
       <div *ngIf="(shownFacetOrRange$ | async) === 'facet-pills-' + key"
-           [class.active]="(facetFieldsByKey$ | async)(key).order == 1"
+           [class.active]="facetFieldsConfig[key].order == 1"
            class="tab-pane list-group"
            id="facet-pills-{{key}}"
            role="tabpanel"
@@ -25,22 +24,19 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
         <!-- Select fuer Auswahl wie die Facetten-Werte kombiniert werden sollen (OR vs. AND) -->
         Werte werden per
         <!-- bei mehreren Operatoren ein Select anzeigen, sonst nur den Wert des Operators -->
-        <div *ngIf="(facetFieldsByKey$ | async)(key).operators.length > 1;then operatorSelect else singleOperator"></div>
+        <div *ngIf="facetFieldsConfig[key].operators.length > 1;then operatorSelect else singleOperator"></div>
 
         <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
-        <!-- TODO: Read current value from form store! -->
         <ng-template #operatorSelect>
-          <select title="Verknüpfungsart" *ngIf="(facetFieldsByKey$ | async)(key).operators.length > 1"
-                  class="btn btn-sm"
-                  [formControlName]="'operatorSelect_' + key">
-            <option *ngFor="let operator of (facetFieldsByKey$ | async)(key).operators"
-                    [value]="operator">{{operator}}
+          <select title="Verknüpfungsart" class="btn btn-sm" #sel (click)="changeOperator(key, sel.value)">
+            <option *ngFor="let operator of facetFieldsConfig[key].operators"
+                    [value]="operator" [selected]="operator === (facetFieldByKey$ | async)(key).operator">{{operator}}
             </option>
           </select>
         </ng-template>
 
         <!-- Anzeige wie Facettenwerte dieser Facetten immer verknupeft werden -->
-        <ng-template #singleOperator>{{(facetFieldsByKey$ | async)(key).operator}}</ng-template>
+        <ng-template #singleOperator>{{facetFieldsConfig[key].operator}}</ng-template>
 
         verküpft
 
@@ -73,23 +69,18 @@ export class FacetsComponent {
   //Facetten (abgeleitet von results)
   facets = {};
 
-  form: FormGroup;
-
   //Daten fuer Slider und Diagrammerzeugunge
   query: QueryFormat;
-  facetFieldsByKey$: Observable<any>;
+  facetFieldsConfig: any;
+  facetFieldByKey$: Observable<any>;
   private shownFacetOrRange$: Observable<string>;
-  private facetFields$: Observable<any>;
 
   constructor(private sliderService: SliderService,
               private updateQueryService: UpdateQueryService,
-              private rootState: Store<fromRoot.State>,
-              private searchState: Store<fromSearch.State>,
-              private formBuilder: FormBuilder) {
-    this.facetFields$ = rootState.pipe(select(fromRoot.getFacetFields));
-    this.facetFields$.subscribe(x => this.createForm(x));
-    this.facetFieldsByKey$ = rootState.pipe(select(fromRoot.getFacetFieldsByKey));
+              private searchState: Store<fromSearch.State>) {
+    this.facetFieldsConfig = environment.facetFields;
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
+    this.facetFieldByKey$ = searchState.pipe(select(fromSearch.getFacetValuesByKey));
 
     updateQueryService.query$.subscribe(q => this.query = q);
     updateQueryService.response$.subscribe(res => {
@@ -106,15 +97,8 @@ export class FacetsComponent {
     this.updateQueryService.updateQuery(query);
   }
 
-  private createForm(facets: any) {
-    if (Object.keys(facets).length) {
-      this.form = this.formBuilder.group({});
-    }
-
-    for (const facet of Object.keys(facets)) {
-      this.form.addControl('operatorSelect_' + facet, new FormControl());
-    }
-    this.form.valueChanges.subscribe(x => this.searchState.dispatch(new fromFormActions.FacetsUpdated(x)));
+  changeOperator(facet: string, value: string) {
+    this.searchState.dispatch(new fromFormActions.FacetOperatorChanged({facet: facet, value: value}));
   }
 
 }

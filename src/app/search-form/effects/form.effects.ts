@@ -7,7 +7,7 @@ import {
   RangeReset,
   ResetRange,
   SearchFieldUpdated,
-  UpdateFacets,
+  UpdateFacetOperator,
   UpdateFilters,
   UpdateRangeBoundaries,
   UpdateSearchField
@@ -39,11 +39,11 @@ export class FormEffects {
     );
 
   @Effect()
-  facetsUpdated$ = this.actions$
+  facetOperatorChanged$ = this.actions$
     .pipe(
-      ofType(FormActionTypes.FacetsUpdated),
+      ofType(FormActionTypes.FacetOperatorChanged),
       flatMap((x: FiltersUpdated) => [
-        new UpdateFacets(x.payload),
+        new UpdateFacetOperator(x.payload),
         new MakeRequest(),
       ])
     );

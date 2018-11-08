@@ -5,8 +5,8 @@ export enum FormActionTypes {
   UpdateFilters = '[Form] Update Filter Form Model',
   SearchFieldUpdated = '[Form] Search Field in Form Updated',
   UpdateSearchFields = '[Form] Update Search Field Form Model',
-  FacetsUpdated = '[Form] Facets Field in Form Updated',
-  UpdateFacets = '[Form] Update Facets in Form Model',
+  FacetOperatorChanged = '[Form] Facets Field in Form Updated',
+  UpdateFacetOperator = '[Form] Update Facets in Form Model',
   RangeBoundariesChanged = '[Form] Boundaries for range in form changed',
   UpdateRangeBoundaries = '[Form] Set new boundaries for range in form model',
   ResetRange = '[Form] Propagate Reset Ranges',
@@ -42,17 +42,17 @@ export class UpdateSearchField implements Action {
   }
 }
 
-export class FacetsUpdated implements Action {
-  readonly type = FormActionTypes.FacetsUpdated;
+export class FacetOperatorChanged implements Action {
+  readonly type = FormActionTypes.FacetOperatorChanged;
 
-  constructor(public payload: any) {
+  constructor(public payload: { facet: string, value: string }) {
   }
 }
 
-export class UpdateFacets implements Action {
-  readonly type = FormActionTypes.UpdateFacets;
+export class UpdateFacetOperator implements Action {
+  readonly type = FormActionTypes.UpdateFacetOperator;
 
-  constructor(public payload: any) {
+  constructor(public payload: { facet: string, value: string }) {
   }
 }
 
@@ -105,8 +105,8 @@ export type FormActions
   | UpdateFilters
   | SearchFieldUpdated
   | UpdateSearchField
-  | FacetsUpdated
-  | UpdateFacets
+  | FacetOperatorChanged
+  | UpdateFacetOperator
   | RangeBoundariesChanged
   | UpdateRangeBoundaries
   | ResetRange
