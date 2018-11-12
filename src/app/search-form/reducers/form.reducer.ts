@@ -12,7 +12,7 @@ export const initialState: State = {
   facetFields: Object.keys(environment.facetFields).reduce((agg, k) => {
     agg[k] = {
       field: environment.facetFields[k].field,
-      values: environment.facetFields[k].values,
+      values: [],
       operator: environment.facetFields[k].operator,
     };
     return agg;
@@ -35,10 +35,10 @@ export const initialState: State = {
     };
     return agg;
   }, {}),
-  searchFields: Object.keys(environment.searchFields).reduce((agg, k) => {
-    agg[k] = {
-      field: environment.searchFields[k].field,
-      value: environment.searchFields[k].value,
+  searchFields: environment.searchFields.preselect.reduce((agg, k, index) => {
+    agg['search' + index] = {
+      field: k,
+      value: '',
     };
     return agg;
   }, {}),
@@ -48,16 +48,47 @@ export const initialState: State = {
 export function reducer(state = initialState, action: FormActions): State {
   switch (action.type) {
 
-    case FormActionTypes.UpdateFilters:
+    case FormActionTypes.UpdateEntireForm:
       return {
-        ...state,
-        filterFields: action.payload,
+        ...action.payload
       };
 
-    case FormActionTypes.UpdateSearchFields:
+    case FormActionTypes.ToggleFilterValue:
       return {
         ...state,
-        searchFields: action.payload,
+        filterFields: Object.keys(state['filterFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.filter ?
+            {
+              ...state.filterFields[k],
+              values: state.filterFields[k].values.includes(action.payload.value) ?
+                state.filterFields[k].values.filter(x => x !== action.payload.value) :
+                state.filterFields[k].values.concat(action.payload.value)
+            } :
+            state['filterFields'][k];
+          return agg;
+        }, {}),
+      };
+
+    case FormActionTypes.UpdateSearchFieldType:
+      return {
+        ...state,
+        searchFields: Object.keys(state['searchFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.field ?
+            {...state.searchFields[k], field: action.payload.type} :
+            state['searchFields'][k];
+          return agg;
+        }, {}),
+      };
+
+    case FormActionTypes.UpdateSearchFieldValue:
+      return {
+        ...state,
+        searchFields: Object.keys(state['searchFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.field ?
+            {...state.searchFields[k], value: action.payload.value} :
+            state['searchFields'][k];
+          return agg;
+        }, {}),
       };
 
     case FormActionTypes.UpdateFacetOperator:

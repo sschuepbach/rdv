@@ -32,7 +32,6 @@ import { SearchParamsComponent } from './containers/search-params.component';
 import { EffectsModule } from '@ngrx/effects';
 import { FormEffects } from './effects/form.effects';
 import { QueryEffects } from './effects/query.effects';
-import { OptionSelectorComponent } from './components/option-selector.component';
 import { FacetsComponent } from './containers/facets.component';
 import { RangesComponent } from './containers/ranges.component';
 
@@ -63,7 +62,6 @@ import { RangesComponent } from './containers/ranges.component';
     FieldsComponent,
     FiltersComponent,
     VisualSearchComponent,
-    OptionSelectorComponent,
     FacetsComponent,
     RangesComponent,
   ],

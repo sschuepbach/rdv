@@ -16,6 +16,7 @@ import { SliderService } from '../services/slider.service';
 import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
+import * as fromSearch from '../reducers';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -51,6 +52,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private indexOfActiveBasket: number;
   private query: QueryFormat;
   private queryFormat: QueryFormat;
+  private formData: any;
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -70,9 +72,11 @@ export class SearchComponent implements OnInit, OnDestroy {
               private sliderService: SliderService,
               private _fb: FormBuilder,
               private route: ActivatedRoute,
-              private rootStore: Store<fromRoot.State>) {
+              private rootStore: Store<fromRoot.State>,
+              private searchStore: Store<fromSearch.State>) {
 
     rootStore.pipe(select(fromRoot.getQueryFormat)).subscribe(qF => this.queryFormat = qF);
+    searchStore.pipe(select(fromSearch.getFormValues)).subscribe(vals => this.formData = vals);
     basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
     basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
     updateQueryService.query$.subscribe(q => this.query = q);
@@ -159,7 +163,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     console.log("Write to local storage!");
 
     //aktuelle UserQuery speichern
-    localStorage.setItem("userQuery", JSON.stringify(this.query));
+    // TODO: Save also queryParams!
+    localStorage.setItem("userQuery", JSON.stringify(this.formData));
 
     //Array der gespeicherten UserQueries speichern
     localStorage.setItem("savedUserQueries", JSON.stringify(this.queriesStoreService.savedQueries));

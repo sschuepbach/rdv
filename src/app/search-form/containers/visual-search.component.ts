@@ -1,11 +1,7 @@
 import { Component } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
-import { SliderService } from '../services/slider.service';
-import { QueryFormat } from "../../shared/models/query-format";
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import { Store } from '@ngrx/store';
 
-import * as fromRoot from "../../reducers/index";
+import { environment } from '../../../environments/environment';
 import * as fromSearch from "../reducers";
 import * as fromLayoutActions from "../actions/layout.actions";
 
@@ -18,30 +14,30 @@ import * as fromLayoutActions from "../actions/layout.actions";
          role="tablist">
 
       <!-- Tab-Ueberschriften fuer Facetten als Pills-Link -->
-      <a *ngFor="let key of (query$ | async).facetFields | objectKeys"
+      <a *ngFor="let key of facetFieldsConfig | objectKeys"
          class="nav-link text-sm-center px-2 py-0"
-         [ngClass]="'order-' + (facetFieldsByKey$ | async)(key).order"
-         [class.active]="(facetFieldsByKey$ | async)(key).order == 1"
+         [ngClass]="'order-' + facetFieldsConfig[key].order"
+         [class.active]="facetFieldsConfig[key].order == 1"
          [id]="'facet-pills-'+key+'-tab'"
          data-toggle="pill"
          href="#"
          (click)="changeView('facet-pills-'+key)"
          role="tab"
          aria-controls="'pills-'+key"
-         aria-expanded="true">{{(facetFieldsByKey$ | async)(key).label}}</a>
+         aria-expanded="true">{{facetFieldsConfig[key].label}}</a>
 
       <!-- Tab-Ueberschriften fuer Ranges als Pills-Link -->
-      <a *ngFor="let key of rangeFields$ | async | objectKeys"
+      <a *ngFor="let key of rangeFieldsConfig | objectKeys"
          class="nav-link text-sm-center px-2 py-0"
-         [ngClass]="'order-' + (rangeFieldsByKey$ | async)(key).order"
-         [class.active]="(rangeFieldsByKey$ | async)(key).order == 1"
+         [ngClass]="'order-' + rangeFieldsConfig[key].order"
+         [class.active]="rangeFieldsConfig[key].order == 1"
          id="facet-pills-{{key}}-tab"
          data-toggle="pill"
          href="#"
          (click)="changeView('facet-pills-'+key)"
          role="tab"
          aria-controls="'facet-pills-'+key"
-         aria-expanded="true">{{(rangeFieldsByKey$ | async)(key).label}}</a>
+         aria-expanded="true">{{rangeFieldsConfig[key].label}}</a>
     </nav>
 
     <!-- DIV-Container fuer Tab-Inhalte -->
@@ -55,20 +51,12 @@ import * as fromLayoutActions from "../actions/layout.actions";
 })
 export class VisualSearchComponent {
 
-  query$: Observable<QueryFormat>;
-  facetFieldsByKey$: Observable<any>;
-  rangeFieldsByKey$: Observable<any>;
-  private rangeFields$: Observable<any>;
+  rangeFieldsConfig: any;
+  facetFieldsConfig: any;
 
-  constructor(private sliderService: SliderService,
-              private updateQueryService: UpdateQueryService,
-              private rootState: Store<fromRoot.State>,
-              private searchState: Store<fromSearch.State>) {
-    this.facetFieldsByKey$ = rootState.pipe(select(fromRoot.getFacetFieldsByKey));
-    this.rangeFieldsByKey$ = rootState.pipe(select(fromRoot.getRangeFieldsByKey));
-    this.rangeFields$ = rootState.pipe(select(fromRoot.getRangeFields));
-
-    this.query$ = updateQueryService.query$;
+  constructor(private searchState: Store<fromSearch.State>) {
+    this.rangeFieldsConfig = environment.rangeFields;
+    this.facetFieldsConfig = environment.facetFields;
   }
 
   changeView(view: string) {

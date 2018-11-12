@@ -31,19 +31,19 @@ export const getFormValues = createSelector(
   (state) => state.form,
 );
 
-export const getRangesValues = createSelector(
+export const getRangeValues = createSelector(
   getFormValues,
-  (v) => v.rangeFields,
+  (formValues) => formValues.rangeFields,
 );
 
 export const getRangeValuesByKey = createSelector(
-  getRangesValues,
+  getRangeValues,
   (rangeFields) => memoize((key: string) => rangeFields[key]),
 );
 
 export const getFacetValues = createSelector(
   getFormValues,
-  (v) => v.facetFields,
+  (formValues) => formValues.facetFields,
 );
 
 export const getFacetValuesByKey = createSelector(
@@ -54,4 +54,24 @@ export const getFacetValuesByKey = createSelector(
 export const getShownFacetOrRange = createSelector(
   getLayout,
   (state) => state.shownFacetOrRange,
+);
+
+export const getSearchValues = createSelector(
+  getFormValues,
+  (formValues) => formValues.searchFields,
+);
+
+export const getSearchValuesByKey = createSelector(
+  getSearchValues,
+  (searchFields) => memoize((key: string) => searchFields[key]),
+);
+
+export const getFilterValues = createSelector(
+  getFormValues,
+  (formValues) => formValues.filterFields,
+);
+
+export const getFilterValuesByKey = createSelector(
+  getFilterValues,
+  (filters) => memoize((key: string) => filters[key])
 );

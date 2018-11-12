@@ -145,7 +145,7 @@ export class RangesComponent implements OnInit {
     this.rangeFieldsByKey$ = rootState.pipe(select(fromRoot.getRangeFieldsByKey));
     this.rangeFieldsByKey$.subscribe(x => this.rangeFieldsConfig = x);
 
-    this.rangeValues$ = searchState.pipe(select(fromSearch.getRangesValues));
+    this.rangeValues$ = searchState.pipe(select(fromSearch.getRangeValues));
     this.rangeValues$.subscribe(x => this.rangeValues = x);
     this.rangeValuesByKey$ = searchState.pipe(select(fromSearch.getRangeValuesByKey));
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
@@ -171,7 +171,6 @@ export class RangesComponent implements OnInit {
   }
 
   toggleMissingValues(k: string) {
-    console.log(k);
     this.searchState.dispatch(new fromFormActions.ShowMissingValuesInRange(k))
   }
 

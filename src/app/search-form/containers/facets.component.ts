@@ -28,7 +28,7 @@ import { environment } from '../../../environments/environment';
 
         <!-- Select wie Facettenwerte dieser Facette verknuepft werden sollen -->
         <ng-template #operatorSelect>
-          <select title="Verknüpfungsart" class="btn btn-sm" #sel (click)="changeOperator(key, sel.value)">
+          <select title="Verknüpfungsart" class="btn btn-sm" #sel (change)="changeOperator(key, sel.value)">
             <option *ngFor="let operator of facetFieldsConfig[key].operators"
                     [value]="operator" [selected]="operator === (facetFieldByKey$ | async)(key).operator">{{operator}}
             </option>
@@ -41,10 +41,10 @@ import { environment } from '../../../environments/environment';
         verküpft
 
         <!-- Liste der Facettenwerte dieser Facette -->
-        <ng-container *ngFor="let value of facets[query.facetFields[key].field]">
+        <ng-container *ngFor="let value of facets[(facetFieldByKey$ | async)(key).field]">
 
           <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
-          <button *ngIf="query.facetFields[key].values.indexOf(value[0]) == -1"
+          <button *ngIf="(facetFieldByKey$ | async)(key).values.indexOf(value[0]) == -1"
                   (click)="selectFacet(key, value[0])"
                   type="button"
                   class="list-group-item list-group-item-action p-1">
@@ -90,6 +90,7 @@ export class FacetsComponent {
   }
 
   //Facette speichern
+  // TODO: Adapt for store
   selectFacet(field, value) {
     const query = JSON.parse(JSON.stringify(this.query));
     query.facetFields[field]["values"].push(value);
