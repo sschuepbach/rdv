@@ -2,13 +2,18 @@ import { Action } from '@ngrx/store';
 import { QueryFormat } from '../../shared/models/query-format';
 
 export enum QueryActionTypes {
-  MakeRequest = '[Query] Make request',
+  MakeSearchRequest = '[Query] Make search request',
+  MakeBasketRequest = '[Query] Make basket request',
   SerializeQuery = '[Query] Serialize query',
   ParseQuery = '[Query] Load serialized query',
 }
 
-export class MakeRequest implements Action {
-  readonly type = QueryActionTypes.MakeRequest;
+export class MakeSearchRequest implements Action {
+  readonly type = QueryActionTypes.MakeSearchRequest;
+}
+
+export class MakeBasketRequest implements Action {
+  readonly type = QueryActionTypes.MakeBasketRequest;
 }
 
 export class SerializeQuery implements Action {
@@ -23,6 +28,6 @@ export class LoadQuery implements Action {
 }
 
 export type QueryActions
-  = MakeRequest
+  = MakeSearchRequest
   | SerializeQuery
   | LoadQuery;

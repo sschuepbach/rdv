@@ -9,20 +9,6 @@ export enum UserConfigActionTypes {
 }
 
 
-export class TableFieldsDisplayExtraInfo implements Action {
-  readonly type = UserConfigActionTypes.SetTableFieldsDisplayExtraInfo;
-
-  constructor(public payload = true) {
-  }
-}
-
-export class TableFieldsDisplayLandingpage implements Action {
-  readonly type = UserConfigActionTypes.SetTableFieldsDisplayLandingpage;
-
-  constructor(public payload = true) {
-  }
-}
-
 export class GetRemoteFilterFieldOptions implements Action {
   readonly type = UserConfigActionTypes.GetRemoteFilterFieldOptions;
 
@@ -46,8 +32,6 @@ export class OptionRetrieveError implements Action {
 
 
 export type UserConfigActions
-  = TableFieldsDisplayExtraInfo
-  | TableFieldsDisplayLandingpage
-  | GetRemoteFilterFieldOptions
+  = GetRemoteFilterFieldOptions
   | SetRemoteFilterFieldOptions
   | OptionRetrieveError;

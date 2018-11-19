@@ -3,11 +3,13 @@ import * as fromForm from './form.reducer';
 import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
 import { memoize } from '../../shared/utils';
+import * as fromBasket from './basket.reducer';
 
 
 export interface SearchState {
   form: fromForm.State;
   layout: fromLayout.State;
+  basket: fromBasket.State;
 }
 
 export interface State extends fromRoot.State {
@@ -17,6 +19,7 @@ export interface State extends fromRoot.State {
 export const reducers: ActionReducerMap<SearchState> = {
   form: fromForm.reducer,
   layout: fromLayout.reducer,
+  basket: fromBasket.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');
@@ -74,4 +77,35 @@ export const getFilterValues = createSelector(
 export const getFilterValuesByKey = createSelector(
   getFilterValues,
   (filters) => memoize((key: string) => filters[key])
+);
+
+export const getBaskets = createSelector(
+  getSearch,
+  (state) => state.basket,
+);
+
+export const getBasketCount = createSelector(
+  getBaskets,
+  fromBasket.selectTotal,
+);
+
+export const getBasketIds = createSelector(
+  getBaskets,
+  fromBasket.selectIds,
+);
+
+export const getBasketEntities = createSelector(
+  getBaskets,
+  fromBasket.selectEntities,
+);
+
+export const getCurrentBasketId = createSelector(
+  getBaskets,
+  fromBasket.selectCurrentBasketId,
+);
+
+export const getCurrentBasket = createSelector(
+  getBasketEntities,
+  getCurrentBasketId,
+  (entities, id) => entities[id],
 );

@@ -23,7 +23,6 @@ import { BasketsStoreService } from './services/baskets-store.service';
 import { FormService } from './services/form.service';
 import { QueriesService } from './services/queries.service';
 import { UpdateQueryService } from './services/update-query.service';
-import { SliderService } from './services/slider.service';
 import { PipesModule } from '../shared/pipes';
 import { StoreModule } from '@ngrx/store';
 import * as fromSearch from './reducers';
@@ -34,6 +33,7 @@ import { FormEffects } from './effects/form.effects';
 import { QueryEffects } from './effects/query.effects';
 import { FacetsComponent } from './containers/facets.component';
 import { RangesComponent } from './containers/ranges.component';
+import { BasketEffects } from './effects/basket.effects';
 
 @NgModule({
   imports: [
@@ -47,7 +47,7 @@ import { RangesComponent } from './containers/ranges.component';
     PipesModule,
     RouterModule,
     StoreModule.forFeature('search', fromSearch.reducers),
-    EffectsModule.forFeature([FormEffects, QueryEffects]),
+    EffectsModule.forFeature([FormEffects, QueryEffects, BasketEffects]),
   ],
   declarations: [
     SearchComponent,
@@ -74,7 +74,6 @@ import { RangesComponent } from './containers/ranges.component';
     FormService,
     QueriesService,
     QueriesStoreService,
-    SliderService,
     UpdateQueryService
   ]
 })

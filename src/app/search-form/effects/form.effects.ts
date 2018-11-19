@@ -17,8 +17,8 @@ import {
   UpdateSearchFieldType,
   UpdateSearchFieldValue
 } from '../actions/form.actions';
-import { flatMap } from 'rxjs/operators';
-import { MakeRequest } from '../actions/query.actions';
+import { debounceTime, flatMap } from 'rxjs/operators';
+import { MakeSearchRequest } from '../actions/query.actions';
 
 @Injectable()
 export class FormEffects {
@@ -29,7 +29,7 @@ export class FormEffects {
       ofType(FormActionTypes.SerializedFormDataLoaded),
       flatMap((x: SerializedFormDataLoaded) => [
         new UpdateEntireForm(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -39,7 +39,7 @@ export class FormEffects {
       ofType(FormActionTypes.FilterValueChanged),
       flatMap((x: FilterValueChanged) => [
         new ToggleFilterValue(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -49,7 +49,7 @@ export class FormEffects {
       ofType(FormActionTypes.SearchFieldTypeUpdated),
       flatMap((x: SearchFieldTypeUpdated) => [
         new UpdateSearchFieldType(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -59,7 +59,7 @@ export class FormEffects {
       ofType(FormActionTypes.SearchFieldValueUpdated),
       flatMap((x: SearchFieldValueUpdated) => [
         new UpdateSearchFieldValue(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -69,7 +69,7 @@ export class FormEffects {
       ofType(FormActionTypes.FacetOperatorChanged),
       flatMap((x: FacetOperatorChanged) => [
         new UpdateFacetOperator(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -77,9 +77,10 @@ export class FormEffects {
   rangesUpdated$ = this.actions$
     .pipe(
       ofType(FormActionTypes.RangeBoundariesChanged),
+      debounceTime(200),
       flatMap((x: RangeBoundariesChanged) => [
         new UpdateRangeBoundaries(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 
@@ -89,7 +90,7 @@ export class FormEffects {
       ofType(FormActionTypes.ResetRange),
       flatMap((x: ResetRange) => [
         new RangeReset(x.payload),
-        new MakeRequest(),
+        new MakeSearchRequest(),
       ])
     );
 

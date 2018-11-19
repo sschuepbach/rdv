@@ -29,7 +29,6 @@ import { Observable } from 'rxjs/Rx';
           <div class="col">
             Link kopieren
             <app-copy-link
-              [baseUrl]="(baseUrl$ | async)"
               [data]="query"
               [small]="true">
             </app-copy-link>
@@ -46,7 +45,7 @@ import { Observable } from 'rxjs/Rx';
 
       <hr>
 
-      <app-basket-list [parentFormGroup]="parentFormGroup"></app-basket-list>
+      <app-basket-list></app-basket-list>
 
     </div>
   `,

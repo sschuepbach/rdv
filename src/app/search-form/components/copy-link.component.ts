@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 declare var LZString: any;
 
@@ -13,15 +14,15 @@ declare var LZString: any;
 })
 export class CopyLinkComponent {
 
-  @Input() baseUrl;
   @Input() data;
   @Input() mode = 'search';
   @Input() small = false;
 
+  // noinspection JSMethodCanBeStatic
   generateQueryLink(jsonObject, mode): string {
     const jsonString = JSON.stringify(jsonObject);
     const lzString = LZString.compressToEncodedURIComponent(jsonString);
-    return this.baseUrl + "/search?" + mode + "=" + lzString;
+    return environment.baseUrl + "/search?" + mode + "=" + lzString;
   }
 
 }

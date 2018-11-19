@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { IonRangeSliderComponent } from 'ng2-ion-range-slider';
 import { Observable } from 'rxjs/Rx';
-import { SliderService } from '../services/slider.service';
 import { QueryFormat } from '../../shared/models/query-format';
 import { select, Store } from '@ngrx/store';
 
 import { environment } from '../../../environments/environment';
 import { UpdateQueryService } from '../services/update-query.service';
-import * as fromRoot from "../../reducers/index";
 import * as fromSearch from "../reducers";
 import * as fromFormActions from "../actions/form.actions";
 
@@ -33,7 +31,7 @@ import * as fromFormActions from "../actions/form.actions";
                 [class.fa-circle-thin]="!(rangeValuesByKey$ | async)(key).showMissingValues"></span>
 
           <!-- Text "x Titel ohne Jahr anzeigen" -->
-          <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeData[key].label}}</span>
+          <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
 
         </label>
 
@@ -65,13 +63,13 @@ import * as fromFormActions from "../actions/form.actions";
           <ion-range-slider #sliderElement
                             [id]="key"
                             type="double"
-                            [min]="rangeData[key].min"
-                            [from]="rangeData[key].from"
-                            [to]="rangeData[key].to"
-                            [max]="rangeData[key].max"
+                            [min]="rangeFieldConfig[key].min"
+                            [from]="(rangeValuesByKey$ | async)(key).from"
+                            [to]="(rangeValuesByKey$ | async)(key).to"
+                            [max]="rangeFieldConfig[key].max"
                             [grid]="true"
                             [grid_num]="10"
-                            [prefix]="rangeData[key].label + ' '"
+                            [prefix]="rangeFieldConfig[key].label + ' '"
                             [prettify_enabled]="false"
                             [hide_min_max]="true"
                             (onChange)="updateSlider($event, key)">
@@ -128,25 +126,14 @@ export class RangesComponent implements OnInit {
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
   query: QueryFormat;
-  rangeFieldsByKey$: Observable<any>;
   rangeFieldConfig: any;
 
-  private rangeFieldsConfig: any;
   private shownFacetOrRange$: Observable<string>;
-  private rangeValues$: Observable<any>;
-  private rangeValues: any;
   private rangeValuesByKey$: Observable<any>;
 
-  constructor(private sliderService: SliderService,
-              private updateQueryService: UpdateQueryService,
-              private rootState: Store<fromRoot.State>,
+  constructor(private updateQueryService: UpdateQueryService,
               private searchState: Store<fromSearch.State>) {
     this.rangeFieldConfig = environment.rangeFields;
-    this.rangeFieldsByKey$ = rootState.pipe(select(fromRoot.getRangeFieldsByKey));
-    this.rangeFieldsByKey$.subscribe(x => this.rangeFieldsConfig = x);
-
-    this.rangeValues$ = searchState.pipe(select(fromSearch.getRangeValues));
-    this.rangeValues$.subscribe(x => this.rangeValues = x);
     this.rangeValuesByKey$ = searchState.pipe(select(fromSearch.getRangeValuesByKey));
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
 
@@ -163,11 +150,7 @@ export class RangesComponent implements OnInit {
   }
 
   ngOnInit() {
-    //min- / max-Werte fuer Slider, Labels und Optionen fuer Chart setzen
     this.setRangeData();
-    //Slider Werte setzen
-    this.sliderService.resetSlider$.subscribe(res => this.sliderInit(res));
-    this.sliderService.resetSlider();
   }
 
   toggleMissingValues(k: string) {
@@ -178,37 +161,25 @@ export class RangesComponent implements OnInit {
   private setRangeData() {
 
     //Ueber Felder des Abfrage-Formats gehen
-    for (const key of Object.keys(this.rangeValues)) {
+    for (const key of Object.keys(this.rangeFieldConfig)) {
 
       //leeren Wert fuer rangeMissingValues anlegen (da sonst undefined)
-      this.rangeMissingValues['{!ex=' + this.rangeValues[key].field + '}' +
-      this.rangeValues[key].field + ':0'] = 0;
+      this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[key].field + '}' +
+      this.rangeFieldConfig[key].field + ':0'] = 0;
 
       //Objekt fuer diese Range (z.B. Jahr) anelegen
       this.rangeData[key] = {};
 
-      //Min und Max-Werte aus Query-Format holen
-      this.rangeData[key].min = this.rangeValues[key].min;
-      this.rangeData[key].max = this.rangeValues[key].max;
-
       //Leeres Datenarray anlegen
       this.rangeData[key].chartData = [{data: []}];
 
-      //Labels erstellen
+      //Labels sind unsichtbar (werden fuer Hover benoetigt)
       const labelArray = [];
-
-      //von min zu max Wert gehen
-      for (let i = this.rangeData[key].min; i <= this.rangeData[key].max; i++) {
-
-        //Werte sammeln (1950, 1951,..., 2017)
+      for (let i = this.rangeFieldConfig[key].min; i <= this.rangeFieldConfig[key].max; i++) {
         labelArray.push(i);
       }
-
-      //Labels sind aber unsichtbar (werden aber fuer Hover benoetigt)
       this.rangeData[key].chartLabels = labelArray;
 
-      //Prefix fuer Slider
-      this.rangeData[key].label = this.rangeFieldsConfig(key).label;
 
       //Chart Optionen
       this.rangeData[key].chartOptions = {
@@ -253,11 +224,11 @@ export class RangesComponent implements OnInit {
   private createCharts() {
 
     //Chartdata erstellen
-    for (const key of Object.keys(this.rangeValues)) {
+    for (const key of Object.keys(this.rangeFieldConfig)) {
 
       //Werte sammeln
       const barData = [];
-      const backendData = this.ranges[this.rangeValues[key].field].counts;
+      const backendData = this.ranges[this.rangeFieldConfig[key].field].counts;
 
       //Ranges kommen als Array von Arrays [["1800", 2]["1801", 0]["1802", 6],...],
       for (let i = 0; i < backendData.length; i++) {
@@ -279,20 +250,17 @@ export class RangesComponent implements OnInit {
     }
 
     //Wenn key uebergeben wird, nur diesen bearbeiten, ansonsten alle keys
-    const keys = key ? [key] : Object.keys(this.rangeValues);
+    const keys = key ? [key] : Object.keys(this.rangeFieldConfig);
 
     //Ueber Rangewerte gehen
     for (const k of keys) {
-
-      //Von und bis Werte fuer Slider setzen
-      this.rangeData[k].from = this.rangeValues[k].from;
-      this.rangeData[k].to = this.rangeValues[k].to;
-
       //Vorhangwerte setzen
       this.rangeData[k].curtainLeft =
-        ((1 - (this.rangeData[k].max - this.rangeData[k].from) / (this.rangeData[k].max - this.rangeData[k].min)) * 100) + '%';
+        ((1 - (this.rangeFieldConfig[k].max - this.rangeFieldConfig[k].from) /
+          (this.rangeFieldConfig[k].max - this.rangeFieldConfig[k].min)) * 100) + '%';
       this.rangeData[k].curtainRight =
-        ((this.rangeData[k].max - this.rangeData[k].to) / (this.rangeData[k].max - this.rangeData[k].min) * 100) + '%';
+        ((this.rangeFieldConfig[k].max - this.rangeFieldConfig[k].to) /
+          (this.rangeFieldConfig[k].max - this.rangeFieldConfig[k].min) * 100) + '%';
     }
 
   }
@@ -317,10 +285,8 @@ export class RangesComponent implements OnInit {
 
   //Anzahl der Eintraege ohne ein Merkmal (z.B. Titel ohne Jahr)
   getMissingCount(key) {
-
-    //lokal gespeicherten Wert zurueckliefern
-    return this.rangeMissingValues['{!ex=' + this.rangeValues[key].field + '}' +
-    this.rangeValues[key].field + ':0'];
+    return this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[key].field + '}' +
+    this.rangeFieldConfig[key].field + ':0'];
   }
 
 

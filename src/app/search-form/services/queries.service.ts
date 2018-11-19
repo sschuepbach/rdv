@@ -1,10 +1,13 @@
-import {Injectable} from '@angular/core';
-import {QueriesStoreService} from './queries-store.service';
-import {FormService} from './form.service';
-import {UpdateQueryService} from './update-query.service';
-import {SliderService} from './slider.service';
-import {SavedQueryFormat} from '../models/saved-query';
-import {QueryFormat} from "../../shared/models/query-format";
+import { Injectable } from '@angular/core';
+import { QueriesStoreService } from './queries-store.service';
+import { FormService } from './form.service';
+import { UpdateQueryService } from './update-query.service';
+import { SavedQueryFormat } from '../models/saved-query';
+import { QueryFormat } from "../../shared/models/query-format";
+import { environment } from '../../../environments/environment';
+import { Store } from '@ngrx/store';
+import * as fromSearch from '../reducers';
+import * as fromFormActions from '../actions/form.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +17,8 @@ export class QueriesService {
 
   constructor(private formService: FormService,
               private updateQueryService: UpdateQueryService,
-              private sliderService: SliderService,
-              private queriesStoreService: QueriesStoreService) {
+              private queriesStoreService: QueriesStoreService,
+              private searchState: Store<fromSearch.State>) {
     updateQueryService.query$.subscribe(q => this.query = q);
   }
 
@@ -44,8 +47,9 @@ export class QueriesService {
     //Werte in Input Feldern setzen
     this.formService.setFormInputValues();
 
-    //Slider-Werte setzen
-    this.sliderService.resetSlider();
+    for (const key of Object.keys(environment.rangeFields)) {
+      this.searchState.dispatch(new fromFormActions.RangeReset(key))
+    }
   }
 
   delete(index: number) {

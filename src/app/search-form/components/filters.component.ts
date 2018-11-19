@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
 
@@ -35,13 +35,8 @@ import * as fromSearch from '../reducers';
   `],
 })
 export class FiltersComponent {
-  @Input() filterFieldsOptionsConfig: any;
-  @Input() parentFormGroup: FormGroup;
-
-  form: FormGroup;
   filterFields: any;
   filterFieldsByKey$: Observable<any>;
-
 
   constructor(private formBuilder: FormBuilder,
               private rootState: Store<fromRoot.State>,
@@ -53,5 +48,4 @@ export class FiltersComponent {
   toggleChecked(filter: string, value: string) {
     this.searchState.dispatch(new fromFormActions.ToggleFilterValue({filter: filter, value: value}));
   }
-
 }

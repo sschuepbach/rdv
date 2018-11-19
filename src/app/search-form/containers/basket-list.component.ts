@@ -1,57 +1,55 @@
-import { Component, Input } from '@angular/core';
-import { BasketsStoreService } from '../services/baskets-store.service';
-import { BasketsService } from '../services/baskets.service';
-import { FormArray, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Rx';
+
+import * as fromBasketActions from '../actions/basket.actions';
+import * as fromSearch from '../reducers';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-basket-list',
   template: `
-    <div [formGroup]="parentFormGroup">
-      <div class="mt-2 no-gutters" formArrayName="baskets">
+    <div class="mt-2 no-gutters">
+      <div class="h6">Meine Merklisten</div>
+      <button class="btn btn-primary btn-sm fa fa-plus mb-2" (click)="createBasket()"></button>
 
-        <!-- Ueberschrift -->
-        <div class="h6">Meine Merklisten</div>
+      <!-- Liste der gespeicherten Baskets -->
+      <div class="no-gutters">
+        <div *ngFor="let i of basketIds$ | async"
+             class="input-group input-group-sm col-md-10 mt-1">
 
-        <!-- neue Merkliste anlegen -->
-        <button class="btn btn-primary btn-sm fa fa-plus mb-2"
-                (click)="createBasket()"></button>
-
-        <!-- Liste der gespeicherten Baskets -->
-        <div class="no-gutters">
-          <div *ngFor="let i of countToBasketListLength()"
-               class="input-group input-group-sm col-md-10 mt-1">
-
-            <!-- Button "Merkliste laden" -->
-            <span class="input-group-btn">
+          <!-- Button "Merkliste laden" -->
+          <span class="input-group-btn">
               <button class="btn btn-primary fa fa-circle-o"
-                      [class.fa-dot-circle-o]="i == activeBasketIndex"
+                      [class.fa-dot-circle-o]="i === (currentBasketId$ | async)"
                       type="button"
                       (click)="loadBasket(i)"></button>
             </span>
 
-            <!-- Name des Baskets -->
-            <input type="text"
-                   class="form-control col-md-5"
-                   title="Name des Baskets"
-                   [formControlName]="i">
+          <!-- Name des Baskets -->
+          <input type="text"
+                 #basketName
+                 class="form-control col-md-5"
+                 title="Name des Baskets"
+                 [value]="(basketEntities$ | async)[i].name"
+                 (keyup)="updateBasketName(i, basketName.value)">
 
-            <!-- Anzahl der Titel in dieser Merkliste -->
-            <span class="btn btn-sm">
-              {{getBaskets()[i].ids.length + ' Titel'}}
+          <!-- Anzahl der Titel in dieser Merkliste -->
+          <span class="btn btn-sm">
+              {{(basketEntities$ | async)[i].records.length + ' Titel'}}
             </span>
 
-            <!-- Button "Link kopieren" -->
-            <span class="input-group-btn">
-              <app-copy-link [data]="getBaskets()[i]" [mode]="'basket'"></app-copy-link>
+          <!-- Button "Link kopieren" -->
+          <span class="input-group-btn">
+              <app-copy-link [data]="(basketEntities$ | async)[i]" [mode]="'basket'"></app-copy-link>
             </span>
 
-            <!-- Button "Merkliste loeschen" -->
-            <span class="input-group-btn">
+          <!-- Button "Merkliste loeschen" -->
+          <span class="input-group-btn">
               <button class="btn btn-danger fa fa-trash"
                       type="button"
                       (click)="deleteBasket(i)"></button>
             </span>
-          </div>
         </div>
       </div>
     </div>
@@ -64,34 +62,83 @@ import { FormArray, FormGroup } from '@angular/forms';
 })
 export class BasketListComponent {
 
-  activeBasketIndex: number;
+  basketEntities$: Observable<any>;
+  private basketEntities: any;
+  basketIds$: Observable<any>;
+  currentBasketId$: Observable<any>;
+  private nextId: number;
+  private currentBasketId: number;
+  private basketIds: number[];
 
-  @Input() parentFormGroup: FormGroup;
+  private static generateNextId(ids: number[]) {
+    if (ids.length > 0) {
+      for (const i of Array.from(Array(Math.max(...ids)).keys())) {
+        if (!ids.includes(i + 1)) {
+          return i + 1;
+        }
+      }
+      return ids.length + 1;
+    } else {
+      return 1;
+    }
+  }
 
-  constructor(private basketStoreService: BasketsStoreService,
-              private basketsService: BasketsService) {
-    this.basketsService.indexOfActiveBasket$.subscribe(res => this.activeBasketIndex = res);
+  constructor(private searchState: Store<fromSearch.State>) {
+    this.basketEntities$ = this.searchState.pipe(select(fromSearch.getBasketEntities));
+    this.basketEntities$.subscribe(entities => this.basketEntities = entities);
+    this.basketIds$ = this.searchState.pipe(select(fromSearch.getBasketIds));
+    this.basketIds$.subscribe((ids: number[]) => {
+      this.basketIds = ids;
+      this.nextId = BasketListComponent.generateNextId(ids);
+    });
+    this.currentBasketId$ = this.searchState.pipe(select(fromSearch.getCurrentBasketId));
+    this.currentBasketId$.subscribe(id => this.currentBasketId = id)
   }
 
   loadBasket(index: number) {
-    this.basketsService.loadBasket(index)
+    this.searchState.dispatch(new fromBasketActions.BasketSelected({id: index}));
   }
 
   createBasket() {
-    this.basketsService.createBasket();
+    const id = this.nextId;
+    this.searchState.dispatch(new fromBasketActions.AddBasket(
+      {
+        basket: {
+          id: id,
+          name: 'Meine Merkliste ' + id,
+          records: [],
+          queryParams: {
+            rows: environment.queryParams.rows,
+            start: environment.queryParams.start,
+            sortField: environment.queryParams.sortField,
+            sortDir: environment.queryParams.sortDir,
+          }
+        }
+      }
+    ));
+    this.searchState.dispatch(new fromBasketActions.BasketSelected({id: id}));
+    // this.basketsService.createBasket();
   }
 
   deleteBasket(index: number) {
-    (this.parentFormGroup.get('baskets') as FormArray).removeAt(index);
-    this.basketsService.removeBasket(index);
+    if (index === this.currentBasketId) {
+      if (this.basketIds.length <= 1) {
+        this.createBasket();
+      } else {
+        this.searchState.dispatch(new fromBasketActions.BasketSelected({
+          id: this.basketIds.filter(id => id !== index)[0]
+        }))
+      }
+    }
+    this.searchState.dispatch(new fromBasketActions.DeleteBasket({id: index}));
   }
 
-  getBaskets() {
-    return this.basketStoreService.savedBasketItems;
+  updateBasketName(index: number, name: string) {
+    this.searchState.dispatch(new fromBasketActions.UpsertBasket({
+      basket: {
+        ...this.basketEntities[index],
+        name: name,
+      }
+    }));
   }
-
-  countToBasketListLength() {
-    return Array.from((this.parentFormGroup.get('baskets') as FormArray).controls.keys());
-  }
-
 }

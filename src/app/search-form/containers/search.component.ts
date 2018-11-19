@@ -12,11 +12,12 @@ import { FormService } from '../services/form.service';
 import { QueriesStoreService } from '../services/queries-store.service';
 import { BasketsService } from '../services/baskets.service';
 import { Basket } from '../models/basket';
-import { SliderService } from '../services/slider.service';
 import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
 import * as fromSearch from '../reducers';
+import * as fromFormActions from '../actions/form.actions';
+import { environment } from '../../../environments/environment';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -69,7 +70,6 @@ export class SearchComponent implements OnInit, OnDestroy {
               public formService: FormService,
               private basketsStoreService: BasketsStoreService,
               private basketsService: BasketsService,
-              private sliderService: SliderService,
               private _fb: FormBuilder,
               private route: ActivatedRoute,
               private rootStore: Store<fromRoot.State>,
@@ -106,7 +106,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       if (params.get("basket")) {
         const compressedBasket = params.get("basket");
         const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
-        this.basketsService.createBasket(true, basketFromLink);
+        console.log(basketFromLink);
 
       }
     });
@@ -155,7 +155,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     //Input-Felder in Template zureucksetzen
     this.formService.setFormInputValues();
 
-    this.sliderService.resetSlider();
+    for (const key of Object.keys(environment.rangeFields)) {
+      this.searchStore.dispatch(new fromFormActions.RangeReset(key))
+    }
+
   }
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)

@@ -18,16 +18,12 @@ export interface State {
   showExportList: any;
   tableFields: any[];
   extraInfos: any;
-  tableFieldsDisplayExtraInfo: boolean;
-  tableFieldsDisplayLandingpage: boolean;
   error: any;
 }
 
 
 export const initialState: State = {
   ...environment,
-  tableFieldsDisplayExtraInfo: false,
-  tableFieldsDisplayLandingpage: false,
   error: '',
 };
 
@@ -42,18 +38,6 @@ export function reducer(state = initialState, action: UserConfigActions): State 
 
     case UserConfigActionTypes.SetRemoteFilterFieldOptions:
       return mergeDeep(state, setFilterOption(action.payload.filterFieldKey, action.payload.option));
-
-    case UserConfigActionTypes.SetTableFieldsDisplayExtraInfo:
-      return {
-        ...state,
-        tableFieldsDisplayExtraInfo: action.payload,
-      };
-
-    case UserConfigActionTypes.SetTableFieldsDisplayLandingpage:
-      return {
-        ...state,
-        tableFieldsDisplayLandingpage: action.payload,
-      };
 
     case UserConfigActionTypes.OptionRetrieveError:
       return {

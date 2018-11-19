@@ -1,10 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { UpdateQueryService } from '../services/update-query.service';
-import { SliderService } from '../services/slider.service';
-import { FormService } from '../services/form.service';
 import { QueryFormat } from "../../shared/models/query-format";
-import * as fromRoot from "../../reducers";
 import * as fromSearch from "../reducers";
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
@@ -65,8 +62,7 @@ import * as fromFormActions from "../actions/form.actions";
               <span> / auch Einträge ohne {{rangeFieldsConfig[key].label}} anzeigen</span>
 
           <!-- Undo-Button -->
-              <button (click)="resetRangeValues(key)"
-                      class="btn p-1 fa fa-trash"></button>
+              <button (click)="toggleShowMissingValues(key)" class="btn p-1 fa fa-trash"></button>
             </span>
       </div>
     </div>
@@ -119,8 +115,6 @@ export class ParamsSetComponent {
   searchFieldsAreEmpty = true;
   query: QueryFormat;
 
-  searchFieldsOptions$: Observable<any>;
-
   facetFieldsConfig: any;
   rangeFieldsConfig: any;
   searchFieldsConfig: any;
@@ -132,16 +126,21 @@ export class ParamsSetComponent {
   facetFields$: Observable<any>;
   facetFieldByKey$: Observable<any>;
 
+  private static checkIfSearchFieldsAreEmpty(fields: any) {
+    for (const field of fields) {
+      if (field.value) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   constructor(public updateQueryService: UpdateQueryService,
-              private sliderService: SliderService,
-              private formService: FormService,
-              private rootState: Store<fromRoot.State>,
               private searchState: Store<fromSearch.State>) {
     updateQueryService.query$.subscribe(q => this.query = q);
-    this.searchFieldsAreEmpty = formService.checkIfSearchFieldsAreEmpty();
-    this.searchFieldsOptions$ = rootState.pipe(select(fromRoot.getSearchFieldsOptionsByKey));
 
     this.searchFields$ = searchState.pipe(select(fromSearch.getSearchValues));
+    this.searchFields$.subscribe(fields => this.searchFieldsAreEmpty = ParamsSetComponent.checkIfSearchFieldsAreEmpty(fields));
     this.searchFieldByKey$ = searchState.pipe(select(fromSearch.getSearchValuesByKey));
     this.rangeFields$ = searchState.pipe(select(fromSearch.getRangeValues));
     this.rangeFieldByKey$ = searchState.pipe(select(fromSearch.getRangeValuesByKey));
@@ -166,25 +165,15 @@ export class ParamsSetComponent {
     this.updateQueryService.updateQuery(query);
   }
 
-  //Slider auf Anfangswerte zuruecksetzen
   resetRange(key) {
-
-    //Wert in Queryformat anpassen
-    const query = JSON.parse(JSON.stringify(this.query));
-    query.rangeFields[key].from = this.query.rangeFields[key].min;
-    query.rangeFields[key].to = this.query.rangeFields[key].max;
-
-    this.sliderService.resetSlider(key);
-
-    //Suche starten
-    this.updateQueryService.updateQuery(query);
+    this.searchState.dispatch(new fromFormActions.RangeReset(key));
   }
 
   resetTerm(key) {
     this.searchState.dispatch(new fromFormActions.SearchFieldValueUpdated({field: key, value: ''}));
   }
 
-  resetRangeValues(key) {
-    this.searchState.dispatch(new fromFormActions.RangeReset(key));
+  toggleShowMissingValues(key) {
+    this.searchState.dispatch(new fromFormActions.ShowMissingValuesInRange(key));
   }
 }

@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Basket } from '../models/basket';
 import { UpdateQueryService } from '../services/update-query.service';
 import { BasketsService } from '../services/baskets.service';
 import { FormGroup } from '@angular/forms';
@@ -7,8 +6,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { BackendSearchService } from '../../shared/services/backend-search.service';
 import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
-import * as fromRoot from '../../reducers';
 import { Observable } from 'rxjs/Rx';
+import * as fromSearch from '../reducers';
+import * as fromBasketActions from '../actions/basket.actions';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-results',
@@ -34,17 +35,19 @@ export class ResultsComponent {
   //docs Bereich der Server-Antwort (abgeleitet von results) fuer Merklistentabelle
   basketDocs: any[];
 
-  private activeBasket: Basket;
   query: QueryFormat;
-  extraInfos$: Observable<any>;
-  extraInfosByKey$: Observable<any>;
-  showExportListTable$: Observable<any>;
-  showExportListBasket$: Observable<any>;
-  tableFields$: Observable<any>;
-  tableFieldsDisplayLandingpage$: Observable<boolean>;
-  tableFieldsDisplayExtraInfo$: Observable<boolean>;
-  private tableFields: any;
-  private basketQueryParamsRows: number;
+  tableFields: any;
+  extraInfos: any;
+  tableFieldsDisplayLandingpage: boolean;
+  tableFieldsDisplayExtraInfo: boolean;
+  private readonly numberOfDisplayedBasketRows: number;
+
+  numberOfBaskets$: Observable<number>;
+  currentBasket$: Observable<any>;
+  private currentBasket: any;
+  showExportListTable: boolean;
+  showExportListBasket: boolean;
+  private numberOfBaskets: number;
 
   //Anzahl der Seiten gesamt
   get pages(): number {
@@ -57,7 +60,7 @@ export class ResultsComponent {
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.basketsService.basketSize / this.basketQueryParamsRows);
+    return Math.ceil(this.currentBasket.records.length / this.numberOfDisplayedBasketRows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -70,103 +73,106 @@ export class ResultsComponent {
   //aktuelle Merklisten-Seite beim Blaettern
   get basketPage(): number {
 
-    if (this.basketsService.basketsExist()) {
-
+    return this.numberOfBaskets ?
       //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      return Math.floor(this.activeBasket.queryParams.start / this.basketQueryParamsRows) + 1;
-    } else {
-
-      //0 zurueck
-      return 0;
-    }
+      Math.floor(this.currentBasket.queryParams.start / this.numberOfDisplayedBasketRows) + 1 :
+      0;
   }
 
   constructor(private basketsService: BasketsService,
               private updateQueryService: UpdateQueryService,
               private backendSearchService: BackendSearchService,
               private sanitizer: DomSanitizer,
-              private rootState: Store<fromRoot.State>) {
-    this.extraInfos$ = rootState.pipe(select(fromRoot.getExtraInfos));
-    this.extraInfosByKey$ = rootState.pipe(select(fromRoot.getExtraInfosByKey));
-    this.showExportListTable$ = rootState.pipe(select(fromRoot.getShowExportListTable));
-    this.showExportListBasket$ = rootState.pipe(select(fromRoot.getShowExportListBasket));
-    this.tableFields$ = rootState.pipe(select(fromRoot.getTableFields));
-    this.tableFieldsDisplayLandingpage$ = rootState.pipe(select(fromRoot.getTableFieldsDisplayLandingpage));
-    this.tableFieldsDisplayExtraInfo$ = rootState.pipe(select(fromRoot.getTableFieldsDisplayExtraInfo));
-    this.tableFields$.subscribe(x => this.tableFields = x);
-    rootState.pipe(select(fromRoot.getBasketQueryParamsRows)).subscribe(x => this.basketQueryParamsRows = x);
+              private searchState: Store<fromSearch.State>) {
+    this.extraInfos = environment.extraInfos;
+    this.tableFields = environment.tableFields;
+    this.showExportListTable = environment.showExportList.table;
+    this.showExportListBasket = environment.showExportList.basket;
+    this.numberOfDisplayedBasketRows = environment.basketConfig.queryParams.rows;
+
+    this.tableFieldsDisplayLandingpage = environment.tableFields.reduce((agg, field) =>
+      !agg && field.hasOwnProperty('landingpage') && field['landingpage'],
+      false);
+    this.tableFieldsDisplayExtraInfo = environment.tableFields.reduce((agg, field) =>
+      !agg && field.hasOwnProperty('extraInfo') && field['extraInfo']
+      , false);
+
+    this.numberOfBaskets$ = searchState.pipe(select(fromSearch.getBasketCount));
+    this.numberOfBaskets$.subscribe(no => this.numberOfBaskets = no);
+    this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
+    this.currentBasket$.subscribe(basket => this.currentBasket = basket);
 
     updateQueryService.query$.subscribe(q => this.query = q);
     updateQueryService.response$.subscribe(res => {
         this.count = res.response.numFound;
         this.docs = res.response.docs;
         //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
-        this.setSortColumnIndex();
+      this.setSortColumnIndexForSearch();
       }
     );
-    basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
+
+    // TODO: Replace
     //Suche anmelden: Bei Aenderungen der aktiven Merkliste
-    basketsService.basketSearchTerms$
-      .switchMap((basket: Basket) => this.backendSearchService.getBackendDataBasket(basket))
-      .subscribe((res: any) => {
-        //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
-        this.setSortColumnIndex('basket');
-        //Array der Treffer-Dokumente
-        // this.docs = res.response.docs;
-        console.log(res.response.docs);
-        this.basketDocs = res.response.docs;
-      });
+    /*    basketsService.basketSearchTerms$
+          .switchMap((basket: Basket) => this.backendSearchService.getBackendDataBasket(basket))
+          .subscribe((res: any) => {
+            //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
+            this.setSortColumnIndexForBasket();
+            //Array der Treffer-Dokumente
+            this.basketDocs = res.response.docs;
+          });*/
   }
 
+  // TODO: Used by search
   //Blaettern in Trefferliste / Merkliste
-  updateStart(offset, mode: string = 'search') {
-
+  setSearchOffset(offset) {
     //neuen Startwert berechnen
     let newStart: number;
 
-    //Treffertabelle und Merklistetabelle unterscheiden
-    switch (mode) {
-
-      //Treffertabelle
-      case 'search':
-
-        //auf letzte Seite springen
-        if (offset === 'last') {
-          newStart = (this.query.queryParams.rows * (this.pages - 1));
-        } else if (offset === 'first') {
-          newStart = 0;
-        } else {
-          newStart = this.query.queryParams.start +
-            (offset * this.query.queryParams.rows);
-        }
-
-        //Start anpassen
-        const query = JSON.parse(JSON.stringify(this.query));
-        query.queryParams.start = newStart;
-        this.updateQueryService.updateQuery(query);
-        break;
-
-      //Merklistentabelle
-      case 'basket':
-
-        //auf letzte Seite springen
-        if (offset === 'last') {
-          newStart = (this.basketQueryParamsRows * (this.basketPages - 1));
-        } else if (offset === 'first') {
-          newStart = 0;
-        } else {
-          newStart = this.activeBasket.queryParams.start + (offset * this.basketQueryParamsRows);
-        }
-
-        //Start anpassen
-        this.activeBasket.queryParams.start = newStart;
-
-        //Suche starten
-        this.basketsService.propagateBasketSearchTermsFromActiveBasket();
-        break;
+    //auf letzte Seite springen
+    if (offset === 'last') {
+      newStart = (this.query.queryParams.rows * (this.pages - 1));
+    } else if (offset === 'first') {
+      newStart = 0;
+    } else {
+      newStart = this.query.queryParams.start +
+        (offset * this.query.queryParams.rows);
     }
+
+    //Start anpassen
+    const query = JSON.parse(JSON.stringify(this.query));
+    query.queryParams.start = newStart;
+    this.updateQueryService.updateQuery(query);
   }
 
+  // TODO: Used by basket
+  setBasketOffset(offset) {
+    let newStart: number;
+    //auf letzte Seite springen
+    if (offset === 'last') {
+      newStart = (this.numberOfDisplayedBasketRows * (this.basketPages - 1));
+    } else if (offset === 'first') {
+      newStart = 0;
+    } else {
+      newStart = this.currentBasket.queryParams.start + (offset * this.numberOfDisplayedBasketRows);
+    }
+
+    //Start anpassen
+    this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+      basket: {
+        ...this.currentBasket,
+        queryParams: {
+          ...this.currentBasket.queryParams,
+          start: newStart
+        }
+      }
+    }));
+
+    // FIXME: Replace
+    // this.basketsService.propagateBasketSearchTermsFromActiveBasket();
+  }
+
+  // TODO: Used by both
   //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
   // noinspection JSMethodCanBeStatic
   private getType(obj) {
@@ -181,6 +187,7 @@ export class ResultsComponent {
     }
   }
 
+  // TODO: Used by both
   exportList(docs) {
     let dataString = "data:application/octet-stream,";
 
@@ -211,44 +218,36 @@ export class ResultsComponent {
     this.exportListData = this.sanitizer.bypassSecurityTrustUrl(dataString);
   }
 
+  // TODO: Used by search
   //Spalte herausfinden nach welcher gerade sortiert wird fuer farbliche Hinterlegung der Trefferliste / Merkliste
-  private setSortColumnIndex(mode: string = 'search') {
+  private setSortColumnIndexForSearch() {
+    //Ueber Felder der Tabelle gehen
+    this.tableFields.forEach((item, index) => {
 
-    //nach Modus unterscheiden
-    switch (mode) {
+      //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
+      if (item.sort === this.query.queryParams.sortField) {
 
-      //Trefferliste
-      case 'search':
-
-        //Ueber Felder der Tabelle gehen
-        this.tableFields.forEach((item, index) => {
-
-          //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
-          if (item.sort === this.query.queryParams.sortField) {
-
-            //diesen Index merken
-            this.sortColumnSearch = index;
-          }
-        });
-        break;
-
-      //Merkliste
-      case 'basket':
-
-        //Ueber Felder der Tabelle gehen
-        this.tableFields.forEach((item, index) => {
-
-          //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
-          if (item.sort === this.activeBasket.queryParams.sortField) {
-
-            //diesen Index merken
-            this.sortColumnBasket = index;
-          }
-        });
-        break;
-    }
+        //diesen Index merken
+        this.sortColumnSearch = index;
+      }
+    });
   }
 
+  // TODO: Used by basket
+  private setSortColumnIndexForBasket() {
+    //Ueber Felder der Tabelle gehen
+    this.tableFields.forEach((item, index) => {
+
+      //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
+      if (item.sort === this.currentBasket.queryParams.sortField) {
+
+        //diesen Index merken
+        this.sortColumnBasket = index;
+      }
+    });
+  }
+
+  // TODO: Used by both
   //Werte fuer Darstellung in Trefferliste formattieren
   // noinspection JSMethodCanBeStatic
   formatValue(value, display) {
@@ -271,45 +270,14 @@ export class ResultsComponent {
     return output;
   }
 
-  //gibt eine CSS-Klasse zurueck, wenn nach dieser Spalte sortiert wird
-  sortBy(field: string, mode: string = 'search') {
-
-    //CSS-Klasse, davon ausgehen, dass gerade nicht nach diesem Feld sortiert wird
-    //(fa-sort = rauf und runter-Symbol, welches anzeigt, dass es ein sortierbares Feld ist)
-    let cssClass = "fa-sort";
-
-    //Treffertabelle und Merklistetabelle unterscheiden
-    switch (mode) {
-
-      //Treffertabelle
-      case 'search':
-
-        //wenn nach diesem Feld sortiert wird
-        if (field === this.query.queryParams.sortField) {
-
-          //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
-          cssClass = this.query.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc";
-        }
-        break;
-
-      //Merkliste
-      case 'basket':
-
-        //wenn nach diesem Feld sortiert wird
-        if (field === this.activeBasket.queryParams.sortField) {
-
-          //anhand der gesetzten Sortierrichtung eine CSS-Klasse setzen
-          cssClass =
-            this.activeBasket.queryParams.sortDir === "asc"
-              ? "fa-sort-asc" : "fa-sort-desc";
-        }
-        break;
-    }
-
-    //fa-Klasse zurueckgeben
-    return cssClass;
+  // TODO: Used by search
+  getSortBySymbol(field: string) {
+    return field === this.query.queryParams.sortField ?
+      this.query.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc" :
+      'fa-sort';
   }
 
+  // TODO: Used by both
   //Detailinfo holen und Ansicht toggeln
   getFullData(id: string) {
 
@@ -327,62 +295,68 @@ export class ResultsComponent {
   }
 
 
+  // TODO: Used by search
   //Treffertabelle / Merkliste sortieren
-  sortTable(sortField: string, mode: string = 'search') {
+  sortSearchTable(sortField: string) {
+    const query = JSON.parse(JSON.stringify(this.query));
 
-    //Treffertabelle und Merklistetabelle unterscheiden
-    switch (mode) {
-
-      //Treffertabelle
-      case 'search':
-
-        const query = JSON.parse(JSON.stringify(this.query));
-
-        //wenn bereits nach diesem Feld sortiert wird
-        if (sortField === this.query.queryParams.sortField) {
-          query.queryParams.sortDir = this.query.queryParams.sortDir === "desc" ? "asc" : "desc";
-        } else {
-          query.queryParams.sortField = sortField;
-          query.queryParams.sortDir = 'asc';
-        }
-
-        //Trefferliste wieder von vorne anzeigen
-        query.queryParams.start = 0;
-        this.updateQueryService.updateQuery(query);
-        break;
-
-      //Merkliste
-      case 'basket':
-
-        //wenn bereits nach diesem Feld sortiert wird
-        if (sortField === this.activeBasket.queryParams.sortField) {
-
-          //Sortierrichtung umdrehen
-          this.activeBasket.queryParams.sortDir = this.activeBasket.queryParams.sortDir === "desc" ? "asc" : "desc";
-        } else {
-
-          //Sortierfeld setzen
-          this.activeBasket.queryParams.sortField = sortField;
-
-          //Sortierrichtung aufsteigend setzen
-          this.activeBasket.queryParams.sortDir = 'asc';
-        }
-
-        //Suche starten
-        this.basketsService.propagateBasketSearchTermsFromActiveBasket();
-        break;
+    //wenn bereits nach diesem Feld sortiert wird
+    if (sortField === this.query.queryParams.sortField) {
+      query.queryParams.sortDir = this.query.queryParams.sortDir === "desc" ? "asc" : "desc";
+    } else {
+      query.queryParams.sortField = sortField;
+      query.queryParams.sortDir = 'asc';
     }
+
+    //Trefferliste wieder von vorne anzeigen
+    query.queryParams.start = 0;
+    this.updateQueryService.updateQuery(query);
   }
 
-  itemIsInBasket(id: string) {
-    return this.basketsService.itemIsInBasket(id);
+  // TODO: Used by basket
+  sortBasketTable(sortField: string) {
+    //wenn bereits nach diesem Feld sortiert wird
+    if (sortField === this.currentBasket.queryParams.sortField) {
+      this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+        basket: {
+          ...this.currentBasket,
+          queryParams: {
+            ...this.currentBasket.queryParams,
+            sortField: sortField,
+            sortDir: this.currentBasket.queryParams.sortDir === 'desc' ? 'asc' : 'desc',
+          }
+        }
+      }));
+    } else {
+      this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+        basket: {
+          ...this.currentBasket,
+          queryParams: {
+            ...this.currentBasket.queryParams,
+            sortField: sortField,
+            sortDir: 'asc',
+          }
+        }
+      }));
+    }
+
+    //Suche starten
+    // FIXME: Replace
+    // this.basketsService.propagateBasketSearchTermsFromActiveBasket();
   }
 
-  addOrRemoveBasketItem(id: string) {
-    return this.basketsService.addOrRemoveBasketItem(id);
-  }
-
-  getBasketSize() {
-    return this.basketsService.basketSize;
+  // TODO: Used by both
+  addOrRemoveRecordInBasket(id: string) {
+    this.searchState.dispatch(new fromBasketActions.UpdateBasket(
+      {
+        basket: {
+          ...this.currentBasket,
+          records:
+            this.currentBasket.records.includes(id) ?
+              this.currentBasket.records.filter(rec => rec !== id) :
+              this.currentBasket.records.concat(id)
+        }
+      }
+    ));
   }
 }

@@ -21,21 +21,6 @@ export class AppComponent {
   }
 
   private initializeUserConfig() {
-    // falls ein tableField extraInfo gesetzt hat, generatedConfig['tableFieldsDisplayExtraInfo'] auf true setzen
-    for (const field of environment.tableFields) {
-      if (field.hasOwnProperty('extraInfo') && field["extraInfo"] === true) {
-        this.rootState.dispatch(new fromActions.TableFieldsDisplayExtraInfo());
-        break;
-      }
-    }
-
-    // falls ein tableField landingpage gesetzt hat, generatedConfig['tableFieldsDisplayLandingpage'] auf true setzen
-    for (const field of environment.tableFields) {
-      if (field.hasOwnProperty('landingpage') && field["landingpage"] === true) {
-        this.rootState.dispatch(new fromActions.TableFieldsDisplayLandingpage());
-        break;
-      }
-    }
 
     //vorhandene Filter dynamisch laden
     for (const key of Object.keys(environment.filterFields)) {

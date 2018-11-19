@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { QueryFormat } from '../../shared/models/query-format';
 import { Observable } from 'rxjs/Rx';
-import { SliderService } from '../services/slider.service';
 import { UpdateQueryService } from '../services/update-query.service';
 import { select, Store } from '@ngrx/store';
 
@@ -75,8 +74,7 @@ export class FacetsComponent {
   facetFieldByKey$: Observable<any>;
   private shownFacetOrRange$: Observable<string>;
 
-  constructor(private sliderService: SliderService,
-              private updateQueryService: UpdateQueryService,
+  constructor(private updateQueryService: UpdateQueryService,
               private searchState: Store<fromSearch.State>) {
     this.facetFieldsConfig = environment.facetFields;
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));

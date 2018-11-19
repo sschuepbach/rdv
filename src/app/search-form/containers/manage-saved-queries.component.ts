@@ -28,7 +28,6 @@ import { Observable } from 'rxjs/Rx';
                  [value]=savedQuery.name>
           <span class="input-group-btn">
               <app-copy-link
-                [baseUrl]="baseUrl$ | async"
                 [data]="savedQuery.query">
               </app-copy-link>
             </span>
