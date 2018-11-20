@@ -1,41 +1,23 @@
 import { Action } from '@ngrx/store';
 
 export enum FormActionTypes {
-  SerializedFormDataLoaded = '[Form] Serialized form data has been loaded',
   UpdateEntireForm = '[Form] Update entire form',
-  FilterValueChanged = '[Form] Filter in form changed',
   ToggleFilterValue = '[Form] Toggle filter in form model',
-  SearchFieldTypeUpdated = '[Form] Search field type in form updated',
   UpdateSearchFieldType = '[Form] Update search field type in form model',
-  SearchFieldValueUpdated = '[Form] Search field value in form updated',
   UpdateSearchFieldValue = '[Form] Update search field value in form model',
-  FacetOperatorChanged = '[Form] Facets Field in Form Updated',
   UpdateFacetOperator = '[Form] Update Facets in Form Model',
-  RangeBoundariesChanged = '[Form] Boundaries for range in form changed',
+  RangeBoundariesChanged = '[Form] Boundaries for range in form model changed',
   UpdateRangeBoundaries = '[Form] Set new boundaries for range in form model',
-  ResetRange = '[Form] Propagate Reset Ranges',
-  RangeReset = '[Form] Reset Ranges in Form Model',
+  ResetRange = '[Form] Reset Ranges in Form Model',
   ShowMissingValuesInRange = '[Form] Toggle Show Missing Values',
+  ResetAll = '[Form] Reset All',
 }
 
-export class SerializedFormDataLoaded implements Action {
-  readonly type = FormActionTypes.SerializedFormDataLoaded;
-
-  constructor(public payload: any) {
-  }
-}
 
 export class UpdateEntireForm implements Action {
   readonly type = FormActionTypes.UpdateEntireForm;
 
   constructor(public payload: any) {
-  }
-}
-
-export class FilterValueChanged implements Action {
-  readonly type = FormActionTypes.FilterValueChanged;
-
-  constructor(public payload: { filter: string, value: string }) {
   }
 }
 
@@ -46,13 +28,6 @@ export class ToggleFilterValue implements Action {
   }
 }
 
-export class SearchFieldTypeUpdated implements Action {
-  readonly type = FormActionTypes.SearchFieldTypeUpdated;
-
-  constructor(public payload: { field: string, type: string }) {
-  }
-}
-
 export class UpdateSearchFieldType implements Action {
   readonly type = FormActionTypes.UpdateSearchFieldType;
 
@@ -60,24 +35,10 @@ export class UpdateSearchFieldType implements Action {
   }
 }
 
-export class SearchFieldValueUpdated implements Action {
-  readonly type = FormActionTypes.SearchFieldValueUpdated;
-
-  constructor(public payload: { field: string, value: string }) {
-  }
-}
-
 export class UpdateSearchFieldValue implements Action {
   readonly type = FormActionTypes.UpdateSearchFieldValue;
 
   constructor(public payload: { field: string, value: string }) {
-  }
-}
-
-export class FacetOperatorChanged implements Action {
-  readonly type = FormActionTypes.FacetOperatorChanged;
-
-  constructor(public payload: { facet: string, value: string }) {
   }
 }
 
@@ -117,13 +78,6 @@ export class ResetRange implements Action {
   }
 }
 
-export class RangeReset implements Action {
-  readonly type = FormActionTypes.RangeReset;
-
-  constructor(public payload: string) {
-  }
-}
-
 export class ShowMissingValuesInRange implements Action {
   readonly type = FormActionTypes.ShowMissingValuesInRange;
 
@@ -131,20 +85,19 @@ export class ShowMissingValuesInRange implements Action {
   }
 }
 
+export class ResetAll implements Action {
+  readonly type = FormActionTypes.ResetAll;
+}
+
 
 export type FormActions
-  = SerializedFormDataLoaded
-  | UpdateEntireForm
-  | FilterValueChanged
+  = UpdateEntireForm
   | ToggleFilterValue
-  | SearchFieldTypeUpdated
   | UpdateSearchFieldType
-  | SearchFieldValueUpdated
   | UpdateSearchFieldValue
-  | FacetOperatorChanged
   | UpdateFacetOperator
   | RangeBoundariesChanged
   | UpdateRangeBoundaries
   | ResetRange
-  | RangeReset
-  | ShowMissingValuesInRange;
+  | ShowMissingValuesInRange
+  | ResetAll;

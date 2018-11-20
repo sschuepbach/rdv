@@ -1,7 +1,6 @@
 import { UserConfigActions, UserConfigActionTypes } from '../actions/user-config.actions';
 import { environment } from '../../../environments/environment';
 import { mergeDeep } from '../../shared/utils';
-import { QueryFormat } from '../../shared/models/query-format';
 
 
 export interface State {
@@ -50,7 +49,7 @@ export function reducer(state = initialState, action: UserConfigActions): State 
   }
 }
 
-export function createQueryFormat(state: State): QueryFormat {
+/*export function createQueryFormat(state: State): QueryFormat {
 
   //Neues QueryFormat-Geruest erstellen
   const queryFormat = new QueryFormat();
@@ -105,4 +104,4 @@ export function createQueryFormat(state: State): QueryFormat {
 
   //QueryFormat zurueckgeben
   return queryFormat;
-}
+}*/

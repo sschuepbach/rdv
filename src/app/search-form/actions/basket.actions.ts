@@ -13,7 +13,6 @@ export enum BasketActionTypes {
   DeleteBasket = '[Basket] Delete Basket',
   DeleteBaskets = '[Basket] Delete Baskets',
   ClearBaskets = '[Basket] Clear Baskets',
-  BasketSelected = '[Basket] Basket selected',
   SelectBasket = '[Basket] Select Basket',
 }
 
@@ -69,14 +68,14 @@ export class UpdateBaskets implements Action {
 export class DeleteBasket implements Action {
   readonly type = BasketActionTypes.DeleteBasket;
 
-  constructor(public payload: { id: number }) {
+  constructor(public payload: { id: string }) {
   }
 }
 
 export class DeleteBaskets implements Action {
   readonly type = BasketActionTypes.DeleteBaskets;
 
-  constructor(public payload: { ids: number[] }) {
+  constructor(public payload: { ids: string[] }) {
   }
 }
 
@@ -84,19 +83,13 @@ export class ClearBaskets implements Action {
   readonly type = BasketActionTypes.ClearBaskets;
 }
 
-export class BasketSelected implements Action {
-  readonly type = BasketActionTypes.BasketSelected;
-
-  constructor(public payload: { id: number }) {
-  }
-}
-
 export class SelectBasket implements Action {
   readonly type = BasketActionTypes.SelectBasket;
 
-  constructor(public payload: { id: number }) {
+  constructor(public payload: { id: string }) {
   }
 }
+
 
 export type BasketActions =
   LoadBaskets
@@ -109,5 +102,4 @@ export type BasketActions =
   | DeleteBasket
   | DeleteBaskets
   | ClearBaskets
-  | BasketSelected
   | SelectBasket;

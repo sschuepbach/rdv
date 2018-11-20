@@ -20,11 +20,6 @@ export const getUserConfigState = createFeatureSelector<State, fromUserConfig.St
   'userConfig'
 );
 
-export const getQueryFormat = createSelector(
-  getUserConfigState,
-  (userConfig) => fromUserConfig.createQueryFormat(userConfig),
-);
-
 export const getBasketConfig = createSelector(
   getUserConfigState,
   (userConfig) => userConfig.basketConfig,

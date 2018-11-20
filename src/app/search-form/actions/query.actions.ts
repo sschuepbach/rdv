@@ -10,10 +10,16 @@ export enum QueryActionTypes {
 
 export class MakeSearchRequest implements Action {
   readonly type = QueryActionTypes.MakeSearchRequest;
+
+  constructor(public  payload: any) {
+  }
 }
 
 export class MakeBasketRequest implements Action {
   readonly type = QueryActionTypes.MakeBasketRequest;
+
+  constructor(public payload: any) {
+  }
 }
 
 export class SerializeQuery implements Action {

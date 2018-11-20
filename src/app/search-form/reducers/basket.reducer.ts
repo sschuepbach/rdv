@@ -3,7 +3,7 @@ import { Basket } from '../models/basket.model';
 import { BasketActions, BasketActionTypes } from '../actions/basket.actions';
 
 export interface State extends EntityState<Basket> {
-  selectedBasketId: number | null;
+  selectedBasketId: string | null;
 }
 
 export const adapter: EntityAdapter<Basket> = createEntityAdapter<Basket>();

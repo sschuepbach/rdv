@@ -134,7 +134,8 @@ export class RangesComponent implements OnInit {
   constructor(private updateQueryService: UpdateQueryService,
               private searchState: Store<fromSearch.State>) {
     this.rangeFieldConfig = environment.rangeFields;
-    this.rangeValuesByKey$ = searchState.pipe(select(fromSearch.getRangeValuesByKey));
+    this.rangeValuesByKey$ = searchState.pipe(
+      select(fromSearch.getRangeValuesByKey));
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
 
     // updateQueryService.query$.subscribe(q => this.query = q);

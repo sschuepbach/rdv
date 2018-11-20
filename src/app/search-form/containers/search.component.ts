@@ -2,22 +2,17 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
-import { FormBuilder } from "@angular/forms";
-import { BasketsStoreService } from 'app/search-form/services/baskets-store.service';
 import { ActivatedRoute } from '@angular/router';
-import { BackendSearchService } from '../../shared/services/backend-search.service';
-import { UpdateQueryService } from '../services/update-query.service';
-import { QueriesService } from '../services/queries.service';
 import { FormService } from '../services/form.service';
 import { QueriesStoreService } from '../services/queries-store.service';
-import { BasketsService } from '../services/baskets.service';
-import { Basket } from '../models/basket';
-import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
 import * as fromSearch from '../reducers';
 import * as fromFormActions from '../actions/form.actions';
+import * as fromQueryActions from '../actions/query.actions';
+import * as fromBasketActions from '../actions/basket.actions';
 import { environment } from '../../../environments/environment';
+import { hashCode } from '../../shared/utils';
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -49,11 +44,8 @@ declare var LZString: any;
 
 export class SearchComponent implements OnInit, OnDestroy {
 
-  private activeBasket: Basket;
-  private indexOfActiveBasket: number;
-  private query: QueryFormat;
-  private queryFormat: QueryFormat;
   private formData: any;
+  private baskets: any;
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -63,23 +55,22 @@ export class SearchComponent implements OnInit, OnDestroy {
     return JSON.parse(localStorage.getItem("userQuery"));
   }
 
-  constructor(private backendSearchService: BackendSearchService,
-              public updateQueryService: UpdateQueryService,
-              private queriesService: QueriesService,
-              private queriesStoreService: QueriesStoreService,
+  constructor(private queriesStoreService: QueriesStoreService,
               public formService: FormService,
-              private basketsStoreService: BasketsStoreService,
-              private basketsService: BasketsService,
-              private _fb: FormBuilder,
               private route: ActivatedRoute,
               private rootStore: Store<fromRoot.State>,
               private searchStore: Store<fromSearch.State>) {
 
-    rootStore.pipe(select(fromRoot.getQueryFormat)).subscribe(qF => this.queryFormat = qF);
-    searchStore.pipe(select(fromSearch.getFormValues)).subscribe(vals => this.formData = vals);
-    basketsService.activeBasket$.subscribe(res => this.activeBasket = res);
-    basketsService.indexOfActiveBasket$.subscribe(res => this.indexOfActiveBasket = res);
-    updateQueryService.query$.subscribe(q => this.query = q);
+    searchStore.pipe(select(fromSearch.getFormValues))
+      .subscribe(vals => {
+        this.formData = vals;
+        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest({...vals, queryParams: environment.queryParams}));
+      });
+    searchStore.pipe(select(fromSearch.getCurrentBasket))
+      .subscribe(basket => {
+        this.searchStore.dispatch(new fromQueryActions.MakeBasketRequest(basket))
+      });
+    searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this.baskets = baskets);
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -94,86 +85,78 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    let initialBasketsExist = false;
+
     this.route.queryParamMap.subscribe(params => {
       if (params.get("search")) {
-        this.updateQueryService.updateQuery(SearchComponent.loadQueryFromUrl(params));
+        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent.loadQueryFromUrl(params)));
       } else if (localStorage.getItem("userQuery")) {
-        this.updateQueryService.updateQuery(SearchComponent.loadQueryFromLocalStorage());
-      } else {
-        this.updateQueryService.updateQuery(this.queryFormat);
+        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent.loadQueryFromLocalStorage()));
       }
 
       if (params.get("basket")) {
         const compressedBasket = params.get("basket");
         const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
-        console.log(basketFromLink);
+        const hash = hashCode();
+        this.searchStore.dispatch(new fromBasketActions.AddBasket({basket: {...basketFromLink, id: hash}}));
 
+        this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
+        initialBasketsExist = true;
       }
     });
 
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     const localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
     if (localStorageSavedUserQueries) {
+      // TODO: Implement store slice for savedQueries
       this.queriesStoreService.savedQueries = JSON.parse(localStorageSavedUserQueries);
     }
 
     //versuchen gespeicherte Merklisten aus localstorage zu laden -> nach Form-Erstellung
     const localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
+    if (localStorageSavedUserBaskets && JSON.parse(localStorageSavedUserBaskets).length) {
+      const parsedBaskets = JSON.parse(localStorageSavedUserBaskets).map((x: any) => {
+        return {...x, id: hashCode()}
+      });
+      this.searchStore.dispatch(new fromBasketActions.AddBaskets({baskets: parsedBaskets}));
+      this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: parsedBaskets[0].id}));
+      initialBasketsExist = true;
+    }
 
-    //wenn es ein Merklisten-Merkmal im localstorage gibt
-    if (localStorageSavedUserBaskets) {
-
-      //Wenn es Merklisten im localstorage gibt (kein leeres Array)
-      if (JSON.parse(localStorageSavedUserBaskets).length) {
-
-        //gespeicherte Suchen aus localstorage holen
-        const lsBaskets = JSON.parse(localStorageSavedUserBaskets);
-
-        //Ueber gespeicherte Merklisten gehen
-        for (const lsBasket of lsBaskets) {
-
-          //damit Merkliste anlegen
-          this.basketsService.createBasket(true, lsBasket);
+    if (!initialBasketsExist) {
+      const hash = hashCode();
+      this.searchStore.dispatch(new fromBasketActions.AddBasket({
+        basket: {
+          id: hash,
+          name: 'Meine Merkliste 1',
+          ids: [],
+          queryParams: {
+            rows: environment.queryParams.rows,
+            start: environment.queryParams.start,
+            sortField: environment.queryParams.sortField,
+            sortDir: environment.queryParams.sortDir,
+          }
         }
-      }
+      }));
+      this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
     }
-
-    //Merkliste anlegen (falls keine aus localstorage geladen wurden oder per Link importiert wurde)
-    if (!this.basketsService.basketsExist()) {
-
-      //Leere Merkliste anlegen
-      this.basketsService.createBasket(true);
-    }
-
   }
 
   resetSearch() {
-
-    //Anfrage-Format neu erzeugen lassen
-    this.updateQueryService.updateQuery(this.queryFormat);
-
-    //Input-Felder in Template zureucksetzen
-    this.formService.setFormInputValues();
-
-    for (const key of Object.keys(environment.rangeFields)) {
-      this.searchStore.dispatch(new fromFormActions.RangeReset(key))
-    }
-
+    this.searchStore.dispatch(new fromFormActions.ResetAll());
   }
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
   private writeToLocalStorage() {
-    console.log("Write to local storage!");
-
     //aktuelle UserQuery speichern
-    // TODO: Save also queryParams!
-    localStorage.setItem("userQuery", JSON.stringify(this.formData));
+    localStorage.setItem("userQuery", JSON.stringify({...this.formData, queryParams: environment.queryParams}));
 
     //Array der gespeicherten UserQueries speichern
+    // TODO: Implement store slice for savedQueries
     localStorage.setItem("savedUserQueries", JSON.stringify(this.queriesStoreService.savedQueries));
 
     //Array der Merklisten speichern
-    localStorage.setItem("savedBaskets", JSON.stringify(this.basketsStoreService.savedBasketItems));
+    localStorage.setItem("savedBaskets", JSON.stringify(this.baskets));
   }
 
 }

@@ -1,7 +1,7 @@
 export interface Basket {
-  id: number;
+  id: string;
   name: string;
-  records: string[];
+  ids: string[];
   queryParams: {
     rows: number;
     start: number;

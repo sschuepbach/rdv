@@ -97,7 +97,7 @@ export class FacetsComponent {
   }
 
   changeOperator(facet: string, value: string) {
-    this.searchState.dispatch(new fromFormActions.FacetOperatorChanged({facet: facet, value: value}));
+    this.searchState.dispatch(new fromFormActions.UpdateFacetOperator({facet: facet, value: value}));
   }
 
 }

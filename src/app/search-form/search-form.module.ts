@@ -29,11 +29,10 @@ import * as fromSearch from './reducers';
 import { ManageSearchComponent } from './containers/manage-search.component';
 import { SearchParamsComponent } from './containers/search-params.component';
 import { EffectsModule } from '@ngrx/effects';
-import { FormEffects } from './effects/form.effects';
 import { QueryEffects } from './effects/query.effects';
 import { FacetsComponent } from './containers/facets.component';
 import { RangesComponent } from './containers/ranges.component';
-import { BasketEffects } from './effects/basket.effects';
+import { FormEffects } from './effects/form.effects';
 
 @NgModule({
   imports: [
@@ -47,7 +46,7 @@ import { BasketEffects } from './effects/basket.effects';
     PipesModule,
     RouterModule,
     StoreModule.forFeature('search', fromSearch.reducers),
-    EffectsModule.forFeature([FormEffects, QueryEffects, BasketEffects]),
+    EffectsModule.forFeature([QueryEffects, FormEffects]),
   ],
   declarations: [
     SearchComponent,

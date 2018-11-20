@@ -124,7 +124,7 @@ export function reducer(state = initialState, action: FormActions): State {
         }, {})
       };
 
-    case FormActionTypes.RangeReset:
+    case FormActionTypes.ResetRange:
       return {
         ...state,
         rangeFields: Object.keys(environment.rangeFields).reduce((agg, k) => {
@@ -140,6 +140,9 @@ export function reducer(state = initialState, action: FormActions): State {
           return agg;
         }, {}),
       };
+
+    case FormActionTypes.ResetAll:
+      return initialState;
 
     default:
       return state;

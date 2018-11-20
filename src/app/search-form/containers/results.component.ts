@@ -60,7 +60,7 @@ export class ResultsComponent {
   get basketPages(): number {
 
     //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.currentBasket.records.length / this.numberOfDisplayedBasketRows);
+    return Math.ceil(this.currentBasket.ids.length / this.numberOfDisplayedBasketRows);
   }
 
   //aktuelle Seite beim Blaettern
@@ -351,10 +351,10 @@ export class ResultsComponent {
       {
         basket: {
           ...this.currentBasket,
-          records:
-            this.currentBasket.records.includes(id) ?
-              this.currentBasket.records.filter(rec => rec !== id) :
-              this.currentBasket.records.concat(id)
+          ids:
+            this.currentBasket.ids.includes(id) ?
+              this.currentBasket.ids.filter(rec => rec !== id) :
+              this.currentBasket.ids.concat(id)
         }
       }
     ));

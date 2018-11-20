@@ -48,7 +48,7 @@ export class QueriesService {
     this.formService.setFormInputValues();
 
     for (const key of Object.keys(environment.rangeFields)) {
-      this.searchState.dispatch(new fromFormActions.RangeReset(key))
+      this.searchState.dispatch(new fromFormActions.ResetRange(key))
     }
   }
 

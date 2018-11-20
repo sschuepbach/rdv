@@ -60,11 +60,11 @@ export class FieldsComponent {
   }
 
   updateSearchType(fieldName: string, typeName: string) {
-    this.searchState.dispatch(new fromFormActions.SearchFieldTypeUpdated({field: fieldName, type: typeName}));
+    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldType({field: fieldName, type: typeName}));
   }
 
   updateSearchValue(fieldName: string, value: string) {
-    this.searchState.dispatch(new fromFormActions.SearchFieldValueUpdated({field: fieldName, value: value}));
+    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldValue({field: fieldName, value: value}));
   }
 
 }

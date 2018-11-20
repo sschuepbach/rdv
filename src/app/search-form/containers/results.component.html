@@ -207,7 +207,7 @@
               <!-- Star-Symbol  -->
               <div class="col text-sm-center">
                     <span class="fa"
-                          [ngClass]="(currentBasket$ | async).records.includes(doc.id) ?
+                          [ngClass]="(currentBasket$ | async).ids.includes(doc.id) ?
                           'fa-star-o text-warning' :
                           'text-warning fa-star'">
                     </span>

@@ -21,7 +21,9 @@ export function mergeDeep(target: any, ...sources: any[]): any {
   if (isObject(target) && isObject(source)) {
     for (const key in source) {
       if (source.hasOwnProperty(key) && isObject(source[key])) {
-        if (!target[key]) {Object.assign(target, {[key]: {}})}
+        if (!target[key]) {
+          Object.assign(target, {[key]: {}})
+        }
         mergeDeep(target[key], source[key]);
       } else {
         Object.assign(target, {[key]: source[key]});
@@ -41,3 +43,10 @@ export const memoize = (fn) => {
     return cache[x] = fn(x);
   };
 };
+
+export function hashCode() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}

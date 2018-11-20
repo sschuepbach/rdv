@@ -99,6 +99,11 @@ export const getBasketEntities = createSelector(
   fromBasket.selectEntities,
 );
 
+export const getAllBaskets = createSelector(
+  getBaskets,
+  fromBasket.selectAll,
+);
+
 export const getCurrentBasketId = createSelector(
   getBaskets,
   fromBasket.selectCurrentBasketId,

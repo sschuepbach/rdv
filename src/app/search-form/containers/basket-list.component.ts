@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Rx';
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSearch from '../reducers';
 import { environment } from '../../../environments/environment';
+import { hashCode } from '../../shared/utils';
 
 @Component({
   selector: 'app-basket-list',
@@ -36,7 +37,7 @@ import { environment } from '../../../environments/environment';
 
           <!-- Anzahl der Titel in dieser Merkliste -->
           <span class="btn btn-sm">
-              {{(basketEntities$ | async)[i].records.length + ' Titel'}}
+              {{(basketEntities$ | async)[i].ids.length + ' Titel'}}
             </span>
 
           <!-- Button "Link kopieren" -->
@@ -67,46 +68,33 @@ export class BasketListComponent {
   basketIds$: Observable<any>;
   currentBasketId$: Observable<any>;
   private nextId: number;
-  private currentBasketId: number;
-  private basketIds: number[];
-
-  private static generateNextId(ids: number[]) {
-    if (ids.length > 0) {
-      for (const i of Array.from(Array(Math.max(...ids)).keys())) {
-        if (!ids.includes(i + 1)) {
-          return i + 1;
-        }
-      }
-      return ids.length + 1;
-    } else {
-      return 1;
-    }
-  }
+  private currentBasketId: string;
+  private basketIds: string[];
 
   constructor(private searchState: Store<fromSearch.State>) {
     this.basketEntities$ = this.searchState.pipe(select(fromSearch.getBasketEntities));
     this.basketEntities$.subscribe(entities => this.basketEntities = entities);
     this.basketIds$ = this.searchState.pipe(select(fromSearch.getBasketIds));
-    this.basketIds$.subscribe((ids: number[]) => {
+    this.basketIds$.subscribe((ids: string[]) => {
       this.basketIds = ids;
-      this.nextId = BasketListComponent.generateNextId(ids);
+      this.nextId = ids.length;
     });
     this.currentBasketId$ = this.searchState.pipe(select(fromSearch.getCurrentBasketId));
     this.currentBasketId$.subscribe(id => this.currentBasketId = id)
   }
 
-  loadBasket(index: number) {
-    this.searchState.dispatch(new fromBasketActions.BasketSelected({id: index}));
+  loadBasket(index: string) {
+    this.searchState.dispatch(new fromBasketActions.SelectBasket({id: index}));
   }
 
   createBasket() {
-    const id = this.nextId;
+    const hash = hashCode();
     this.searchState.dispatch(new fromBasketActions.AddBasket(
       {
         basket: {
-          id: id,
-          name: 'Meine Merkliste ' + id,
-          records: [],
+          id: hash,
+          name: 'Meine Merkliste ' + this.nextId,
+          ids: [],
           queryParams: {
             rows: environment.queryParams.rows,
             start: environment.queryParams.start,
@@ -116,16 +104,16 @@ export class BasketListComponent {
         }
       }
     ));
-    this.searchState.dispatch(new fromBasketActions.BasketSelected({id: id}));
+    this.searchState.dispatch(new fromBasketActions.SelectBasket({id: hash}));
     // this.basketsService.createBasket();
   }
 
-  deleteBasket(index: number) {
+  deleteBasket(index: string) {
     if (index === this.currentBasketId) {
       if (this.basketIds.length <= 1) {
         this.createBasket();
       } else {
-        this.searchState.dispatch(new fromBasketActions.BasketSelected({
+        this.searchState.dispatch(new fromBasketActions.SelectBasket({
           id: this.basketIds.filter(id => id !== index)[0]
         }))
       }

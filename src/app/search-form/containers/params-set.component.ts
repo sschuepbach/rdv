@@ -166,11 +166,11 @@ export class ParamsSetComponent {
   }
 
   resetRange(key) {
-    this.searchState.dispatch(new fromFormActions.RangeReset(key));
+    this.searchState.dispatch(new fromFormActions.ResetRange(key));
   }
 
   resetTerm(key) {
-    this.searchState.dispatch(new fromFormActions.SearchFieldValueUpdated({field: key, value: ''}));
+    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldValue({field: key, value: ''}));
   }
 
   toggleShowMissingValues(key) {
