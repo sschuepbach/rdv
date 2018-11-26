@@ -3,7 +3,7 @@ import { FormArray, FormBuilder, FormControl, NG_VALIDATORS, Validators } from '
 import { UpdateQueryService } from './update-query.service';
 import { QueriesStoreService } from './queries-store.service';
 import { BasketsStoreService } from './baskets-store.service';
-import { Basket } from '../models/basket';
+import { Basket } from '../models/basket.model';
 import { QueryFormat } from '../../shared/models/query-format';
 import * as fromRoot from '../../reducers';
 import { select, Store } from '@ngrx/store';

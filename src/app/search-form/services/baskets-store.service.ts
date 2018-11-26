@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Basket } from '../models/basket';
+import { Basket } from '../models/basket.model';
 
 @Injectable({
   providedIn: 'root'

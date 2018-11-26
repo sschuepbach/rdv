@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import { Observable } from "rxjs/Observable";
 import { QueryFormat } from "app/shared/models/query-format";
 
-import { Basket } from 'app/search-form/models/basket';
+import { Basket } from 'app/search-form/models/basket.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BackendSearchService } from './backend-search.service';
 

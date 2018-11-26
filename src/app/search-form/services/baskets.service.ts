@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BasketsStoreService } from './baskets-store.service';
 import { FormService } from './form.service';
 import { BehaviorSubject, ReplaySubject } from 'rxjs/Rx';
-import { Basket } from '../models/basket';
+import { Basket } from '../models/basket.model';
 import { select, Store } from '@ngrx/store';
 import * as fromRoot from '../../reducers';
 

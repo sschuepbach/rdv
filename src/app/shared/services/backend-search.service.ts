@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
-import {QueryFormat} from '../models/query-format';
-import {Observable} from 'rxjs/Rx';
-import {Basket} from '../../search-form/models/basket';
+import { Injectable } from '@angular/core';
+import { QueryFormat } from '../models/query-format';
+import { Observable } from 'rxjs/Rx';
+import { Basket } from '../../search-form/models/basket.model';
 
 @Injectable({
   providedIn: 'root'
