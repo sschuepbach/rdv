@@ -169,7 +169,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 //TODO i18n AND OR -> UND / ODER
 //TODO Baum-Suche
 //TODO Merklisten / Anfragen umsortieren
-//TODO Aufteilung in einzelne Komponenten
 
 //Bereiche ein- / ausblenden
 
