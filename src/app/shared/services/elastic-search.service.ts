@@ -1,13 +1,13 @@
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import 'rxjs/add/operator/map';
-import { Observable } from "rxjs/Observable";
-import { QueryFormat } from "app/shared/models/query-format";
-import { Basket } from 'app/search-form/models/basket.model';
-import { HttpClient } from '@angular/common/http';
-import { BackendSearchService } from './backend-search.service';
+import {Observable} from "rxjs/Observable";
+import {QueryFormat} from "app/shared/models/query-format";
+import {Basket} from 'app/search-form/models/basket.model';
+import {HttpClient} from '@angular/common/http';
+import {BackendSearchService} from './backend-search.service';
 
 @Injectable()
 export class ElasticBackendSearchService extends BackendSearchService {
@@ -189,7 +189,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST Anfrage
-      .post(this.proxyUrl, JSON.stringify(complexQueryFormat))
+      .post(this.proxyUrl, JSON.stringify(complexQueryFormat), {headers: {'Content-Type': 'application/json'}})
 
       //Antwort als JSON weiterreichen
       .map((response: any) => response);
@@ -216,7 +216,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST-Anfrage mit URL, ID und sourceFields
-      .post(this.proxyUrl, JSON.stringify(detailQueryFormat))
+      .post(this.proxyUrl, JSON.stringify(detailQueryFormat), {headers: {'Content-Type': 'application/json'}})
 
       //das 1. Dokument als JSON weiterreichen
       .map((response: any) => response.response.docs[0]);
@@ -242,7 +242,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST Anfrage mit URL, Liste der IDs und Liste der Felder
-      .post(this.proxyUrl, JSON.stringify(basketQueryFormat))
+      .post(this.proxyUrl, JSON.stringify(basketQueryFormat), {headers: {'Content-Type': 'application/json'}})
 
       //von JSON-Antwort nur die Dokument weiterreichen
       .map((response: any) => response);

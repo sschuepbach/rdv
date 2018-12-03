@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
 
 import * as fromQueryActions from '../actions/query.actions';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { BackendSearchService } from '../../shared/services/backend-search.service';
+import * as fromResultActions from '../actions/result.actions';
+import * as fromFacetActions from '../actions/facet.actions';
+import {catchError, debounceTime, distinctUntilChanged, flatMap, map, switchMap} from 'rxjs/operators';
+import {BackendSearchService} from '../../shared/services/backend-search.service';
+import {of} from "rxjs";
 
 
 @Injectable()
@@ -14,8 +17,34 @@ export class QueryEffects {
     ofType(fromQueryActions.QueryActionTypes.MakeSearchRequest),
     debounceTime(750),
     distinctUntilChanged(),
-    // switchMap((query) => this.backendSearchService.getBackendDataComplex(query) ),
+    map((action: fromQueryActions.MakeSearchRequest) => action.payload),
+    switchMap(query =>
+      this.backendSearchService.getBackendDataComplex(query).pipe(
+        map(result => new fromQueryActions.SearchSuccess(result)
+        ),
+        catchError(err => of(new fromQueryActions.SearchFailure(err)))
+      )),
   );
+
+  @Effect()
+  searchSuccess$ = this.actions$.pipe(
+    ofType(fromQueryActions.QueryActionTypes.SearchSuccess),
+    map((action: fromQueryActions.SearchSuccess) => action.payload.response),
+    flatMap(res => [
+        new fromResultActions.AddResults(res.docs),
+        new fromFacetActions.UpdateFacetFields(res.facet_counts.facet_fields),
+        new fromFacetActions.UpdateFacetRanges(res.facet_counts.facet_ranges),
+        new fromFacetActions.UpdateFacetQueries(res.facet_counts.facet_queries)
+      ]
+    ));
+
+  @Effect()
+  searchFailure$ = this.actions$.pipe(
+    ofType(fromQueryActions.QueryActionTypes.SearchFailure),
+    map((action: fromQueryActions.SearchFailure) => action.payload),
+    map(err => console.log(err)),
+  );
+
 
   @Effect()
   makeBasketRequest$ = this.actions$.pipe(

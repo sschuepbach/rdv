@@ -1,10 +1,12 @@
-import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
+import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
 import * as fromForm from './form.reducer';
 import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
-import { memoize } from '../../shared/utils';
+import {memoize} from '../../shared/utils';
 import * as fromBasket from './basket.reducer';
 import * as fromSavedQuery from './saved-query.reducer';
+import * as fromFacet from './facet.reducer';
+import * as fromResult from './result.reducer';
 
 
 export interface SearchState {
@@ -12,6 +14,8 @@ export interface SearchState {
   layout: fromLayout.State;
   basket: fromBasket.State;
   savedQuery: fromSavedQuery.State;
+  result: fromResult.State;
+  facet: fromFacet.State;
 }
 
 export interface State extends fromRoot.State {
@@ -23,6 +27,8 @@ export const reducers: ActionReducerMap<SearchState> = {
   layout: fromLayout.reducer,
   basket: fromBasket.reducer,
   savedQuery: fromSavedQuery.reducer,
+  result: fromResult.reducer,
+  facet: fromFacet.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');
@@ -136,4 +142,44 @@ export const getSavedQueryEntities = createSelector(
 export const getSavedQueriesCount = createSelector(
   getSavedQueries,
   fromSavedQuery.selectTotal,
+);
+
+export const getFacetCounts = createSelector(
+  getSearch,
+  (search) => search.facet,
+);
+
+export const getFacetFieldCount = createSelector(
+  getFacetCounts,
+  (facetCount) => facetCount.facetFields,
+);
+
+export const getFacetRangeCount = createSelector(
+  getFacetCounts,
+  (facetCount) => facetCount.facetRanges,
+);
+
+export const getFacetQueryCount = createSelector(
+  getFacetCounts,
+  (facetCount) => facetCount.facetQueries,
+);
+
+export const getResults = createSelector(
+  getSearch,
+  (search) => search.result,
+);
+
+export const getResultIds = createSelector(
+  getResults,
+  fromResult.selectIds,
+);
+
+export const getResultEntities = createSelector(
+  getResults,
+  fromResult.selectEntities,
+);
+
+export const getResultCount = createSelector(
+  getResults,
+  fromResult.selectEntities,
 );
