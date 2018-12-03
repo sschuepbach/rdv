@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
 import { Observable } from 'rxjs/Rx';
 import { select, Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
@@ -63,8 +62,7 @@ export class ManageSearchComponent {
 
   query$: Observable<any>;
 
-  constructor(private updateQueryService: UpdateQueryService,
-              private searchState: Store<fromSearch.State>) {
+  constructor(private searchState: Store<fromSearch.State>) {
     this.query$ = searchState.pipe(
       select(fromSearch.getFormValues),
       map(x => {
