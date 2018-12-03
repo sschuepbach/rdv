@@ -1,12 +1,11 @@
-import { Component, Input } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
-import { BasketsService } from '../services/baskets.service';
-import { FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BackendSearchService } from '../../shared/services/backend-search.service';
-import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
+
+import { BackendSearchService } from '../../shared/services/backend-search.service';
+import { QueryFormat } from "../../shared/models/query-format";
+import { UpdateQueryService } from '../services/update-query.service';
 import * as fromSearch from '../reducers';
 import * as fromBasketActions from '../actions/basket.actions';
 import { environment } from '../../../environments/environment';
@@ -17,8 +16,6 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./results.component.css']
 })
 export class ResultsComponent {
-
-  @Input() parentFormGroup: FormGroup;
 
   exportListData;
   count = 0;
@@ -79,8 +76,7 @@ export class ResultsComponent {
       0;
   }
 
-  constructor(private basketsService: BasketsService,
-              private updateQueryService: UpdateQueryService,
+  constructor(private updateQueryService: UpdateQueryService,
               private backendSearchService: BackendSearchService,
               private sanitizer: DomSanitizer,
               private searchState: Store<fromSearch.State>) {

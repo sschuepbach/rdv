@@ -17,11 +17,6 @@ import { ResultsComponent } from './containers/results.component';
 import { FieldsComponent } from './components/fields.component';
 import { FiltersComponent } from './components/filters.component';
 import { VisualSearchComponent } from './containers/visual-search.component';
-import { QueriesStoreService } from './services/queries-store.service';
-import { BasketsService } from './services/baskets.service';
-import { BasketsStoreService } from './services/baskets-store.service';
-import { FormService } from './services/form.service';
-import { QueriesService } from './services/queries.service';
 import { UpdateQueryService } from './services/update-query.service';
 import { PipesModule } from '../shared/pipes';
 import { StoreModule } from '@ngrx/store';
@@ -68,11 +63,6 @@ import { FormEffects } from './effects/form.effects';
     SearchComponent
   ],
   providers: [
-    BasketsService,
-    BasketsStoreService,
-    FormService,
-    QueriesService,
-    QueriesStoreService,
     UpdateQueryService
   ]
 })

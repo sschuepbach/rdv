@@ -1,6 +1,6 @@
 <!-- Trefferlisten (Suche und Merkliste) als Tabs (Pills) -->
 <div class="d-flex flex-column p-2 col-md mt-2 mb-2"
-     style="border: 1px solid grey; border-radius:3px;" [formGroup]="parentFormGroup">
+     style="border: 1px solid grey; border-radius:3px;">
 
   <!-- DIV-Container fuer Tab-Links -->
   <nav class="nav nav-pills "
@@ -60,8 +60,7 @@
           <div class="form-inline mr-2 mb-2 mb-md-0">
 
             <!-- Select: Rows -->
-            <select class="form-control form-control-sm"
-                    formControlName="rows" id="rows">
+            <select class="form-control form-control-sm" id="rows">
               <option *ngFor="let rowOpt of mainConfig.rowOpts"
                       [value]="rowOpt">{{rowOpt}}
               </option>

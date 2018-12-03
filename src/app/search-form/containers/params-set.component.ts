@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
 import { UpdateQueryService } from '../services/update-query.service';
 import { QueryFormat } from "../../shared/models/query-format";
-import * as fromSearch from "../reducers";
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
+
 import { environment } from '../../../environments/environment';
 import * as fromFormActions from "../actions/form.actions";
+import * as fromSearch from "../reducers";
 
 @Component({
   selector: 'app-params-set',
@@ -108,8 +108,6 @@ import * as fromFormActions from "../actions/form.actions";
   `]
 })
 export class ParamsSetComponent {
-
-  @Input() parentFormGroup: FormGroup;
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;

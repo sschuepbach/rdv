@@ -1,6 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { QueriesService } from '../services/queries.service';
-import { FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+
+import * as fromSearch from '../reducers';
+import * as fromSavedQueryActions from '../actions/saved-query.actions';
+import { hashCode } from '../../shared/utils';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-save-query',
@@ -16,7 +20,6 @@ import { FormGroup } from '@angular/forms';
 
           <!-- "UserQuery speichern" Textfeld fuer Name -->
           <input class="form-control"
-                 [formControl]="parentFormGroup.get('saveQuery')"
                  type="text"
                  #saveQueryInput
                  placeholder="Name der Suche">
@@ -25,23 +28,22 @@ import { FormGroup } from '@angular/forms';
           <span class="input-group-btn">
                 <button class="btn btn-primary fa fa-floppy-o"
                         type="button"
-                        [disabled]="parentFormGroup.controls['saveQuery'].invalid"
+                        [disabled]="hasErrors(saveQueryInput.value)"
                         (click)="saveUserQuery(saveQueryInput.value)"></button>
               </span>
         </div>
 
         <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
         <div class="input-group ml-md-2 mt-1 mt-md-0"
-             *ngIf="parentFormGroup.controls['saveQuery'].errors">
+             *ngIf="hasErrors(saveQueryInput.value)">
           <div class="bg-danger px-2 rounded"
-               *ngIf="parentFormGroup.controls['saveQuery'].errors.uniqueQueryName">Name muss eindeutig sein
+               *ngIf="isAmbiguous(saveQueryInput.value)">Name muss eindeutig sein
           </div>
           <div class="bg-danger px-2 rounded"
-               *ngIf="parentFormGroup.controls['saveQuery'].errors.required">Name ist Pflichtfeld
+               *ngIf="!saveQueryInput.value">Name ist Pflichtfeld
           </div>
-          <div class="bg-danger px-2 rounded"
-               *ngIf="parentFormGroup.controls['saveQuery'].errors.minlength">Mindestlänge
-            {{parentFormGroup.controls['saveQuery'].errors.minlength.requiredLength}}
+          <div class="bg-danger px-2 rounded" *ngIf="saveQueryInput.value && saveQueryInput.value.length < 3">
+            Mindestlänge 3
           </div>
         </div>
       </div>
@@ -59,13 +61,30 @@ import { FormGroup } from '@angular/forms';
 })
 export class SaveQueryComponent {
 
-  @Input() parentFormGroup: FormGroup;
+  private formValues: any;
+  private savedQueries: any[];
 
-  constructor(private queriesService: QueriesService) {
+  constructor(private searchState: Store<fromSearch.State>) {
+    searchState.pipe(select(fromSearch.getFormValues)).subscribe(formValues => this.formValues = formValues);
+    searchState.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);
   }
 
   saveUserQuery(name: string) {
-    this.queriesService.save(name);
+    this.searchState.dispatch(new fromSavedQueryActions.AddSavedQuery({
+      savedQuery: {
+        id: hashCode(),
+        name: name,
+        query: {...this.formValues, queryParams: environment.queryParams},
+      }
+    }));
+  }
+
+  hasErrors(name: string) {
+    return this.isAmbiguous(name) || name.length < 3 || !name;
+  }
+
+  isAmbiguous(name: string) {
+    return this.savedQueries.filter(x => x.name === name).length > 0
   }
 
 }

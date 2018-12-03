@@ -1,24 +1,24 @@
-import { Component, Input } from '@angular/core';
-import { QueriesService } from '../services/queries.service';
-import { QueriesStoreService } from '../services/queries-store.service';
-import { FormGroup } from '@angular/forms';
-import { select, Store } from '@ngrx/store';
-import * as fromRoot from '../../reducers';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
+import { select, Store } from '@ngrx/store';
+
+import * as fromSearch from '../reducers';
+import * as fromSavedQueryActions from '../actions/saved-query.actions';
+import * as fromFormActions from '../actions/form.actions';
 
 @Component({
   selector: 'app-list-saved-queries',
   template: `
-    <hr *ngIf="getSavedQueries().length">
-    <div class="mt-2" *ngIf="getSavedQueries().length">
+    <hr *ngIf="(numberOfSavedQueries$ | async)">
+    <div class="mt-2" *ngIf="(numberOfSavedQueries$ | async)">
       <div class="h6">Meine Suchen</div>
       <div class="no-gutters">
-        <div *ngFor="let savedQuery of getSavedQueries(); index as i"
+        <div *ngFor="let savedQuery of savedQueries$ | async"
              class="input-group input-group-sm col-md-6 mt-1">
       <span class="input-group-btn">
               <button class="btn btn-primary fa fa-play"
                       type="button"
-                      (click)="loadUserQuery(i)">
+                      (click)="loadUserQuery(savedQuery.id)">
               </button>
             </span>
           <input type="text"
@@ -34,7 +34,7 @@ import { Observable } from 'rxjs/Rx';
           <span class="input-group-btn">
               <button class="btn btn-danger fa fa-trash"
                       type="button"
-                      (click)="deleteUserQuery(i)"></button>
+                      (click)="deleteUserQuery(savedQuery.id)"></button>
             </span>
         </div>
       </div>
@@ -47,26 +47,24 @@ import { Observable } from 'rxjs/Rx';
   `],
 })
 export class ManageSavedQueriesComponent {
+  savedQueries$: Observable<any>;
+  private savedQueryEntities: any;
+  numberOfSavedQueries$: Observable<number>;
 
-  @Input() parentFormGroup: FormGroup;
-  baseUrl$: Observable<string>;
-
-  constructor(private queriesService: QueriesService,
-              private queriesStoreService: QueriesStoreService,
-              private rootState: Store<fromRoot.State>) {
-    this.baseUrl$ = rootState.pipe(select(fromRoot.getBaseUrl));
+  constructor(private searchState: Store<fromSearch.State>) {
+    this.savedQueries$ = searchState.pipe(select(fromSearch.getAllSavedQueries));
+    searchState.pipe(select(fromSearch.getSavedQueryEntities)).subscribe(entities => this.savedQueryEntities = entities);
+    this.numberOfSavedQueries$ = searchState.pipe(select(fromSearch.getSavedQueriesCount));
   }
 
-  loadUserQuery(index: number) {
-    this.queriesService.load(index);
+  loadUserQuery(index: string) {
+    const key = 'queryParams';
+    const {[key]: value, ...formValues} = this.savedQueryEntities[index].query;
+    this.searchState.dispatch(new fromFormActions.UpdateEntireForm(formValues));
   }
 
-  deleteUserQuery(index: number) {
-    this.queriesService.delete(index);
-  }
-
-  getSavedQueries() {
-    return this.queriesStoreService.savedQueries;
+  deleteUserQuery(index: string) {
+    this.searchState.dispatch(new fromSavedQueryActions.DeleteSavedQuery({id: index}));
   }
 
 }

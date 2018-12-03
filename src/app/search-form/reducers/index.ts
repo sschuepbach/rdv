@@ -4,12 +4,14 @@ import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
 import { memoize } from '../../shared/utils';
 import * as fromBasket from './basket.reducer';
+import * as fromSavedQuery from './saved-query.reducer';
 
 
 export interface SearchState {
   form: fromForm.State;
   layout: fromLayout.State;
   basket: fromBasket.State;
+  savedQuery: fromSavedQuery.State;
 }
 
 export interface State extends fromRoot.State {
@@ -20,6 +22,7 @@ export const reducers: ActionReducerMap<SearchState> = {
   form: fromForm.reducer,
   layout: fromLayout.reducer,
   basket: fromBasket.reducer,
+  savedQuery: fromSavedQuery.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');
@@ -113,4 +116,24 @@ export const getCurrentBasket = createSelector(
   getBasketEntities,
   getCurrentBasketId,
   (entities, id) => entities[id],
+);
+
+export const getSavedQueries = createSelector(
+  getSearch,
+  (state) => state.savedQuery,
+);
+
+export const getAllSavedQueries = createSelector(
+  getSavedQueries,
+  fromSavedQuery.selectAll
+);
+
+export const getSavedQueryEntities = createSelector(
+  getSavedQueries,
+  fromSavedQuery.selectEntities
+);
+
+export const getSavedQueriesCount = createSelector(
+  getSavedQueries,
+  fromSavedQuery.selectTotal,
 );

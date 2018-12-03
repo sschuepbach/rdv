@@ -3,14 +3,13 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
 import { ActivatedRoute } from '@angular/router';
-import { FormService } from '../services/form.service';
-import { QueriesStoreService } from '../services/queries-store.service';
 import { select, Store } from '@ngrx/store';
+
 import * as fromRoot from '../../reducers';
 import * as fromSearch from '../reducers';
-import * as fromFormActions from '../actions/form.actions';
 import * as fromQueryActions from '../actions/query.actions';
 import * as fromBasketActions from '../actions/basket.actions';
+import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import { environment } from '../../../environments/environment';
 import { hashCode } from '../../shared/utils';
 
@@ -22,22 +21,11 @@ declare var LZString: any;
   selector: 'app-search',
   template: `
     <div class="container mt-2">
-
-      <form *ngIf="formService.searchForm"
-            [formGroup]="formService.searchForm"
-            class="mt-2">
-
-        <!-- <pre style="position: fixed; right: 10px; top: 10px">{{updateQueryService.queryFormat | json}}</pre> -->
-        <!-- <pre style="position: fixed; right: 10px; top: 10px">{{savedBaskets | json}}</pre> -->
-
-        <app-manage-search [parentFormGroup]="formService.searchForm" (resetSearch)="resetSearch()"></app-manage-search>
-
-        <app-search-params></app-search-params>
-
-        <app-results [parentFormGroup]="formService.searchForm">
-        </app-results>
-
-      </form>
+      <!-- <pre style="position: fixed; right: 10px; top: 10px">{{updateQueryService.queryFormat | json}}</pre> -->
+      <!-- <pre style="position: fixed; right: 10px; top: 10px">{{savedBaskets | json}}</pre> -->
+      <app-manage-search></app-manage-search>
+      <app-search-params></app-search-params>
+      <app-results></app-results>
     </div>
   `,
 })
@@ -46,6 +34,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private formData: any;
   private baskets: any;
+  private savedQueries: any;
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -55,9 +44,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     return JSON.parse(localStorage.getItem("userQuery"));
   }
 
-  constructor(private queriesStoreService: QueriesStoreService,
-              public formService: FormService,
-              private route: ActivatedRoute,
+  constructor(private route: ActivatedRoute,
               private rootStore: Store<fromRoot.State>,
               private searchStore: Store<fromSearch.State>) {
 
@@ -71,6 +58,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.searchStore.dispatch(new fromQueryActions.MakeBasketRequest(basket))
       });
     searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this.baskets = baskets);
+    searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
@@ -108,8 +96,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
     const localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
     if (localStorageSavedUserQueries) {
-      // TODO: Implement store slice for savedQueries
-      this.queriesStoreService.savedQueries = JSON.parse(localStorageSavedUserQueries);
+      this.searchStore.dispatch(new fromSavedQueryActions.AddSavedQueries({savedQueries: JSON.parse(localStorageSavedUserQueries)}));
     }
 
     //versuchen gespeicherte Merklisten aus localstorage zu laden -> nach Form-Erstellung
@@ -142,9 +129,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetSearch() {
-    this.searchStore.dispatch(new fromFormActions.ResetAll());
-  }
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
   private writeToLocalStorage() {
@@ -152,8 +136,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     localStorage.setItem("userQuery", JSON.stringify({...this.formData, queryParams: environment.queryParams}));
 
     //Array der gespeicherten UserQueries speichern
-    // TODO: Implement store slice for savedQueries
-    localStorage.setItem("savedUserQueries", JSON.stringify(this.queriesStoreService.savedQueries));
+    localStorage.setItem("savedUserQueries", JSON.stringify(this.savedQueries));
 
     //Array der Merklisten speichern
     localStorage.setItem("savedBaskets", JSON.stringify(this.baskets));
