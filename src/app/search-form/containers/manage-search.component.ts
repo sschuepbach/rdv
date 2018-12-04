@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { select, Store } from '@ngrx/store';
-import { map } from 'rxjs/operators';
 
 import * as fromSearch from '../reducers';
 import * as fromFormActions from '../actions/form.actions';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-manage-search',
@@ -63,12 +61,7 @@ export class ManageSearchComponent {
   query$: Observable<any>;
 
   constructor(private searchState: Store<fromSearch.State>) {
-    this.query$ = searchState.pipe(
-      select(fromSearch.getFormValues),
-      map(x => {
-        return {...x, queryParams: environment.queryParams}
-      })
-    );
+    this.query$ = searchState.pipe(select(fromSearch.getFormValues));
   }
 
   resetSearch() {

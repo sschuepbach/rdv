@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { QueryFormat } from '../../shared/models/query-format';
 import { Observable } from 'rxjs/Rx';
-import { UpdateQueryService } from '../services/update-query.service';
 import { select, Store } from '@ngrx/store';
 
 import * as fromSearch from "../reducers";
@@ -40,7 +38,7 @@ import { environment } from '../../../environments/environment';
         verküpft
 
         <!-- Liste der Facettenwerte dieser Facette -->
-        <ng-container *ngFor="let value of facets[(facetFieldByKey$ | async)(key).field]">
+        <ng-container *ngFor="let value of (facetFieldCountByKey$ | async)((facetFieldByKey$ | async)(key).field)">
 
           <!-- Facettenwert (z.B. Dissertation) und Anzahl (43) anzeigen und Button zum Auswaehlen anbieten -->
           <button *ngIf="(facetFieldByKey$ | async)(key).values.indexOf(value[0]) == -1"
@@ -64,36 +62,20 @@ import { environment } from '../../../environments/environment';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetsComponent {
-
-  //Facetten (abgeleitet von results)
-  facets = {};
-
-  //Daten fuer Slider und Diagrammerzeugunge
-  query: QueryFormat;
   facetFieldsConfig: any;
   facetFieldByKey$: Observable<any>;
-  private shownFacetOrRange$: Observable<string>;
+  facetFieldCountByKey$: Observable<any>;
+  shownFacetOrRange$: Observable<string>;
 
-  constructor(private updateQueryService: UpdateQueryService,
-              private searchState: Store<fromSearch.State>) {
+  constructor(private searchState: Store<fromSearch.State>) {
     this.facetFieldsConfig = environment.facetFields;
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
     this.facetFieldByKey$ = searchState.pipe(select(fromSearch.getFacetValuesByKey));
-
-    updateQueryService.query$.subscribe(q => this.query = q);
-    updateQueryService.response$.subscribe(res => {
-      //Facetten-Werte
-      this.facets = res.facet_counts.facet_fields;
-    });
+    this.facetFieldCountByKey$ = searchState.pipe(select(fromSearch.getFacetFieldCountByKey));
   }
 
-  //Facette speichern
-  // TODO: Adapt for store
   selectFacet(field, value) {
-    const query = JSON.parse(JSON.stringify(this.query));
-    query.facetFields[field]["values"].push(value);
-    query.queryParams.start = 0;
-    this.updateQueryService.updateQuery(query);
+    this.searchState.dispatch(new fromFormActions.AddFacetValue({facet: field, value: value}));
   }
 
   changeOperator(facet: string, value: string) {

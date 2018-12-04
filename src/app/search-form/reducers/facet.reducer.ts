@@ -1,15 +1,17 @@
-import {FacetActions, FacetActionTypes} from '../actions/facet.actions';
+import { FacetActions, FacetActionTypes } from '../actions/facet.actions';
 
 export interface State {
   facetFields: any[];
   facetRanges: any[];
   facetQueries: any;
+  total: number;
 }
 
 export const initialState: State = {
   facetFields: [],
   facetRanges: [],
   facetQueries: {},
+  total: 0,
 };
 
 export function reducer(state = initialState, action: FacetActions): State {
@@ -23,6 +25,9 @@ export function reducer(state = initialState, action: FacetActions): State {
 
     case FacetActionTypes.UpdateFacetQueries:
       return {...state, facetQueries: action.payload};
+
+    case FacetActionTypes.UpdateTotal:
+      return {...state, total: action.payload};
 
     case FacetActionTypes.ResetAll:
       return initialState;

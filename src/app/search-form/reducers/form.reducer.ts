@@ -91,6 +91,28 @@ export function reducer(state = initialState, action: FormActions): State {
         }, {}),
       };
 
+    case FormActionTypes.AddFacetValue:
+      return {
+        ...state,
+        facetFields: Object.keys(state['facetFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.facet ?
+            {...state.facetFields[k], values: state.facetFields[k].values.concat(action.payload.value)} :
+            state['facetFields'][k];
+          return agg;
+        }, {}),
+      };
+
+    case FormActionTypes.RemoveFacetValue:
+      return {
+        ...state,
+        facetFields: Object.keys(state['facetFields']).reduce((agg, k) => {
+          agg[k] = k === action.payload.facet ?
+            {...state.facetFields[k], values: state.facetFields[k].values.filter(x => x !== action.payload.value)} :
+            state['facetFields'][k];
+          return agg;
+        }, {}),
+      };
+
     case FormActionTypes.UpdateFacetOperator:
       return {
         ...state,

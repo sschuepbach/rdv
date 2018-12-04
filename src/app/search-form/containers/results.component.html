@@ -16,7 +16,7 @@
        aria-controls="pills-search"
        aria-expanded="true">Ergebnisse
       <!-- Treffer-Anzahl in Trefferliste -->
-      <strong>({{count}})</strong>
+      <strong>({{count$ | async}})</strong>
     </a>
 
     <!-- Tab-Link fuer Merkliste -->
@@ -46,7 +46,7 @@
       <div class="d-flex justify-content-start flex-wrap">
 
         <!-- Block: Select Treffer pro Seite + Pagination -->
-        <div *ngIf="count"
+        <div *ngIf="count$ | async"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <!-- Link fuer export -->
@@ -79,13 +79,13 @@
             <!-- 1. Seite -->
             <button class="btn btn-primary fa fa-angle-double-left"
                     (click)="setSearchOffset('first')"
-                    [disabled]="query.queryParams.start == 0">
+                    [disabled]="(offset$ | async) == 0">
             </button>
 
             <!-- nach links blaettern -->
             <button class="btn btn-primary fa fa-angle-left"
                     (click)="setSearchOffset(-1)"
-                    [disabled]="query.queryParams.start == 0">
+                    [disabled]="(offset$ | async) == 0">
             </button>
 
             <!-- aktuelle Seite von insgesamt x Seiten -->
@@ -105,7 +105,7 @@
       </div>
 
       <!-- Treffertabelle -->
-      <div *ngIf="count"
+      <div *ngIf="count$ | async"
            class="mt-2 mh-table-view">
 
         <!-- Tabellenheader -->

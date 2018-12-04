@@ -5,6 +5,8 @@ export enum FormActionTypes {
   ToggleFilterValue = '[Form] Toggle filter in form model',
   UpdateSearchFieldType = '[Form] Update search field type in form model',
   UpdateSearchFieldValue = '[Form] Update search field value in form model',
+  AddFacetValue = '[Form] Add facet value in form model',
+  RemoveFacetValue = '[Form] Remove facet value in form model',
   UpdateFacetOperator = '[Form] Update Facets in Form Model',
   RangeBoundariesChanged = '[Form] Boundaries for range in form model changed',
   UpdateRangeBoundaries = '[Form] Set new boundaries for range in form model',
@@ -39,6 +41,26 @@ export class UpdateSearchFieldValue implements Action {
   readonly type = FormActionTypes.UpdateSearchFieldValue;
 
   constructor(public payload: { field: string, value: string }) {
+  }
+}
+
+export class AddFacetValue implements Action {
+  readonly type = FormActionTypes.AddFacetValue;
+
+  constructor(public payload: {
+    facet: string,
+    value: string,
+  }) {
+  }
+}
+
+export class RemoveFacetValue implements Action {
+  readonly type = FormActionTypes.RemoveFacetValue;
+
+  constructor(public payload: {
+    facet: string,
+    value: string,
+  }) {
   }
 }
 
@@ -95,6 +117,8 @@ export type FormActions
   | ToggleFilterValue
   | UpdateSearchFieldType
   | UpdateSearchFieldValue
+  | AddFacetValue
+  | RemoveFacetValue
   | UpdateFacetOperator
   | RangeBoundariesChanged
   | UpdateRangeBoundaries

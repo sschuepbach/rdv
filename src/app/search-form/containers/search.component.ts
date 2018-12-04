@@ -32,9 +32,10 @@ declare var LZString: any;
 
 export class SearchComponent implements OnInit, OnDestroy {
 
-  private formData: any;
   private baskets: any;
   private savedQueries: any;
+  private combinedQuery: any;
+
 
   private static loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
@@ -48,10 +49,10 @@ export class SearchComponent implements OnInit, OnDestroy {
               private rootStore: Store<fromRoot.State>,
               private searchStore: Store<fromSearch.State>) {
 
-    searchStore.pipe(select(fromSearch.getFormValues))
+    searchStore.pipe(select(fromSearch.getCombinedQuery))
       .subscribe(vals => {
-        this.formData = vals;
-        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest({...vals, queryParams: environment.queryParams}));
+        this.combinedQuery = vals;
+        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(vals));
       });
     searchStore.pipe(select(fromSearch.getCurrentBasket))
       .subscribe(basket => {
@@ -133,7 +134,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
   private writeToLocalStorage() {
     //aktuelle UserQuery speichern
-    localStorage.setItem("userQuery", JSON.stringify({...this.formData, queryParams: environment.queryParams}));
+    localStorage.setItem("userQuery", JSON.stringify(this.combinedQuery));
 
     //Array der gespeicherten UserQueries speichern
     localStorage.setItem("savedUserQueries", JSON.stringify(this.savedQueries));

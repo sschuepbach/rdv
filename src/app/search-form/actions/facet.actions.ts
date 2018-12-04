@@ -1,10 +1,11 @@
-import {Action} from '@ngrx/store';
+import { Action } from '@ngrx/store';
 
 export enum FacetActionTypes {
   ResetAll = '[Facet] Reset all',
   UpdateFacetFields = '[Facet] Update facet fields',
   UpdateFacetRanges = '[Facet] Update facet ranges',
   UpdateFacetQueries = '[Facet] Update facet queries',
+  UpdateTotal = '[Facet] Update total count',
 }
 
 export class UpdateFacetFields {
@@ -32,8 +33,17 @@ export class ResetAll implements Action {
   readonly type = FacetActionTypes.ResetAll;
 }
 
+export class UpdateTotal implements Action {
+  readonly type = FacetActionTypes.UpdateTotal;
+
+  constructor(public payload: number) {
+  }
+}
+
 export type FacetActions
   = ResetAll
   | UpdateFacetFields
   | UpdateFacetRanges
-  | UpdateFacetQueries;
+  | UpdateFacetQueries
+  | UpdateTotal;
+

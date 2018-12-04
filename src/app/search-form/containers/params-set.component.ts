@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { UpdateQueryService } from '../services/update-query.service';
-import { QueryFormat } from "../../shared/models/query-format";
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
 
@@ -111,7 +109,6 @@ export class ParamsSetComponent {
 
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;
-  query: QueryFormat;
 
   facetFieldsConfig: any;
   rangeFieldsConfig: any;
@@ -133,9 +130,7 @@ export class ParamsSetComponent {
     return true;
   }
 
-  constructor(public updateQueryService: UpdateQueryService,
-              private searchState: Store<fromSearch.State>) {
-    updateQueryService.query$.subscribe(q => this.query = q);
+  constructor(private searchState: Store<fromSearch.State>) {
 
     this.searchFields$ = searchState.pipe(select(fromSearch.getSearchValues));
     this.searchFields$.subscribe(fields => this.searchFieldsAreEmpty = ParamsSetComponent.checkIfSearchFieldsAreEmpty(fields));
@@ -152,15 +147,8 @@ export class ParamsSetComponent {
 
   //Facette entfernen
   removeFacet(field, value) {
-
-    //Index der ausgewaehlten Facette finden anhand des Namens
-    const index = this.query.facetFields[field]["values"].indexOf(value);
-
+    this.searchState.dispatch(new fromFormActions.RemoveFacetValue({facet: field, value: value}));
     //TODO an Start der Trefferliste springen?
-
-    const query = JSON.parse(JSON.stringify(this.query));
-    query.facetFields[field]["values"].splice(index, 1);
-    this.updateQueryService.updateQuery(query);
   }
 
   resetRange(key) {

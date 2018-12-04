@@ -4,10 +4,9 @@ import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Rx';
 
 import { BackendSearchService } from '../../shared/services/backend-search.service';
-import { QueryFormat } from "../../shared/models/query-format";
-import { UpdateQueryService } from '../services/update-query.service';
 import * as fromSearch from '../reducers';
 import * as fromBasketActions from '../actions/basket.actions';
+import * as fromQueryActions from '../actions/query.actions';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -19,7 +18,7 @@ export class ResultsComponent {
 
   exportListData;
   count = 0;
-  //docs Bereich der Server-Antwort (abgeleitet von results) fuer Treffertabelle
+  count$: Observable<number>;
   docs: any[];
 
   //Nach welcher Spalte wird gerade sortiert bei Trefferliste / Merkliste fuer farbliche Hinterlegung der Spalte
@@ -32,7 +31,6 @@ export class ResultsComponent {
   //docs Bereich der Server-Antwort (abgeleitet von results) fuer Merklistentabelle
   basketDocs: any[];
 
-  query: QueryFormat;
   tableFields: any;
   extraInfos: any;
   tableFieldsDisplayLandingpage: boolean;
@@ -45,12 +43,17 @@ export class ResultsComponent {
   showExportListTable: boolean;
   showExportListBasket: boolean;
   private numberOfBaskets: number;
+  private numberOfRows: number;
+  offset$: Observable<number>;
+  private offset: number;
+  private sortField: string;
+  private sortOrder: string;
 
   //Anzahl der Seiten gesamt
   get pages(): number {
 
     //Anzahl der Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this.count / this.query.queryParams.rows);
+    return Math.ceil(this.count / this.numberOfRows);
   }
 
   //Anzahl der Merklisten-Seiten gesamt
@@ -64,7 +67,7 @@ export class ResultsComponent {
   get page(): number {
 
     //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-    return Math.floor(this.query.queryParams.start / this.query.queryParams.rows) + 1;
+    return Math.floor(this.offset / this.numberOfRows) + 1;
   }
 
   //aktuelle Merklisten-Seite beim Blaettern
@@ -76,8 +79,7 @@ export class ResultsComponent {
       0;
   }
 
-  constructor(private updateQueryService: UpdateQueryService,
-              private backendSearchService: BackendSearchService,
+  constructor(private backendSearchService: BackendSearchService,
               private sanitizer: DomSanitizer,
               private searchState: Store<fromSearch.State>) {
     this.extraInfos = environment.extraInfos;
@@ -85,6 +87,7 @@ export class ResultsComponent {
     this.showExportListTable = environment.showExportList.table;
     this.showExportListBasket = environment.showExportList.basket;
     this.numberOfDisplayedBasketRows = environment.basketConfig.queryParams.rows;
+    this.numberOfRows = environment.queryParams.rows;
 
     this.tableFieldsDisplayLandingpage = environment.tableFields.reduce((agg, field) =>
       !agg && field.hasOwnProperty('landingpage') && field['landingpage'],
@@ -98,14 +101,19 @@ export class ResultsComponent {
     this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
     this.currentBasket$.subscribe(basket => this.currentBasket = basket);
 
-    updateQueryService.query$.subscribe(q => this.query = q);
-    updateQueryService.response$.subscribe(res => {
-        this.count = res.response.numFound;
-        this.docs = res.response.docs;
-        //Spalte herausfinden, nach der die Trefferliste gerade sortiert wird
-      this.setSortColumnIndexForSearch();
-      }
-    );
+    this.offset$ = searchState.pipe(select(fromSearch.getResultOffset));
+    this.offset$.subscribe(x => this.offset = x);
+    searchState.pipe(select(fromSearch.getResultSortField)).subscribe(x => {
+      this.sortField = x;
+      this.setSortColumnIndexForSearch(x);
+    });
+    searchState.pipe(select(fromSearch.getResultSortOrder)).subscribe(x => this.sortOrder = x);
+
+    this.count$ = searchState.pipe(select(fromSearch.getTotalCount));
+    this.count$.subscribe(x => this.count = x);
+
+    searchState.pipe(select(fromSearch.getAllResults)).subscribe(x => this.docs = x)
+
 
     // TODO: Replace
     //Suche anmelden: Bei Aenderungen der aktiven Merkliste
@@ -127,18 +135,15 @@ export class ResultsComponent {
 
     //auf letzte Seite springen
     if (offset === 'last') {
-      newStart = (this.query.queryParams.rows * (this.pages - 1));
+      newStart = (this.numberOfRows * (this.pages - 1));
     } else if (offset === 'first') {
       newStart = 0;
     } else {
-      newStart = this.query.queryParams.start +
-        (offset * this.query.queryParams.rows);
+      newStart = this.offset +
+        (offset * this.numberOfRows);
     }
 
-    //Start anpassen
-    const query = JSON.parse(JSON.stringify(this.query));
-    query.queryParams.start = newStart;
-    this.updateQueryService.updateQuery(query);
+    this.searchState.dispatch(new fromQueryActions.SetOffset(newStart));
   }
 
   // TODO: Used by basket
@@ -216,12 +221,12 @@ export class ResultsComponent {
 
   // TODO: Used by search
   //Spalte herausfinden nach welcher gerade sortiert wird fuer farbliche Hinterlegung der Trefferliste / Merkliste
-  private setSortColumnIndexForSearch() {
+  private setSortColumnIndexForSearch(sortField: string) {
     //Ueber Felder der Tabelle gehen
     this.tableFields.forEach((item, index) => {
 
       //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
-      if (item.sort === this.query.queryParams.sortField) {
+      if (item.sort === sortField) {
 
         //diesen Index merken
         this.sortColumnSearch = index;
@@ -247,29 +252,15 @@ export class ResultsComponent {
   //Werte fuer Darstellung in Trefferliste formattieren
   // noinspection JSMethodCanBeStatic
   formatValue(value, display) {
-
-    //von normalem Text ausgehen
-    let output = value;
-
-    //Wenn es ein spezieller Modus ist
-    switch (display) {
-
-      //Link-Modus
-      case 'link':
-
-        //Link erstellen
-        output = "<a href=" + value + ">" + value + " <i class='fa fa-external-link'></i></a>";
-        break;
-    }
-
-    //formattierten Wert zurueckgeben
-    return output;
+    return display === 'link' ?
+      "<a href=" + value + ">" + value + " <i class='fa fa-external-link'></i></a>" :
+      value;
   }
 
   // TODO: Used by search
   getSortBySymbol(field: string) {
-    return field === this.query.queryParams.sortField ?
-      this.query.queryParams.sortDir === "asc" ? "fa-sort-asc" : "fa-sort-desc" :
+    return field === this.sortField ?
+      this.sortOrder === "asc" ? "fa-sort-asc" : "fa-sort-desc" :
       'fa-sort';
   }
 
@@ -294,19 +285,14 @@ export class ResultsComponent {
   // TODO: Used by search
   //Treffertabelle / Merkliste sortieren
   sortSearchTable(sortField: string) {
-    const query = JSON.parse(JSON.stringify(this.query));
-
     //wenn bereits nach diesem Feld sortiert wird
-    if (sortField === this.query.queryParams.sortField) {
-      query.queryParams.sortDir = this.query.queryParams.sortDir === "desc" ? "asc" : "desc";
+    if (sortField === this.sortField) {
+      this.searchState.dispatch(new fromQueryActions.SetSortOrder(this.sortOrder === "desc" ? "asc" : "desc"));
     } else {
-      query.queryParams.sortField = sortField;
-      query.queryParams.sortDir = 'asc';
+      this.searchState.dispatch(new fromQueryActions.SetSortField(sortField));
+      this.searchState.dispatch(new fromQueryActions.SetSortOrder('asc'));
     }
-
-    //Trefferliste wieder von vorne anzeigen
-    query.queryParams.start = 0;
-    this.updateQueryService.updateQuery(query);
+    this.searchState.dispatch(new fromQueryActions.SetOffset(0));
   }
 
   // TODO: Used by basket

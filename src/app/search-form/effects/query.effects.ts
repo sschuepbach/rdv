@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as fromQueryActions from '../actions/query.actions';
 import * as fromResultActions from '../actions/result.actions';
 import * as fromFacetActions from '../actions/facet.actions';
-import {catchError, debounceTime, distinctUntilChanged, flatMap, map, switchMap} from 'rxjs/operators';
-import {BackendSearchService} from '../../shared/services/backend-search.service';
-import {of} from "rxjs";
+import { catchError, debounceTime, distinctUntilChanged, flatMap, map, switchMap, tap } from 'rxjs/operators';
+import { BackendSearchService } from '../../shared/services/backend-search.service';
+import { of } from "rxjs";
 
 
 @Injectable()
@@ -32,6 +32,7 @@ export class QueryEffects {
     map((action: fromQueryActions.SearchSuccess) => action.payload.response),
     flatMap(res => [
         new fromResultActions.AddResults(res.docs),
+      new fromFacetActions.UpdateTotal(res.numFound),
         new fromFacetActions.UpdateFacetFields(res.facet_counts.facet_fields),
         new fromFacetActions.UpdateFacetRanges(res.facet_counts.facet_ranges),
         new fromFacetActions.UpdateFacetQueries(res.facet_counts.facet_queries)
@@ -42,7 +43,11 @@ export class QueryEffects {
   searchFailure$ = this.actions$.pipe(
     ofType(fromQueryActions.QueryActionTypes.SearchFailure),
     map((action: fromQueryActions.SearchFailure) => action.payload),
-    map(err => console.log(err)),
+    tap(err => console.log(err)),
+    flatMap(() => [
+      new fromResultActions.ClearResults(),
+      new fromFacetActions.ResetAll(),
+    ]),
   );
 
 

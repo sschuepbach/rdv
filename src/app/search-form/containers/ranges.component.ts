@@ -5,9 +5,9 @@ import { QueryFormat } from '../../shared/models/query-format';
 import { select, Store } from '@ngrx/store';
 
 import { environment } from '../../../environments/environment';
-import { UpdateQueryService } from '../services/update-query.service';
 import * as fromSearch from "../reducers";
 import * as fromFormActions from "../actions/form.actions";
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ranges',
@@ -120,9 +120,6 @@ export class RangesComponent implements OnInit {
   //Ranges (leere Wert, z.B. Titel ohne Jahr fuer Checkbox, abgeleitet von results)
   private rangeMissingValues = {};
 
-  //Ranges (fuer Chart, abgeleitet von results)
-  private ranges;
-
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
   query: QueryFormat;
@@ -131,23 +128,20 @@ export class RangesComponent implements OnInit {
   private shownFacetOrRange$: Observable<string>;
   private rangeValuesByKey$: Observable<any>;
 
-  constructor(private updateQueryService: UpdateQueryService,
-              private searchState: Store<fromSearch.State>) {
+  constructor(private searchState: Store<fromSearch.State>) {
     this.rangeFieldConfig = environment.rangeFields;
     this.rangeValuesByKey$ = searchState.pipe(
       select(fromSearch.getRangeValuesByKey));
     this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
 
-    // updateQueryService.query$.subscribe(q => this.query = q);
-    updateQueryService.response$.subscribe(res => {
-      //Facetten-Ranges Werte
-      this.ranges = res.facet_counts.facet_ranges;
-      //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
-      this.rangeMissingValues = res.facet_counts.facet_queries;
-      //Facetten-Werte
-      this.createCharts()
-    });
-
+    //Facetten-Ranges Werte
+    searchState.pipe(
+      select(fromSearch.getFacetRangeCount),
+      filter(x => x.length > 0),
+    )
+      .subscribe(x => this.createCharts(x));
+    //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
+    searchState.pipe(select(fromSearch.getFacetQueryCount)).subscribe(x => this.rangeMissingValues = x);
   }
 
   ngOnInit() {
@@ -222,14 +216,15 @@ export class RangesComponent implements OnInit {
   }
 
   //Chart erstellen
-  private createCharts() {
+  private createCharts(ranges: any) {
 
     //Chartdata erstellen
     for (const key of Object.keys(this.rangeFieldConfig)) {
 
       //Werte sammeln
       const barData = [];
-      const backendData = this.ranges[this.rangeFieldConfig[key].field].counts;
+      console.log(ranges);
+      const backendData = ranges[this.rangeFieldConfig[key].field].counts;
 
       //Ranges kommen als Array von Arrays [["1800", 2]["1801", 0]["1802", 6],...],
       for (let i = 0; i < backendData.length; i++) {
@@ -289,6 +284,5 @@ export class RangesComponent implements OnInit {
     return this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[key].field + '}' +
     this.rangeFieldConfig[key].field + ':0'];
   }
-
 
 }

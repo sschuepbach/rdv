@@ -1,11 +1,11 @@
-import {Action} from '@ngrx/store';
-import {QueryFormat} from '../../shared/models/query-format';
+import { Action } from '@ngrx/store';
 
 export enum QueryActionTypes {
   MakeSearchRequest = '[Query] Make search request',
   MakeBasketRequest = '[Query] Make basket request',
-  SerializeQuery = '[Query] Serialize query',
-  ParseQuery = '[Query] Load serialized query',
+  SetOffset = '[Query] Set offset of result view',
+  SetSortField = '[Query] Set sort field',
+  SetSortOrder = '[Query] Set sort order',
   SearchSuccess = '[Query] Search successful',
   SearchFailure = '[Query] Search failed',
 }
@@ -24,14 +24,24 @@ export class MakeBasketRequest implements Action {
   }
 }
 
-export class SerializeQuery implements Action {
-  readonly type = QueryActionTypes.SerializeQuery;
+export class SetOffset implements Action {
+  readonly type = QueryActionTypes.SetOffset;
+
+  constructor(public payload: number) {
+  }
 }
 
-export class LoadQuery implements Action {
-  readonly type = QueryActionTypes.ParseQuery;
+export class SetSortOrder implements Action {
+  readonly type = QueryActionTypes.SetSortOrder;
 
-  constructor(public payload: { query: QueryFormat }) {
+  constructor(public payload: string) {
+  }
+}
+
+export class SetSortField implements Action {
+  readonly type = QueryActionTypes.SetSortField;
+
+  constructor(public payload: string) {
   }
 }
 
@@ -51,7 +61,8 @@ export class SearchFailure implements Action {
 
 export type QueryActions
   = MakeSearchRequest
-  | SerializeQuery
-  | LoadQuery
+  | SetOffset
+  | SetSortField
+  | SetSortOrder
   | SearchSuccess
   | SearchFailure;

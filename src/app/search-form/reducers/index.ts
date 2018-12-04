@@ -1,12 +1,14 @@
-import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
+import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromForm from './form.reducer';
 import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
-import {memoize} from '../../shared/utils';
+import { memoize } from '../../shared/utils';
 import * as fromBasket from './basket.reducer';
 import * as fromSavedQuery from './saved-query.reducer';
 import * as fromFacet from './facet.reducer';
 import * as fromResult from './result.reducer';
+import * as fromQuery from './query.reducer';
+import { environment } from '../../../environments/environment';
 
 
 export interface SearchState {
@@ -16,6 +18,7 @@ export interface SearchState {
   savedQuery: fromSavedQuery.State;
   result: fromResult.State;
   facet: fromFacet.State;
+  query: fromQuery.State;
 }
 
 export interface State extends fromRoot.State {
@@ -29,6 +32,7 @@ export const reducers: ActionReducerMap<SearchState> = {
   savedQuery: fromSavedQuery.reducer,
   result: fromResult.reducer,
   facet: fromFacet.reducer,
+  query: fromQuery.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');
@@ -154,6 +158,11 @@ export const getFacetFieldCount = createSelector(
   (facetCount) => facetCount.facetFields,
 );
 
+export const getFacetFieldCountByKey = createSelector(
+  getFacetFieldCount,
+  (facetCounts) => memoize((key: string) => facetCounts[key])
+);
+
 export const getFacetRangeCount = createSelector(
   getFacetCounts,
   (facetCount) => facetCount.facetRanges,
@@ -162,6 +171,11 @@ export const getFacetRangeCount = createSelector(
 export const getFacetQueryCount = createSelector(
   getFacetCounts,
   (facetCount) => facetCount.facetQueries,
+);
+
+export const getTotalCount = createSelector(
+  getFacetCounts,
+  (facetCount) => facetCount.total,
 );
 
 export const getResults = createSelector(
@@ -179,7 +193,56 @@ export const getResultEntities = createSelector(
   fromResult.selectEntities,
 );
 
+export const getAllResults = createSelector(
+  getResults,
+  fromResult.selectAll,
+);
+
 export const getResultCount = createSelector(
   getResults,
-  fromResult.selectEntities,
+  fromResult.selectTotal,
+);
+
+export const getQueryParams = createSelector(
+  getSearch,
+  (search) => search.query,
+);
+
+export const getResultOffset = createSelector(
+  getQueryParams,
+  (queryParams) => queryParams.offset,
+);
+
+export const getResultSortField = createSelector(
+  getQueryParams,
+  (queryParams) => queryParams.sortField,
+);
+
+export const getResultSortOrder = createSelector(
+  getQueryParams,
+  (queryParams) => queryParams.sortOrder,
+);
+
+export const getCombinedQuery = createSelector(
+  getFacetValues,
+  getRangeValues,
+  getSearchValues,
+  getFilterValues,
+  getResultOffset,
+  getResultSortField,
+  getResultSortOrder,
+  (facets, ranges, searchFields, filters, offset, sortField, sortOrder) => {
+    return {
+      facetFields: facets,
+      rangeFields: ranges,
+      searchFields: searchFields,
+      filterFields: filters,
+      queryParams: {
+        start: offset,
+        sortField: sortField,
+        sortDir: sortOrder,
+        rows: environment.queryParams.rows,
+      }
+    }
+  }
 );
