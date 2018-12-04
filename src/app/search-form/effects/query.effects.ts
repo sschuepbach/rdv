@@ -31,11 +31,11 @@ export class QueryEffects {
     ofType(fromQueryActions.QueryActionTypes.SearchSuccess),
     map((action: fromQueryActions.SearchSuccess) => action.payload.response),
     flatMap(res => [
-        new fromResultActions.AddResults(res.docs),
+      new fromResultActions.AddResults({results: res.docs}),
       new fromFacetActions.UpdateTotal(res.numFound),
-        new fromFacetActions.UpdateFacetFields(res.facet_counts.facet_fields),
-        new fromFacetActions.UpdateFacetRanges(res.facet_counts.facet_ranges),
-        new fromFacetActions.UpdateFacetQueries(res.facet_counts.facet_queries)
+      new fromFacetActions.UpdateFacetFields(res.facet_counts ? res.facet_counts.facet_fields : {}),
+      new fromFacetActions.UpdateFacetRanges(res.facet_counts ? res.facet_counts.facet_ranges : {}),
+      new fromFacetActions.UpdateFacetQueries(res.facet_counts ? res.facet_counts.facet_queries : {})
       ]
     ));
 
