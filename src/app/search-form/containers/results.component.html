@@ -284,7 +284,7 @@
       <div class="d-flex justify-content-start flex-wrap">
 
         <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
-        <div *ngIf="numberOfBaskets$ | async"
+        <div *ngIf="(numberOfBaskets$ | async) && (currentBasket$ | async).ids.length"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <!-- Link fuer export -->
