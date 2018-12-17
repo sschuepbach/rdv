@@ -36,6 +36,7 @@ export class ResultsComponent {
   tableFieldsDisplayLandingpage: boolean;
   tableFieldsDisplayExtraInfo: boolean;
   private readonly numberOfDisplayedBasketRows: number;
+  rowOpts: number[];
 
   numberOfBaskets$: Observable<number>;
   currentBasket$: Observable<any>;
@@ -88,6 +89,7 @@ export class ResultsComponent {
     this.showExportListBasket = environment.showExportList.basket;
     this.numberOfDisplayedBasketRows = environment.basketConfig.queryParams.rows;
     this.numberOfRows = environment.queryParams.rows;
+    this.rowOpts = environment.rowOpts;
 
     this.tableFieldsDisplayLandingpage = environment.tableFields.reduce((agg, field) =>
       !agg && field.hasOwnProperty('landingpage') && field['landingpage'],
