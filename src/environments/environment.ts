@@ -8,7 +8,7 @@ export const environment = {
   baseUrl: "http://localhost:4200",
 
   //Wo liegt Proxy-Skript, das mit Elasticsearch spricht?
-  proxyUrl: "http://localhost/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php",
+  proxyUrl: "http://afrikaportal:UbBaSeL@ub-afrikaportal.ub.unibas.ch/unibas/php-proxy/angularx_elasticsearch_proxy_unibas.php",
 
   //Welche Felder sind durchsuchbar, Anzahl der Felder in preselect regelt wie viele Suchfelder erscheinen
   searchFields: {
@@ -95,6 +95,9 @@ export const environment = {
 
     },
   },
+
+//Optionen fuer Anzahl der Treffer Treffertabelle
+  rowOpts: [5, 10, 20, 50],
 
   queryParams: {
     "rows": 10, // 5, 10, 20, 50

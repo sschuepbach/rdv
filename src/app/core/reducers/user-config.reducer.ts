@@ -14,6 +14,7 @@ export interface State {
   rangeFields: any;
   queryParams: any;
   basketConfig: any;
+  rowOpts: number[];
   showExportList: any;
   tableFields: any[];
   extraInfos: any;

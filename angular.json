@@ -61,6 +61,14 @@
                 }
               ]
             },
+            "afrikaportal": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.afrikaportal.ts"
+                }
+              ]
+            },
             "bwsts-prod": {
               "optimization": true,
               "outputHashing": "all",
@@ -138,6 +146,9 @@
           "configurations": {
             "production": {
               "browserTarget": "rdv:build:production"
+            },
+            "afrikaportal": {
+              "browserTarget": "rdv:build:afrikaportal"
             },
             "bwsts": {
               "browserTarget": "rdv:build:bwsts"

@@ -113,6 +113,9 @@ export const environment = {
     }
   },
 
+//Optionen fuer Anzahl der Treffer Treffertabelle
+  rowOpts: [5, 10, 20, 50],
+
   queryParams: {
     "rows": 10, // 5, 10, 20, 50
     "start": 0,
