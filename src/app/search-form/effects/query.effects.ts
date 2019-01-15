@@ -34,6 +34,7 @@ export class QueryEffects {
     map((action: fromQueryActions.SearchSuccess) => action.payload.response),
     filter(x => x),
     flatMap(res => [
+      new fromResultActions.ClearResults(),
       new fromResultActions.AddResults({results: res.docs}),
       new fromFacetActions.UpdateTotal(res.numFound),
       new fromFacetActions.UpdateFacetFields(res.facet_counts ? res.facet_counts.facet_fields : {}),
