@@ -131,6 +131,16 @@ export const getCurrentBasket = createSelector(
   (entities, id) => entities[id],
 );
 
+export const getBasketResults = createSelector(
+  getSearch,
+  (state) => state.basketResult,
+);
+
+export const getAllBasketResults = createSelector(
+  getBasketResults,
+  fromBasketResult.selectAll,
+);
+
 export const getSavedQueries = createSelector(
   getSearch,
   (state) => state.savedQuery,

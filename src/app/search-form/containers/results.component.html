@@ -291,7 +291,7 @@
           <a *ngIf="showExportListBasket"
              class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
              [href]="exportListData"
-             (click)="exportList(basketDocs)"
+             (click)="exportList(currentBasketResults)"
              download="export-merkliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
 
           <!-- Paging fuer Merklisten-Treffertabelle -->
@@ -345,9 +345,9 @@
 
               <!-- Sortiersymbol -->
               <span [class]="'mh-sort fa ' +
-              (currentBasket$ | async).queryParams.sortField === field.sort ?
-              (currentBasket$ | async).queryParams.sortDir === 'asc' ? 'fa-sort-asc' : 'fa-sort-desc' :
-              'fa-sort'">
+              ((currentBasket$ | async).queryParams.sortField === field.sort ?
+              ((currentBasket$ | async).queryParams.sortDir === 'asc' ? 'fa-sort-asc' : 'fa-sort-desc') :
+              'fa-sort')">
               </span>
             </div>
 
@@ -367,7 +367,7 @@
 
         <!-- Tabellenzeilen -->
         <div class="mh-table-row d-flex flex-column"
-             *ngFor="let doc of basketDocs">
+             *ngFor="let doc of currentBasketResults$ | async">
 
           <!-- 1. Zeile mit Hauptinfos -->
           <div class="d-flex flex-column flex-sm-row mh-table-row-main no-gutters">

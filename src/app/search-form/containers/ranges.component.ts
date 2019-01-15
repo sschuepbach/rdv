@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { IonRangeSliderComponent } from 'ng2-ion-range-slider';
-import { Observable } from 'rxjs/Rx';
-import { QueryFormat } from '../../shared/models/query-format';
-import { select, Store } from '@ngrx/store';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {IonRangeSliderComponent} from 'ng2-ion-range-slider';
+import {Observable} from 'rxjs/Rx';
+import {QueryFormat} from '../../shared/models/query-format';
+import {select, Store} from '@ngrx/store';
 
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import * as fromSearch from "../reducers";
 import * as fromFormActions from "../actions/form.actions";
-import { filter } from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-ranges',
@@ -223,7 +223,6 @@ export class RangesComponent implements OnInit {
 
       //Werte sammeln
       const barData = [];
-      console.log(ranges);
       const backendData = ranges[this.rangeFieldConfig[key].field].counts;
 
       //Ranges kommen als Array von Arrays [["1800", 2]["1801", 0]["1802", 6],...],

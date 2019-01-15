@@ -9,6 +9,7 @@ import * as fromRoot from '../../reducers';
 import * as fromSearch from '../reducers';
 import * as fromQueryActions from '../actions/query.actions';
 import * as fromBasketActions from '../actions/basket.actions';
+import * as fromBasketResultActions from '../actions/basket-result.actions'
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import {environment} from '../../../environments/environment';
 import {hashCode} from '../../shared/utils';
@@ -58,8 +59,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     searchStore.pipe(select(fromSearch.getCurrentBasket),
       filter(x => !!x))
       .subscribe(basket => {
-        console.log(basket);
-        this.searchStore.dispatch(new fromQueryActions.MakeBasketSearchRequest(basket))
+        this.searchStore.dispatch(new fromBasketResultActions.ClearBasketResults());
+        this.searchStore.dispatch(new fromQueryActions.MakeBasketSearchRequest(basket));
       });
     searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this.baskets = baskets);
     searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);

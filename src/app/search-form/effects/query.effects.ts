@@ -73,10 +73,9 @@ export class QueryEffects {
     ofType(fromQueryActions.QueryActionTypes.BasketSearchSuccess),
     map((action: fromQueryActions.BasketSearchSuccess) => action.payload),
     filter((x: BasketResult[]) => x.length > 0),
-    flatMap(res => [
-      new fromBasketResultActions.ClearBasketResults(),
+    map(res =>
       new fromBasketResultActions.AddBasketResults({basketResults: res})
-    ]));
+    ));
 
   @Effect()
   basketSearchFailure$ = this.actions$.pipe(

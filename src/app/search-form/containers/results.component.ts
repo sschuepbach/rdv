@@ -28,9 +28,6 @@ export class ResultsComponent {
   //Eintragsdetails (abstract,...) zwischenspeichern, damit sie nicht immer geholt werden muessen
   detailDataArray: any[] = [];
 
-  //docs Bereich der Server-Antwort (abgeleitet von results) fuer Merklistentabelle
-  basketDocs: any[];
-
   tableFields: any;
   extraInfos: any;
   tableFieldsDisplayLandingpage: boolean;
@@ -40,6 +37,8 @@ export class ResultsComponent {
 
   numberOfBaskets$: Observable<number>;
   currentBasket$: Observable<any>;
+  currentBasketResults$: Observable<any>;
+  currentBasketResults: any;
   private currentBasket: any;
   showExportListTable: boolean;
   showExportListBasket: boolean;
@@ -102,6 +101,8 @@ export class ResultsComponent {
     this.numberOfBaskets$.subscribe(no => this.numberOfBaskets = no);
     this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
     this.currentBasket$.subscribe(basket => this.currentBasket = basket);
+    this.currentBasketResults$ = searchState.pipe(select(fromSearch.getAllBasketResults));
+    this.currentBasketResults$.subscribe(res => this.currentBasketResults = res);
 
     this.offset$ = searchState.pipe(select(fromSearch.getResultOffset));
     this.offset$.subscribe(x => this.offset = x);
@@ -116,17 +117,6 @@ export class ResultsComponent {
 
     searchState.pipe(select(fromSearch.getAllResults)).subscribe(x => this.docs = x)
 
-
-    // TODO: Replace
-    //Suche anmelden: Bei Aenderungen der aktiven Merkliste
-    /*    basketsService.basketSearchTerms$
-          .switchMap((basket: Basket) => this.backendSearchService.getBackendDataBasket(basket))
-          .subscribe((res: any) => {
-            //Spalte herausfinden, nach der die Merkliste gerade sortiert wird
-            this.setSortColumnIndexForBasket();
-            //Array der Treffer-Dokumente
-            this.basketDocs = res.response.docs;
-          });*/
   }
 
   // TODO: Used by search
@@ -149,30 +139,28 @@ export class ResultsComponent {
   }
 
   // TODO: Used by basket
-  setBasketOffset(offset) {
-    let newStart: number;
+  setBasketOffset(page) {
+    let newOffset: number;
     //auf letzte Seite springen
-    if (offset === 'last') {
-      newStart = (this.numberOfDisplayedBasketRows * (this.basketPages - 1));
-    } else if (offset === 'first') {
-      newStart = 0;
+    if (page === 'last') {
+      newOffset = (this.numberOfDisplayedBasketRows * (this.basketPages - 1));
+    } else if (page === 'first') {
+      newOffset = 0;
     } else {
-      newStart = this.currentBasket.queryParams.start + (offset * this.numberOfDisplayedBasketRows);
+      newOffset = this.currentBasket.queryParams.start + (page * this.numberOfDisplayedBasketRows);
     }
 
     //Start anpassen
-    this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+    this.searchState.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
         ...this.currentBasket,
         queryParams: {
           ...this.currentBasket.queryParams,
-          start: newStart
+          start: newOffset,
         }
       }
     }));
 
-    // FIXME: Replace
-    // this.basketsService.propagateBasketSearchTermsFromActiveBasket();
   }
 
   // TODO: Used by both
@@ -301,7 +289,7 @@ export class ResultsComponent {
   sortBasketTable(sortField: string) {
     //wenn bereits nach diesem Feld sortiert wird
     if (sortField === this.currentBasket.queryParams.sortField) {
-      this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+      this.searchState.dispatch(new fromBasketActions.UpsertBasket({
         basket: {
           ...this.currentBasket,
           queryParams: {
@@ -312,7 +300,7 @@ export class ResultsComponent {
         }
       }));
     } else {
-      this.searchState.dispatch(new fromBasketActions.UpdateBasket({
+      this.searchState.dispatch(new fromBasketActions.UpsertBasket({
         basket: {
           ...this.currentBasket,
           queryParams: {
@@ -323,10 +311,6 @@ export class ResultsComponent {
         }
       }));
     }
-
-    //Suche starten
-    // FIXME: Replace
-    // this.basketsService.propagateBasketSearchTermsFromActiveBasket();
   }
 
   // TODO: Used by both
