@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import { select, Store } from '@ngrx/store';
+import {Component} from '@angular/core';
+import {Observable} from 'rxjs/Rx';
+import {select, Store} from '@ngrx/store';
 
 import * as fromSearch from '../reducers';
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import * as fromFormActions from '../actions/form.actions';
 
 @Component({
-  selector: 'app-list-saved-queries',
+  selector: 'app-manage-saved-queries',
   template: `
     <hr *ngIf="(numberOfSavedQueries$ | async)">
     <div class="mt-2" *ngIf="(numberOfSavedQueries$ | async)">

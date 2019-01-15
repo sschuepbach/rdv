@@ -1,13 +1,15 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
 export enum QueryActionTypes {
   MakeSearchRequest = '[Query] Make search request',
-  MakeBasketRequest = '[Query] Make basket request',
+  MakeBasketSearchRequest = '[Query] Make basket request',
   SetOffset = '[Query] Set offset of result view',
   SetSortField = '[Query] Set sort field',
   SetSortOrder = '[Query] Set sort order',
   SearchSuccess = '[Query] Search successful',
   SearchFailure = '[Query] Search failed',
+  BasketSearchSuccess = '[Query] Search successful',
+  BasketSearchFailure = '[Query] Search failed',
 }
 
 export class MakeSearchRequest implements Action {
@@ -17,8 +19,8 @@ export class MakeSearchRequest implements Action {
   }
 }
 
-export class MakeBasketRequest implements Action {
-  readonly type = QueryActionTypes.MakeBasketRequest;
+export class MakeBasketSearchRequest implements Action {
+  readonly type = QueryActionTypes.MakeBasketSearchRequest;
 
   constructor(public payload: any) {
   }
@@ -59,10 +61,27 @@ export class SearchFailure implements Action {
   }
 }
 
+export class BasketSearchSuccess implements Action {
+  readonly type = QueryActionTypes.BasketSearchSuccess;
+
+  constructor(public payload: any) {
+  }
+}
+
+export class BasketSearchFailure implements Action {
+  readonly type = QueryActionTypes.BasketSearchFailure;
+
+  constructor(public payload: string) {
+  }
+}
+
 export type QueryActions
   = MakeSearchRequest
+  | MakeBasketSearchRequest
   | SetOffset
   | SetSortField
   | SetSortOrder
   | SearchSuccess
-  | SearchFailure;
+  | SearchFailure
+  | BasketSearchSuccess
+  | BasketSearchFailure;

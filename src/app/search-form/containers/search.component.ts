@@ -1,17 +1,18 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
-import { ActivatedRoute } from '@angular/router';
-import { select, Store } from '@ngrx/store';
+import {ActivatedRoute} from '@angular/router';
+import {select, Store} from '@ngrx/store';
 
 import * as fromRoot from '../../reducers';
 import * as fromSearch from '../reducers';
 import * as fromQueryActions from '../actions/query.actions';
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
-import { environment } from '../../../environments/environment';
-import { hashCode } from '../../shared/utils';
+import {environment} from '../../../environments/environment';
+import {hashCode} from '../../shared/utils';
+import {filter} from "rxjs/operators";
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
@@ -54,9 +55,11 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.combinedQuery = vals;
         this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(vals));
       });
-    searchStore.pipe(select(fromSearch.getCurrentBasket))
+    searchStore.pipe(select(fromSearch.getCurrentBasket),
+      filter(x => !!x))
       .subscribe(basket => {
-        this.searchStore.dispatch(new fromQueryActions.MakeBasketRequest(basket))
+        console.log(basket);
+        this.searchStore.dispatch(new fromQueryActions.MakeBasketSearchRequest(basket))
       });
     searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this.baskets = baskets);
     searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);

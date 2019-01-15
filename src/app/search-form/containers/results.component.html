@@ -28,7 +28,7 @@
        aria-controls="pills-basket"
        aria-expanded="true">Merkliste
       <!-- Treffer-Anzahl in Merkliste -->
-      <strong>({{numberOfBaskets$ | async}})</strong>
+      <strong>({{(currentBasket$ | async).ids.length}})</strong>
     </a>
   </nav>
 
@@ -207,8 +207,8 @@
               <div class="col text-sm-center">
                     <span class="fa"
                           [ngClass]="(currentBasket$ | async).ids.includes(doc.id) ?
-                          'fa-star-o text-warning' :
-                          'text-warning fa-star'">
+                          'fa-star text-warning' :
+                          'fa-star-o'">
                     </span>
               </div>
             </div>

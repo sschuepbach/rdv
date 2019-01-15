@@ -1,14 +1,15 @@
-import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
+import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
 import * as fromForm from './form.reducer';
 import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
-import { memoize } from '../../shared/utils';
+import {memoize} from '../../shared/utils';
 import * as fromBasket from './basket.reducer';
 import * as fromSavedQuery from './saved-query.reducer';
 import * as fromFacet from './facet.reducer';
 import * as fromResult from './result.reducer';
 import * as fromQuery from './query.reducer';
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
+import * as fromBasketResult from './basket-result.reducer';
 
 
 export interface SearchState {
@@ -19,6 +20,7 @@ export interface SearchState {
   result: fromResult.State;
   facet: fromFacet.State;
   query: fromQuery.State;
+  basketResult: fromBasketResult.State;
 }
 
 export interface State extends fromRoot.State {
@@ -33,6 +35,7 @@ export const reducers: ActionReducerMap<SearchState> = {
   result: fromResult.reducer,
   facet: fromFacet.reducer,
   query: fromQuery.reducer,
+  basketResult: fromBasketResult.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');

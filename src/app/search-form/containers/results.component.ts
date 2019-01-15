@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import {Component} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {select, Store} from '@ngrx/store';
+import {Observable} from 'rxjs/Rx';
 
-import { BackendSearchService } from '../../shared/services/backend-search.service';
+import {BackendSearchService} from '../../shared/services/backend-search.service';
 import * as fromSearch from '../reducers';
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromQueryActions from '../actions/query.actions';
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-results',
@@ -334,11 +334,14 @@ export class ResultsComponent {
     this.searchState.dispatch(new fromBasketActions.UpdateBasket(
       {
         basket: {
-          ...this.currentBasket,
-          ids:
-            this.currentBasket.ids.includes(id) ?
-              this.currentBasket.ids.filter(rec => rec !== id) :
-              this.currentBasket.ids.concat(id)
+          id: this.currentBasket.id,
+          changes: {
+            ...this.currentBasket,
+            ids:
+              this.currentBasket.ids.includes(id) ?
+                this.currentBasket.ids.filter(rec => rec !== id) :
+                this.currentBasket.ids.concat(id)
+          }
         }
       }
     ));

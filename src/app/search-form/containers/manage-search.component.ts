@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import { select, Store } from '@ngrx/store';
+import {Component} from '@angular/core';
+import {Observable} from 'rxjs/Rx';
+import {select, Store} from '@ngrx/store';
 
 import * as fromSearch from '../reducers';
 import * as fromFormActions from '../actions/form.actions';
@@ -34,7 +34,7 @@ import * as fromFormActions from '../actions/form.actions';
 
       </div>
 
-      <app-list-saved-queries></app-list-saved-queries>
+      <app-manage-saved-queries></app-manage-saved-queries>
 
       <hr>
 
