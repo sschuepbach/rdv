@@ -27,7 +27,7 @@ declare var LZString: any;
       <!-- <pre style="position: fixed; right: 10px; top: 10px">{{savedBaskets | json}}</pre> -->
       <app-manage-search></app-manage-search>
       <app-search-params></app-search-params>
-      <app-results></app-results>
+      <app-result-lists></app-result-lists>
     </div>
   `,
 })

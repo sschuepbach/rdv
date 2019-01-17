@@ -131,6 +131,11 @@ export const getCurrentBasket = createSelector(
   (entities, id) => entities[id],
 );
 
+export const getCurrentBasketElementsCount = createSelector(
+  getCurrentBasket,
+  (basket) => basket.ids.length,
+);
+
 export const getBasketResults = createSelector(
   getSearch,
   (state) => state.basketResult,
@@ -186,7 +191,7 @@ export const getFacetQueryCount = createSelector(
   (facetCount) => facetCount.facetQueries,
 );
 
-export const getTotalCount = createSelector(
+export const getTotalResultsCount = createSelector(
   getFacetCounts,
   (facetCount) => facetCount.total,
 );
