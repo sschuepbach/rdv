@@ -12,7 +12,7 @@ import * as fromBasketActions from '../actions/basket.actions';
 import * as fromBasketResultActions from '../actions/basket-result.actions'
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import {environment} from '../../../environments/environment';
-import {hashCode} from '../../shared/utils';
+import {randomHashCode} from '../../shared/utils';
 import {filter} from "rxjs/operators";
 
 //Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
@@ -90,7 +90,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       if (params.get("basket")) {
         const compressedBasket = params.get("basket");
         const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
-        const hash = hashCode();
+        const hash = randomHashCode();
         this.searchStore.dispatch(new fromBasketActions.AddBasket({basket: {...basketFromLink, id: hash}}));
 
         this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
@@ -108,7 +108,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     const localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
     if (localStorageSavedUserBaskets && JSON.parse(localStorageSavedUserBaskets).length) {
       const parsedBaskets = JSON.parse(localStorageSavedUserBaskets).map((x: any) => {
-        return {...x, id: hashCode()}
+        return {...x, id: randomHashCode()}
       });
       this.searchStore.dispatch(new fromBasketActions.AddBaskets({baskets: parsedBaskets}));
       this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: parsedBaskets[0].id}));
@@ -116,7 +116,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     }
 
     if (!initialBasketsExist) {
-      const hash = hashCode();
+      const hash = randomHashCode();
       this.searchStore.dispatch(new fromBasketActions.AddBasket({
         basket: {
           id: hash,

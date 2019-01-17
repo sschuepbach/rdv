@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import {Component} from '@angular/core';
+import {select, Store} from '@ngrx/store';
+import {Observable} from 'rxjs/Rx';
 
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSearch from '../reducers';
-import { environment } from '../../../environments/environment';
-import { hashCode } from '../../shared/utils';
+import {environment} from '../../../environments/environment';
+import {randomHashCode} from '../../shared/utils';
 
 @Component({
   selector: 'app-basket-list',
@@ -88,7 +88,7 @@ export class BasketListComponent {
   }
 
   createBasket() {
-    const hash = hashCode();
+    const hash = randomHashCode();
     this.searchState.dispatch(new fromBasketActions.AddBasket(
       {
         basket: {

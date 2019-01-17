@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { select, Store } from '@ngrx/store';
+import {Component} from '@angular/core';
+import {select, Store} from '@ngrx/store';
 
 import * as fromSearch from '../reducers';
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
-import { hashCode } from '../../shared/utils';
-import { environment } from '../../../environments/environment';
+import {randomHashCode} from '../../shared/utils';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-save-query',
@@ -72,7 +72,7 @@ export class SaveQueryComponent {
   saveUserQuery(name: string) {
     this.searchState.dispatch(new fromSavedQueryActions.AddSavedQuery({
       savedQuery: {
-        id: hashCode(),
+        id: randomHashCode(),
         name: name,
         query: {...this.formValues, queryParams: environment.queryParams},
       }

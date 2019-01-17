@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {select, Store} from "@ngrx/store";
 
-import * as fromSearch from '../../reducers';
-import * as fromQueryActions from '../../actions/query.actions';
-import {environment} from "../../../../environments/environment";
+import * as fromSearch from '../reducers';
+import * as fromQueryActions from '../actions/query.actions';
+import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
-import {BackendSearchService} from "../../../shared/services/backend-search.service";
+import {BackendSearchService} from "../../shared/services/backend-search.service";
 
 @Component({
   selector: 'app-search-results-list',

@@ -2,10 +2,10 @@ import {Component} from '@angular/core';
 import {Observable} from "rxjs";
 import {select, Store} from "@ngrx/store";
 
-import {environment} from "../../../../environments/environment";
-import * as fromBasketActions from '../../actions/basket.actions';
-import * as fromSearch from '../../reducers';
-import {BackendSearchService} from "../../../shared/services/backend-search.service";
+import {environment} from "../../../environments/environment";
+import * as fromBasketActions from '../actions/basket.actions';
+import * as fromSearch from '../reducers';
+import {BackendSearchService} from "../../shared/services/backend-search.service";
 
 @Component({
   selector: 'app-basket-results-list',

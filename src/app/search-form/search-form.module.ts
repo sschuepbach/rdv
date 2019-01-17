@@ -27,11 +27,13 @@ import {FacetsComponent} from './containers/facets.component';
 import {RangesComponent} from './containers/ranges.component';
 import {FormEffects} from './effects/form.effects';
 import {ResultListsComponent} from './components/result-lists.component';
-import {BasketResultsListComponent} from './containers/basket-results-list/basket-results-list.component';
-import {SearchResultsListComponent} from './containers/search-results-list/search-results-list.component';
+import {BasketResultsListComponent} from './containers/basket-results-list.component';
+import {SearchResultsListComponent} from './containers/search-results-list.component';
 import {BasketIconComponent} from './containers/basket-icon.component';
 import {ExportResultsListComponent} from './containers/export-results-list.component';
 import {DisplayLinkDirective} from "./shared/directives/display-link.directive";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {CachingInterceptor} from "../shared/services/caching-interceptor.service";
 
 @NgModule({
   imports: [
@@ -67,6 +69,13 @@ import {DisplayLinkDirective} from "./shared/directives/display-link.directive";
     BasketIconComponent,
     ExportResultsListComponent,
     DisplayLinkDirective,
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CachingInterceptor,
+      multi: true,
+    }
   ],
   exports: [
     SearchComponent
