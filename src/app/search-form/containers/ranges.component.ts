@@ -31,7 +31,7 @@ import {filter} from 'rxjs/operators';
                 [class.fa-circle-thin]="!(rangeValuesByKey$ | async)(key).showMissingValues"></span>
 
           <!-- Text "x Titel ohne Jahr anzeigen" -->
-          <span>Zeige {{getMissingCount(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
+          <span>Zeige {{countResultsWithMissingFeature(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
 
         </label>
 
@@ -278,10 +278,9 @@ export class RangesComponent implements OnInit {
     // query.queryParams.start = 0;
   }
 
-  //Anzahl der Eintraege ohne ein Merkmal (z.B. Titel ohne Jahr)
-  getMissingCount(key) {
-    return this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[key].field + '}' +
-    this.rangeFieldConfig[key].field + ':0'];
+  countResultsWithMissingFeature(featureKey) {
+    return this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[featureKey].field + '}' +
+    this.rangeFieldConfig[featureKey].field + ':0'];
   }
 
 }
