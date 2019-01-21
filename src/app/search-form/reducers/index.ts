@@ -41,15 +41,23 @@ export const reducers: ActionReducerMap<SearchState> = {
   detailedResult: fromDetailedResult.reducer,
 };
 
-export const getSearch = createFeatureSelector<State, SearchState>('search');
 
-export const getLayout = createSelector(
-  getSearch,
+const _getSearch = createFeatureSelector<State, SearchState>('search');
+
+
+const _getLayout = createSelector(
+  _getSearch,
   (state) => state.layout,
 );
 
+export const getShownFacetOrRange = createSelector(
+  _getLayout,
+  (state) => state.shownFacetOrRange,
+);
+
+
 export const getFormValues = createSelector(
-  getSearch,
+  _getSearch,
   (state) => state.form,
 );
 
@@ -73,11 +81,6 @@ export const getFacetValuesByKey = createSelector(
   (facetFields) => memoize((key: string) => facetFields[key]),
 );
 
-export const getShownFacetOrRange = createSelector(
-  getLayout,
-  (state) => state.shownFacetOrRange,
-);
-
 export const getSearchValues = createSelector(
   getFormValues,
   (formValues) => formValues.searchFields,
@@ -88,43 +91,44 @@ export const getSearchValuesByKey = createSelector(
   (searchFields) => memoize((key: string) => searchFields[key]),
 );
 
-export const getFilterValues = createSelector(
+const _getFilterValues = createSelector(
   getFormValues,
   (formValues) => formValues.filterFields,
 );
 
 export const getFilterValuesByKey = createSelector(
-  getFilterValues,
+  _getFilterValues,
   (filters) => memoize((key: string) => filters[key])
 );
 
-export const getBaskets = createSelector(
-  getSearch,
+
+const _getBaskets = createSelector(
+  _getSearch,
   (state) => state.basket,
 );
 
 export const getBasketCount = createSelector(
-  getBaskets,
+  _getBaskets,
   fromBasket.selectTotal,
 );
 
 export const getBasketIds = createSelector(
-  getBaskets,
+  _getBaskets,
   fromBasket.selectIds,
 );
 
-export const getBasketEntities = createSelector(
-  getBaskets,
-  fromBasket.selectEntities,
-);
-
 export const getAllBaskets = createSelector(
-  getBaskets,
+  _getBaskets,
   fromBasket.selectAll,
 );
 
+export const getBasketEntities = createSelector(
+  _getBaskets,
+  fromBasket.selectEntities,
+);
+
 export const getCurrentBasketId = createSelector(
-  getBaskets,
+  _getBaskets,
   fromBasket.selectCurrentBasketId,
 );
 
@@ -139,108 +143,98 @@ export const getCurrentBasketElementsCount = createSelector(
   (basket) => basket.ids.length,
 );
 
-export const getBasketResults = createSelector(
-  getSearch,
+
+const _getBasketResults = createSelector(
+  _getSearch,
   (state) => state.basketResult,
 );
 
 export const getAllBasketResults = createSelector(
-  getBasketResults,
+  _getBasketResults,
   fromBasketResult.selectAll,
 );
 
-export const getSavedQueries = createSelector(
-  getSearch,
+
+const _getSavedQueries = createSelector(
+  _getSearch,
   (state) => state.savedQuery,
 );
 
 export const getAllSavedQueries = createSelector(
-  getSavedQueries,
+  _getSavedQueries,
   fromSavedQuery.selectAll
 );
 
 export const getSavedQueryEntities = createSelector(
-  getSavedQueries,
+  _getSavedQueries,
   fromSavedQuery.selectEntities
 );
 
 export const getSavedQueriesCount = createSelector(
-  getSavedQueries,
+  _getSavedQueries,
   fromSavedQuery.selectTotal,
 );
 
-export const getFacetCounts = createSelector(
-  getSearch,
+
+const _getFacetCounts = createSelector(
+  _getSearch,
   (search) => search.facet,
 );
 
-export const getFacetFieldCount = createSelector(
-  getFacetCounts,
+const _getFacetFieldCount = createSelector(
+  _getFacetCounts,
   (facetCount) => facetCount.facetFields,
 );
 
 export const getFacetFieldCountByKey = createSelector(
-  getFacetFieldCount,
+  _getFacetFieldCount,
   (facetCounts) => memoize((key: string) => facetCounts[key])
 );
 
 export const getFacetRangeCount = createSelector(
-  getFacetCounts,
+  _getFacetCounts,
   (facetCount) => facetCount.facetRanges,
 );
 
 export const getFacetQueryCount = createSelector(
-  getFacetCounts,
+  _getFacetCounts,
   (facetCount) => facetCount.facetQueries,
 );
 
 export const getTotalResultsCount = createSelector(
-  getFacetCounts,
+  _getFacetCounts,
   (facetCount) => facetCount.total,
 );
 
-export const getResults = createSelector(
-  getSearch,
+
+const _getResults = createSelector(
+  _getSearch,
   (search) => search.result,
 );
 
-export const getResultIds = createSelector(
-  getResults,
-  fromResult.selectIds,
-);
-
-export const getResultEntities = createSelector(
-  getResults,
-  fromResult.selectEntities,
-);
-
 export const getAllResults = createSelector(
-  getResults,
+  _getResults,
   fromResult.selectAll,
 );
 
-export const getResultCount = createSelector(
-  getResults,
-  fromResult.selectTotal,
-);
 
-export const getQueryParams = createSelector(
-  getSearch,
+const _getQueryParams = createSelector(
+  _getSearch,
   (search) => search.query,
 );
 
 export const getResultOffset = createSelector(
-  getQueryParams,
+  _getQueryParams,
   (queryParams) => queryParams.offset,
 );
 
 export const getResultSortField = createSelector(
-  getQueryParams,
+  _getQueryParams,
   (queryParams) => queryParams.sortField,
 );
 
 export const getResultSortOrder = createSelector(
-  getQueryParams,
+  _getQueryParams,
   (queryParams) => queryParams.sortOrder,
 );
 
@@ -248,7 +242,7 @@ export const getCombinedQuery = createSelector(
   getFacetValues,
   getRangeValues,
   getSearchValues,
-  getFilterValues,
+  _getFilterValues,
   getResultOffset,
   getResultSortField,
   getResultSortOrder,
@@ -268,17 +262,18 @@ export const getCombinedQuery = createSelector(
   }
 );
 
-export const getDetailedResults = createSelector(
-  getSearch,
+
+const _getDetailedResults = createSelector(
+  _getSearch,
   (state) => state.detailedResult,
 );
 
 export const getDetailedResultsIds = createSelector(
-  getDetailedResults,
+  _getDetailedResults,
   fromDetailedResult.selectIds,
 );
 
 export const getAllDetailedResults = createSelector(
-  getDetailedResults,
+  _getDetailedResults,
   fromDetailedResult.selectEntities,
 );
