@@ -189,7 +189,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST Anfrage
-      .post(this.proxyUrl, JSON.stringify(complexQueryFormat), {headers: {'Content-Type': 'application/json'}})
+      .post(this.proxyUrl, JSON.stringify(complexQueryFormat), {headers: {'Content-Type': 'application/json', 'X-Request-Type': 'search'}})
 
       //Antwort als JSON weiterreichen
       .map((response: any) => response);
@@ -216,7 +216,12 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST-Anfrage mit URL, ID und sourceFields
-      .post(this.proxyUrl, JSON.stringify(detailQueryFormat), {headers: {'Content-Type': 'application/json'}})
+      .post(this.proxyUrl, JSON.stringify(detailQueryFormat), {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-Type': 'get-detailed'
+        }
+      })
 
       //das 1. Dokument als JSON weiterreichen
       .map((response: any) => response.response.docs[0]);
@@ -242,7 +247,12 @@ export class ElasticBackendSearchService extends BackendSearchService {
     return this.http
 
     //POST Anfrage mit URL, Liste der IDs und Liste der Felder
-      .post(this.proxyUrl, JSON.stringify(basketQueryFormat), {headers: {'Content-Type': 'application/json'}})
+      .post(this.proxyUrl, JSON.stringify(basketQueryFormat), {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-Type': 'get-basket'
+        }
+      })
 
       //von JSON-Antwort nur die Dokument weiterreichen
       .map((response: any) => response);

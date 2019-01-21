@@ -5,6 +5,7 @@ import * as fromQueryActions from '../actions/query.actions';
 import * as fromResultActions from '../actions/result.actions';
 import * as fromFacetActions from '../actions/facet.actions';
 import * as fromBasketResultActions from '../actions/basket-result.actions';
+import * as fromDetailedBasketResultActions from '../actions/detailed-result.actions';
 import {catchError, debounceTime, distinctUntilChanged, filter, flatMap, map, switchMap, tap} from 'rxjs/operators';
 import {BackendSearchService} from '../../shared/services/backend-search.service';
 import {of} from "rxjs";
@@ -55,9 +56,36 @@ export class QueryEffects {
   );
 
   @Effect()
+  makeDetailedSearchRequest$ = this.actions$.pipe(
+    ofType(fromQueryActions.QueryActionTypes.MakeDetailedSearchRequest),
+    map((action: fromQueryActions.MakeDetailedSearchRequest) => action.payload),
+    switchMap(id =>
+      this.backendSearchService.getBackendDetailData(id, false).pipe(
+        map(result => new fromQueryActions.DetailedSearchSuccess(result)
+        ),
+        catchError(err => of(new fromQueryActions.DetailedSearchFailure(err)))
+      )),
+  );
+
+  @Effect()
+  detailedSearchSuccess$ = this.actions$.pipe(
+    ofType(fromQueryActions.QueryActionTypes.DetailedSearchSuccess),
+    map((action: fromQueryActions.DetailedSearchSuccess) => action.payload),
+    filter(x => !!x),
+    map(res =>
+      new fromDetailedBasketResultActions.AddDetailedResult({detailedResult: res}),
+    ));
+
+  @Effect()
+  detailedSearchFailure$ = this.actions$.pipe(
+    ofType(fromQueryActions.QueryActionTypes.DetailedSearchFailure),
+    map((action: fromQueryActions.DetailedSearchFailure) => action.payload),
+    tap(err => console.log(err)),
+  );
+
+  @Effect()
   makeBasketRequest$ = this.actions$.pipe(
     ofType(fromQueryActions.QueryActionTypes.MakeBasketSearchRequest),
-    debounceTime(750),
     distinctUntilChanged(),
     map((action: fromQueryActions.MakeBasketSearchRequest) => action.payload),
     switchMap(query =>

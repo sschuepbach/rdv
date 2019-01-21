@@ -1,6 +1,6 @@
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { Basket } from '../models/basket.model';
-import { BasketActions, BasketActionTypes } from '../actions/basket.actions';
+import {createEntityAdapter, EntityAdapter, EntityState} from '@ngrx/entity';
+import {Basket} from '../models/basket.model';
+import {BasketActions, BasketActionTypes} from '../actions/basket.actions';
 
 export interface State extends EntityState<Basket> {
   selectedBasketId: string | null;
@@ -29,28 +29,12 @@ export function reducer(
       return adapter.addMany(action.payload.baskets, state);
     }
 
-    case BasketActionTypes.UpsertBaskets: {
-      return adapter.upsertMany(action.payload.baskets, state);
-    }
-
     case BasketActionTypes.UpdateBasket: {
       return adapter.updateOne(action.payload.basket, state);
     }
 
-    case BasketActionTypes.UpdateBaskets: {
-      return adapter.updateMany(action.payload.baskets, state);
-    }
-
     case BasketActionTypes.DeleteBasket: {
       return adapter.removeOne(action.payload.id, state);
-    }
-
-    case BasketActionTypes.DeleteBaskets: {
-      return adapter.removeMany(action.payload.ids, state);
-    }
-
-    case BasketActionTypes.LoadBaskets: {
-      return adapter.addAll(action.payload.baskets, state);
     }
 
     case BasketActionTypes.ClearBaskets: {

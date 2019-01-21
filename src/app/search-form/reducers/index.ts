@@ -10,6 +10,7 @@ import * as fromResult from './result.reducer';
 import * as fromQuery from './query.reducer';
 import {environment} from '../../../environments/environment';
 import * as fromBasketResult from './basket-result.reducer';
+import * as fromDetailedResult from './detailed-basket-result.reducer';
 
 
 export interface SearchState {
@@ -21,6 +22,7 @@ export interface SearchState {
   facet: fromFacet.State;
   query: fromQuery.State;
   basketResult: fromBasketResult.State;
+  detailedResult: fromDetailedResult.State;
 }
 
 export interface State extends fromRoot.State {
@@ -36,6 +38,7 @@ export const reducers: ActionReducerMap<SearchState> = {
   facet: fromFacet.reducer,
   query: fromQuery.reducer,
   basketResult: fromBasketResult.reducer,
+  detailedResult: fromDetailedResult.reducer,
 };
 
 export const getSearch = createFeatureSelector<State, SearchState>('search');
@@ -263,4 +266,19 @@ export const getCombinedQuery = createSelector(
       }
     }
   }
+);
+
+export const getDetailedResults = createSelector(
+  getSearch,
+  (state) => state.detailedResult,
+);
+
+export const getDetailedResultsIds = createSelector(
+  getDetailedResults,
+  fromDetailedResult.selectIds,
+);
+
+export const getAllDetailedResults = createSelector(
+  getDetailedResults,
+  fromDetailedResult.selectEntities,
 );

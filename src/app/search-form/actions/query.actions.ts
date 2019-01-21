@@ -1,19 +1,32 @@
 import {Action} from '@ngrx/store';
 
+/***
+ * Provides action types for handling requests
+ */
 export enum QueryActionTypes {
   MakeSearchRequest = '[Query] Make search request',
+  MakeDetailedSearchRequest = '[Query] Make detailed search request',
   MakeBasketSearchRequest = '[Query] Make basket request',
   SetOffset = '[Query] Set offset of result view',
   SetSortField = '[Query] Set sort field',
   SetSortOrder = '[Query] Set sort order',
   SearchSuccess = '[Query] Search successful',
   SearchFailure = '[Query] Search failed',
-  BasketSearchSuccess = '[Query] Search successful',
-  BasketSearchFailure = '[Query] Search failed',
+  DetailedSearchSuccess = '[Query] Detailed search successful',
+  DetailedSearchFailure = '[Query] Detailed search failed',
+  BasketSearchSuccess = '[Query] Basket search successful',
+  BasketSearchFailure = '[Query] Basket search failed',
 }
 
 export class MakeSearchRequest implements Action {
   readonly type = QueryActionTypes.MakeSearchRequest;
+
+  constructor(public payload: any) {
+  }
+}
+
+export class MakeDetailedSearchRequest implements Action {
+  readonly type = QueryActionTypes.MakeDetailedSearchRequest;
 
   constructor(public payload: any) {
   }
@@ -56,6 +69,20 @@ export class SearchSuccess implements Action {
 
 export class SearchFailure implements Action {
   readonly type = QueryActionTypes.SearchFailure;
+
+  constructor(public payload: string) {
+  }
+}
+
+export class DetailedSearchSuccess implements Action {
+  readonly type = QueryActionTypes.DetailedSearchSuccess;
+
+  constructor(public payload: any) {
+  }
+}
+
+export class DetailedSearchFailure implements Action {
+  readonly type = QueryActionTypes.DetailedSearchFailure;
 
   constructor(public payload: string) {
   }

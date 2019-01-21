@@ -44,9 +44,22 @@ export const memoize = (fn) => {
   };
 };
 
-export function hashCode() {
+export function randomHashCode() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
+}
+
+export function hashCodeFromString(s: String) {
+  let hash = 0, i, chr;
+  if (s.length === 0) {
+    return hash;
+  }
+  for (i = 0; i < s.length; i++) {
+    chr = s.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0;
+  }
+  return hash;
 }

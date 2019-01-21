@@ -1,5 +1,8 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
+/***
+ * Provides action types for managing facet settings
+ */
 export enum FacetActionTypes {
   ResetAll = '[Facet] Reset all',
   UpdateFacetFields = '[Facet] Update facet fields',

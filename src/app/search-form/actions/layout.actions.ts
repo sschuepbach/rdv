@@ -1,5 +1,8 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
+/***
+ * Provides action types for managing layout
+ */
 export enum LayoutActionTypes {
   ShowFacetOrRange = '[Layout] Show Facet or Range'
 }

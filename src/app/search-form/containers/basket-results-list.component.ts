@@ -4,8 +4,9 @@ import {select, Store} from "@ngrx/store";
 
 import {environment} from "../../../environments/environment";
 import * as fromBasketActions from '../actions/basket.actions';
+import * as fromQueryActions from '../actions/query.actions';
 import * as fromSearch from '../reducers';
-import {BackendSearchService} from "../../shared/services/backend-search.service";
+import * as fromDetailedResultActions from '../actions/detailed-result.actions';
 
 @Component({
   selector: 'app-basket-results-list',
@@ -13,6 +14,7 @@ import {BackendSearchService} from "../../shared/services/backend-search.service
   styleUrls: ['./basket-results-list.component.css']
 })
 export class BasketResultsListComponent {
+  private _detailedViewIds: any;
 
 
   //Anzahl der Merklisten-Seiten gesamt
@@ -36,9 +38,8 @@ export class BasketResultsListComponent {
   currentBasketResults: any;
   currentBasketResults$: Observable<any>;
   numberOfBaskets$: Observable<number>;
+  detailedView$: Observable<any>;
 
-  //Eintragsdetails (abstract,...) zwischenspeichern, damit sie nicht immer geholt werden muessen
-  detailDataArray: any[] = [];
   readonly extraInfos = environment.extraInfos;
   readonly showExportList = environment.showExportList.basket;
   sortColumn = 0;
@@ -54,8 +55,7 @@ export class BasketResultsListComponent {
   private _numberOfBaskets: number;
   private readonly _numberOfDisplayedRows = environment.basketConfig.queryParams.rows;
 
-  constructor(private searchState: Store<fromSearch.State>,
-              private backendSearchService: BackendSearchService) {
+  constructor(private searchState: Store<fromSearch.State>) {
     this.numberOfBaskets$ = searchState.pipe(select(fromSearch.getBasketCount));
     this.numberOfBaskets$.subscribe(no => this._numberOfBaskets = no);
     this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
@@ -64,6 +64,10 @@ export class BasketResultsListComponent {
     });
     this.currentBasketResults$ = searchState.pipe(select(fromSearch.getAllBasketResults));
     this.currentBasketResults$.subscribe(res => this.currentBasketResults = res);
+
+    this.detailedView$ = searchState.pipe(select(fromSearch.getAllDetailedResults));
+    searchState.pipe(select(fromSearch.getDetailedResultsIds))
+      .subscribe(ids => this._detailedViewIds = ids);
 
   }
 
@@ -152,18 +156,15 @@ export class BasketResultsListComponent {
   // TODO: Used by both
   //Detailinfo holen und Ansicht toggeln
   getFullData(id: string) {
-
-    //Wenn es noch keine Detailinfos (abstract,...) dieser ID gibt
-    if (this.detailDataArray[id] === undefined) {
-
-      //Infos aus Backend holen und lokal speichern. Eintrag sichtbar machen
-      this.backendSearchService.getBackendDetailData(id, false).subscribe(
-        res => this.detailDataArray[id] = {"data": res, "visible": true});
+    if (!this.hasDetailedViewOpen(id)) {
+      this.searchState.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
     } else {
-
-      //Sichtbarkeit toggeln
-      this.detailDataArray[id]["visible"] = !this.detailDataArray[id]["visible"];
+      this.searchState.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
     }
+  }
+
+  hasDetailedViewOpen(id: string) {
+    return this._detailedViewIds.indexOf(id) > -1;
   }
 
 }

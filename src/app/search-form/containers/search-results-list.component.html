@@ -146,8 +146,8 @@
             <!-- ggfs. einen Button zum Einblenden der zusaetzlichen Infos, erst ab sm sichtbar sichtbar -->
             <button *ngIf="field.extraInfo === true"
                     class="d-none d-sm-block btn btn-sm btn-primary fa p-1"
-                    [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
-                    [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                    [class.fa-arrow-down]="!hasDetailedViewOpen(doc.id)"
+                    [class.fa-arrow-up]="hasDetailedViewOpen(doc.id)"
                     (click)="getFullData(doc.id)"></button>
           </div>
         </ng-container>
@@ -167,40 +167,40 @@
         <!-- Button zum Einblenden der zusaetzlichen Infos -->
         <button *ngIf="tableFieldsDisplayExtraInfo"
                 class="btn btn-primary btn-sm p-1 fa mb-1 ml-2"
-                [class.fa-arrow-down]="!detailDataArray[doc.id]?.visible"
-                [class.fa-arrow-up]="detailDataArray[doc.id]?.visible"
+                [class.fa-arrow-down]="!hasDetailedViewOpen(doc.id)"
+                [class.fa-arrow-up]="hasDetailedViewOpen(doc.id)"
                 (click)="getFullData(doc.id)">
         </button>
       </div>
 
       <!-- Zusatzzeile mit Details anzeigen, wenn sichtbar -->
       <div class="mh-table-row-info no-gutters"
-           *ngIf="detailDataArray[doc.id]?.visible">
+           *ngIf="hasDetailedViewOpen(doc.id)">
 
         <!-- Ueber Felder der Config gehen -->
         <ng-container *ngFor="let key of extraInfos | objectKeys">
 
           <!-- 1 grosse Zelle fuer Inhalt, anzeigen, wenn es Daten zu diesem Feld gibt -->
           <div class="col-12 d-flex no-gutters"
-               *ngIf="detailDataArray[doc.id]?.data[extraInfos[key].field]?.length">
+               *ngIf="(detailedView$ | async)[doc.id][extraInfos[key].field]?.length">
 
             <!-- Ueberschrift links (z.B. "Schlagwoerter") -->
             <label class="font-weight-bold text-right mr-2">{{extraInfos[key].label}}</label>
 
             <!-- Wenn es ein Einzeltwert ist, Wert ausgeben und mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
             <span class="col"
-                  *ngIf="getType(detailDataArray[doc.id]?.data[extraInfos[key].field]) === 'single'"
-                  appDisplayLink [value]="detailDataArray[doc.id]?.data[extraInfos[key].field]"
+                  *ngIf="getType((detailedView$ | async)[doc.id][extraInfos[key].field]) === 'single'"
+                  appDisplayLink [value]="(detailedView$ | async)[doc.id][extraInfos[key].field]"
                   [display]="extraInfos[key].display">
                     </span>
 
             <!-- Wenn es ein Multiwert ist -->
             <span class="col"
-                  *ngIf="getType(detailDataArray[doc.id]?.data[extraInfos[key].field]) === 'multi'">
+                  *ngIf="getType((detailedView$ | async)[doc.id][extraInfos[key].field]) === 'multi'">
 
                       <!-- Ueber Werte (z.B. einzelne Schlagwoerter) gehen -->
                       <ng-container
-                        *ngFor="let value of detailDataArray[doc.id]?.data[extraInfos[key].field]; last as isLast;">
+                        *ngFor="let value of (detailedView$ | async)[doc.id][extraInfos[key].field]; last as isLast;">
 
                         <!-- Wert ausgeben, mit innerHTML binden, damit auch HTML (z.B. <a>) moeglich ist -->
                         <span appDisplayLink [value]="value" [display]="extraInfos[key].display"></span>

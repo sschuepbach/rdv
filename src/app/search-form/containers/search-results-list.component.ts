@@ -3,9 +3,9 @@ import {select, Store} from "@ngrx/store";
 
 import * as fromSearch from '../reducers';
 import * as fromQueryActions from '../actions/query.actions';
+import * as fromDetailedResultActions from '../actions/detailed-result.actions';
 import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
-import {BackendSearchService} from "../../shared/services/backend-search.service";
 
 @Component({
   selector: 'app-search-results-list',
@@ -31,9 +31,9 @@ export class SearchResultsListComponent {
   currentBasket$: Observable<any>;
   docs$: Observable<any>;
   offset$: Observable<number>;
+  detailedView$: Observable<any>;
+  detailedViewIds$: Observable<any>;
 
-  //Eintragsdetails (abstract,...) zwischenspeichern, damit sie nicht immer geholt werden muessen
-  detailDataArray: any[] = [];
   readonly extraInfos = environment.extraInfos;
   readonly rowOpts = environment.rowOpts;
   readonly showExportList = environment.showExportList.table;
@@ -51,10 +51,10 @@ export class SearchResultsListComponent {
   private readonly _numberOfRows = environment.queryParams.rows;
   private _sortField: string;
   private _sortOrder: string;
+  private _detailedViewIds: any;
 
 
-  constructor(private searchState: Store<fromSearch.State>,
-              private backendSearchService: BackendSearchService) {
+  constructor(private searchState: Store<fromSearch.State>) {
     this.docs$ = searchState.pipe(select(fromSearch.getAllResults));
 
     this.count$ = searchState.pipe(select(fromSearch.getTotalResultsCount));
@@ -73,6 +73,10 @@ export class SearchResultsListComponent {
     searchState.pipe(select(fromSearch.getResultSortOrder)).subscribe(x => this._sortOrder = x);
 
     this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
+
+    this.detailedView$ = searchState.pipe(select(fromSearch.getAllDetailedResults));
+    this.detailedViewIds$ = searchState.pipe(select(fromSearch.getDetailedResultsIds));
+    this.detailedViewIds$.subscribe(ids => this._detailedViewIds = ids);
   }
 
   // TODO: Used by search
@@ -147,18 +151,15 @@ export class SearchResultsListComponent {
   // TODO: Used by both
   //Detailinfo holen und Ansicht toggeln
   getFullData(id: string) {
-
-    //Wenn es noch keine Detailinfos (abstract,...) dieser ID gibt
-    if (this.detailDataArray[id] === undefined) {
-
-      //Infos aus Backend holen und lokal speichern. Eintrag sichtbar machen
-      this.backendSearchService.getBackendDetailData(id, false).subscribe(
-        res => this.detailDataArray[id] = {"data": res, "visible": true});
+    if (!this.hasDetailedViewOpen(id)) {
+      this.searchState.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
     } else {
-
-      //Sichtbarkeit toggeln
-      this.detailDataArray[id]["visible"] = !this.detailDataArray[id]["visible"];
+      this.searchState.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
     }
+  }
+
+  hasDetailedViewOpen(id: string) {
+    return this._detailedViewIds.indexOf(id) > -1;
   }
 
 }

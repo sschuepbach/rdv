@@ -1,5 +1,8 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
+/***
+ * Provides action types for managing form settings
+ */
 export enum FormActionTypes {
   UpdateEntireForm = '[Form] Update entire form',
   ToggleFilterValue = '[Form] Toggle filter in form model',

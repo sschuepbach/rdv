@@ -17,42 +17,9 @@ export function reducer(
   action: ResultActions
 ): State {
   switch (action.type) {
-    case ResultActionTypes.AddResult: {
-      return adapter.addOne(action.payload.result, state);
-    }
-
-    case ResultActionTypes.UpsertResult: {
-      return adapter.upsertOne(action.payload.result, state);
-    }
-
     case ResultActionTypes.AddResults: {
       return adapter.addMany(action.payload.results, state);
     }
-
-    case ResultActionTypes.UpsertResults: {
-      return adapter.upsertMany(action.payload.results, state);
-    }
-
-    case ResultActionTypes.UpdateResult: {
-      return adapter.updateOne(action.payload.result, state);
-    }
-
-    case ResultActionTypes.UpdateResults: {
-      return adapter.updateMany(action.payload.results, state);
-    }
-
-    case ResultActionTypes.DeleteResult: {
-      return adapter.removeOne(action.payload.id, state);
-    }
-
-    case ResultActionTypes.DeleteResults: {
-      return adapter.removeMany(action.payload.ids, state);
-    }
-
-    case ResultActionTypes.LoadResults: {
-      return adapter.addAll(action.payload.results, state);
-    }
-
     case ResultActionTypes.ClearResults: {
       return adapter.removeAll(state);
     }

@@ -17,40 +17,8 @@ export function reducer(
   action: BasketResultActions
 ): State {
   switch (action.type) {
-    case BasketResultActionTypes.AddBasketResult: {
-      return adapter.addOne(action.payload.basketResult, state);
-    }
-
-    case BasketResultActionTypes.UpsertBasketResult: {
-      return adapter.upsertOne(action.payload.basketResult, state);
-    }
-
     case BasketResultActionTypes.AddBasketResults: {
       return adapter.addMany(action.payload.basketResults, state);
-    }
-
-    case BasketResultActionTypes.UpsertBasketResults: {
-      return adapter.upsertMany(action.payload.basketResults, state);
-    }
-
-    case BasketResultActionTypes.UpdateBasketResult: {
-      return adapter.updateOne(action.payload.basketResult, state);
-    }
-
-    case BasketResultActionTypes.UpdateBasketResults: {
-      return adapter.updateMany(action.payload.basketResults, state);
-    }
-
-    case BasketResultActionTypes.DeleteBasketResult: {
-      return adapter.removeOne(action.payload.id, state);
-    }
-
-    case BasketResultActionTypes.DeleteBasketResults: {
-      return adapter.removeMany(action.payload.ids, state);
-    }
-
-    case BasketResultActionTypes.LoadBasketResults: {
-      return adapter.addAll(action.payload.basketResults, state);
     }
 
     case BasketResultActionTypes.ClearBasketResults: {

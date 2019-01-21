@@ -110,6 +110,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       const parsedBaskets = JSON.parse(localStorageSavedUserBaskets).map((x: any) => {
         return {...x, id: randomHashCode()}
       });
+      this.searchStore.dispatch(new fromBasketActions.ClearBaskets());
       this.searchStore.dispatch(new fromBasketActions.AddBaskets({baskets: parsedBaskets}));
       this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: parsedBaskets[0].id}));
       initialBasketsExist = true;
