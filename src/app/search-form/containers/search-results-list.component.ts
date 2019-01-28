@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {select, Store} from "@ngrx/store";
 
 import * as fromSearch from '../reducers';
@@ -10,7 +10,8 @@ import {Observable} from "rxjs";
 @Component({
   selector: 'app-search-results-list',
   templateUrl: './search-results-list.component.html',
-  styleUrls: ['./search-results-list.component.css']
+  styleUrls: ['./search-results-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchResultsListComponent {
   //Anzahl der Seiten gesamt

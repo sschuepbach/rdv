@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {select, Store} from '@ngrx/store';
+import {Observable} from 'rxjs/Rx';
 
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import * as fromFormActions from "../actions/form.actions";
 import * as fromSearch from "../reducers";
 
@@ -103,7 +103,8 @@ import * as fromSearch from "../reducers";
     label {
       margin-bottom: 0;
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParamsSetComponent {
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
   selector: 'app-search-params',
@@ -18,7 +18,8 @@ import { Component } from '@angular/core';
       </div>
 
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchParamsComponent {
 }

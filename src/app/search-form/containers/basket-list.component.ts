@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs/Rx';
 
@@ -60,6 +60,7 @@ import {randomHashCode} from '../../shared/utils';
       border-color: #ccc;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketListComponent {
 

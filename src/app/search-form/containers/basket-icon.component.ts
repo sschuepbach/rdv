@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Store} from "@ngrx/store";
 
 import * as fromBasketActions from '../actions/basket.actions';
@@ -23,6 +23,7 @@ import * as fromSearch from '../reducers';
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketIconComponent {
 

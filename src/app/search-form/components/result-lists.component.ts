@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {select, Store} from "@ngrx/store";
 
 import * as fromSearch from '../reducers';
@@ -53,6 +53,7 @@ import {Observable} from "rxjs";
       </div>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultListsComponent {
 

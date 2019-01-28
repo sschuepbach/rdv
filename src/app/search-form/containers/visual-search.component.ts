@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Store} from '@ngrx/store';
 
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import * as fromSearch from "../reducers";
 import * as fromLayoutActions from "../actions/layout.actions";
 
@@ -48,6 +48,7 @@ import * as fromLayoutActions from "../actions/layout.actions";
       <app-ranges></app-ranges>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualSearchComponent {
 

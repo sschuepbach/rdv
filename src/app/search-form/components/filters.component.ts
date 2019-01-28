@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Rx';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
+import {select, Store} from '@ngrx/store';
+import {Observable} from 'rxjs/Rx';
 
-import { environment } from '../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import * as fromRoot from '../../reducers';
 import * as fromFormActions from '../actions/form.actions';
 import * as fromSearch from '../reducers';
@@ -33,6 +33,7 @@ import * as fromSearch from '../reducers';
       margin-top: 10px;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FiltersComponent {
   filterFields: any;

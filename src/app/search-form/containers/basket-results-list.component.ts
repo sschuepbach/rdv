@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Observable} from "rxjs";
 import {select, Store} from "@ngrx/store";
 
@@ -11,7 +11,8 @@ import * as fromDetailedResultActions from '../actions/detailed-result.actions';
 @Component({
   selector: 'app-basket-results-list',
   templateUrl: './basket-results-list.component.html',
-  styleUrls: ['./basket-results-list.component.css']
+  styleUrls: ['./basket-results-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketResultsListComponent {
   private _detailedViewIds: any;

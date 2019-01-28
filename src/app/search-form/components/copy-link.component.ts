@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {environment} from '../../../environments/environment';
 
 declare var LZString: any;
 
@@ -10,7 +10,8 @@ declare var LZString: any;
             ngxClipboard
             [cbContent]="generateQueryLink(data, mode)">
     </button>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CopyLinkComponent {
 

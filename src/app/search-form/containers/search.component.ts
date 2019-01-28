@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/switchMap';
@@ -30,6 +30,7 @@ declare var LZString: any;
       <app-result-lists></app-result-lists>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class SearchComponent implements OnInit, OnDestroy {

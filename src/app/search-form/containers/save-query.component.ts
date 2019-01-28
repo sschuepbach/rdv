@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 
 import * as fromSearch from '../reducers';
@@ -58,6 +58,7 @@ import {environment} from '../../../environments/environment';
       margin-bottom: 0;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveQueryComponent {
 

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {DomSanitizer} from "@angular/platform-browser";
 import {environment} from "../../../environments/environment";
 
@@ -11,6 +11,7 @@ import {environment} from "../../../environments/environment";
        (click)="exportList(docs)"
        download="export-trefferliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportResultsListComponent {
 

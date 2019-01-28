@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {select, Store} from '@ngrx/store';
 
@@ -55,6 +55,7 @@ import * as fromFormActions from '../actions/form.actions';
       margin-bottom: 0;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageSearchComponent {
 

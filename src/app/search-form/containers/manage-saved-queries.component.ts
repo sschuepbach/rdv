@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {select, Store} from '@ngrx/store';
 
@@ -45,6 +45,7 @@ import * as fromFormActions from '../actions/form.actions';
       border-color: #ccc;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageSavedQueriesComponent {
   savedQueries$: Observable<any>;
