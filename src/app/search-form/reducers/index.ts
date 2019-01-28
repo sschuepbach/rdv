@@ -201,6 +201,14 @@ export const getFacetQueryCount = createSelector(
   (facetCount) => facetCount.facetQueries,
 );
 
+export const getFacetQueryCountByKey = createSelector(
+  getFacetQueryCount,
+  (queryCounts) => memoize((key: string) =>
+    queryCounts['{!ex=' + environment.rangeFields[key].field + '}' +
+    environment.rangeFields[key].field + ':0']
+  )
+);
+
 export const getTotalResultsCount = createSelector(
   _getFacetCounts,
   (facetCount) => facetCount.total,

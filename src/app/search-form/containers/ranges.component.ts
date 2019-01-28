@@ -31,7 +31,7 @@ import {filter} from 'rxjs/operators';
                 [class.fa-circle-thin]="!(rangeValuesByKey$ | async)(key).showMissingValues"></span>
 
           <!-- Text "x Titel ohne Jahr anzeigen" -->
-          <span>Zeige {{countResultsWithMissingFeature(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
+          <span>Zeige {{(facetQueryCountByKey$ | async)(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
 
         </label>
 
@@ -117,13 +117,11 @@ export class RangesComponent implements OnInit {
   //Variable fuer SliderElemente -> bei Reset zuruecksetzen
   @ViewChildren('sliderElement') sliderElement: QueryList<IonRangeSliderComponent>;
 
-  //Ranges (leere Wert, z.B. Titel ohne Jahr fuer Checkbox, abgeleitet von results)
-  private rangeMissingValues = {};
-
   //Daten fuer Slider und Diagrammerzeugunge
   rangeData = {};
   query: QueryFormat;
   rangeFieldConfig: any;
+  facetQueryCountByKey$: Observable<any>;
 
   private shownFacetOrRange$: Observable<string>;
   private rangeValuesByKey$: Observable<any>;
@@ -141,7 +139,7 @@ export class RangesComponent implements OnInit {
     )
       .subscribe(x => this.createCharts(x));
     //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
-    searchState.pipe(select(fromSearch.getFacetQueryCount)).subscribe(x => this.rangeMissingValues = x);
+    this.facetQueryCountByKey$ = searchState.pipe(select(fromSearch.getFacetQueryCountByKey));
   }
 
   ngOnInit() {
@@ -159,8 +157,6 @@ export class RangesComponent implements OnInit {
     for (const key of Object.keys(this.rangeFieldConfig)) {
 
       //leeren Wert fuer rangeMissingValues anlegen (da sonst undefined)
-      this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[key].field + '}' +
-      this.rangeFieldConfig[key].field + ':0'] = 0;
 
       //Objekt fuer diese Range (z.B. Jahr) anelegen
       this.rangeData[key] = {};
@@ -276,11 +272,6 @@ export class RangesComponent implements OnInit {
 
     // TODO: Reactivate later probably
     // query.queryParams.start = 0;
-  }
-
-  countResultsWithMissingFeature(featureKey) {
-    return this.rangeMissingValues['{!ex=' + this.rangeFieldConfig[featureKey].field + '}' +
-    this.rangeFieldConfig[featureKey].field + ':0'];
   }
 
 }

@@ -32,12 +32,12 @@ export class QueryEffects {
   @Effect()
   searchSuccess$ = this.actions$.pipe(
     ofType(fromQueryActions.QueryActionTypes.SearchSuccess),
-    map((action: fromQueryActions.SearchSuccess) => action.payload.response),
-    filter(x => x),
+    map((action: fromQueryActions.SearchSuccess) => action.payload),
+    filter(x => !!x.response),
     flatMap(res => [
       new fromResultActions.ClearResults(),
-      new fromResultActions.AddResults({results: res.docs}),
-      new fromFacetActions.UpdateTotal(res.numFound),
+      new fromResultActions.AddResults({results: res.response.docs}),
+      new fromFacetActions.UpdateTotal(res.response.numFound),
       new fromFacetActions.UpdateFacetFields(res.facet_counts ? res.facet_counts.facet_fields : {}),
       new fromFacetActions.UpdateFacetRanges(res.facet_counts ? res.facet_counts.facet_ranges : {}),
       new fromFacetActions.UpdateFacetQueries(res.facet_counts ? res.facet_counts.facet_queries : {})
