@@ -5,6 +5,7 @@ import * as fromSearch from '../reducers';
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import {randomHashCode} from '../../shared/utils';
 import {environment} from '../../../environments/environment';
+import {BehaviorSubject, Subject} from "rxjs";
 
 @Component({
   selector: 'app-save-query',
@@ -22,27 +23,28 @@ import {environment} from '../../../environments/environment';
           <input class="form-control"
                  type="text"
                  #saveQueryInput
+                 (keyup)="saveQueryName$.next(saveQueryInput.value)"
                  placeholder="Name der Suche">
 
           <!-- "UserQuery speichern" Button, disabled, wenn Textfeld nicht valide -->
           <span class="input-group-btn">
                 <button class="btn btn-primary fa fa-floppy-o"
                         type="button"
-                        [disabled]="hasErrors(saveQueryInput.value)"
-                        (click)="saveUserQuery(saveQueryInput.value)"></button>
+                        [disabled]="hasErrors()"
+                        (click)="saveUserQuery()"></button>
               </span>
         </div>
 
         <!-- Info bei Fehler im Namensfeld von "UserQuery speichern" -->
         <div class="input-group ml-md-2 mt-1 mt-md-0"
-             *ngIf="hasErrors(saveQueryInput.value)">
+             *ngIf="hasErrors(saveQueryName$ | async)">
           <div class="bg-danger px-2 rounded"
-               *ngIf="isAmbiguous(saveQueryInput.value)">Name muss eindeutig sein
+               *ngIf="isAmbiguous(saveQueryName$ | async)">Name muss eindeutig sein
           </div>
           <div class="bg-danger px-2 rounded"
-               *ngIf="!saveQueryInput.value">Name ist Pflichtfeld
+               *ngIf="!(saveQueryName$ | async)">Name ist Pflichtfeld
           </div>
-          <div class="bg-danger px-2 rounded" *ngIf="saveQueryInput.value && saveQueryInput.value.length < 3">
+          <div class="bg-danger px-2 rounded" *ngIf="(saveQueryName$ | async) && (saveQueryName$ | async).length < 3">
             Mindestlänge 3
           </div>
         </div>
@@ -65,23 +67,28 @@ export class SaveQueryComponent {
   private formValues: any;
   private savedQueries: any[];
 
+  saveQueryName$: Subject<string>;
+  saveQueryName: string;
+
   constructor(private searchState: Store<fromSearch.State>) {
+    this.saveQueryName$ = new BehaviorSubject<string>("");
+    this.saveQueryName$.subscribe(x => this.saveQueryName = x);
     searchState.pipe(select(fromSearch.getFormValues)).subscribe(formValues => this.formValues = formValues);
     searchState.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);
   }
 
-  saveUserQuery(name: string) {
+  saveUserQuery() {
     this.searchState.dispatch(new fromSavedQueryActions.AddSavedQuery({
       savedQuery: {
         id: randomHashCode(),
-        name: name,
+        name: this.saveQueryName,
         query: {...this.formValues, queryParams: environment.queryParams},
       }
     }));
   }
 
-  hasErrors(name: string) {
-    return this.isAmbiguous(name) || name.length < 3 || !name;
+  hasErrors() {
+    return this.isAmbiguous(this.saveQueryName) || this.saveQueryName.length < 3 || !this.saveQueryName;
   }
 
   isAmbiguous(name: string) {
