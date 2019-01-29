@@ -20,7 +20,7 @@ import * as fromSearch from '../reducers';
         <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
         <div *ngIf="(numberOfBaskets$ | async) && (currentBasket$ | async).ids.length"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
-          <app-export-results-list *ngIf="showExportList"></app-export-results-list>
+          <app-export-results-list *ngIf="showExportList" [results]="currentBasketResults$ | async"></app-export-results-list>
           <app-rows-per-page [rowsPerPage]="rowsPerPage$ | async"
                              (changeRowsPerPage)="changeRowsPerPage($event)">
           </app-rows-per-page>

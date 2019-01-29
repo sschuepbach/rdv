@@ -5,10 +5,9 @@ import {environment} from "../../../environments/environment";
 @Component({
   selector: 'app-export-results-list',
   template: `
-    <a *ngIf="showExportListTable"
-       class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
+    <a class="btn btn-outline-primary text-sm-center px-2 py-1 mr-2"
        [href]="exportListData"
-       (click)="exportList(docs)"
+       (click)="exportList(results)"
        download="export-trefferliste.txt"><i class="fa fa-download"></i> Liste Exportieren</a>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

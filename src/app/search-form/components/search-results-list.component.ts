@@ -21,7 +21,7 @@ import {Observable} from "rxjs";
         <div *ngIf="count$ | async"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
-          <app-export-results-list *ngIf="showExportList"></app-export-results-list>
+          <app-export-results-list *ngIf="showExportList" [results]="docs$ | async"></app-export-results-list>
           <app-rows-per-page [rowsPerPage]="rowsPerPage$ | async"
                              (changeRowsPerPage)="changeRowsPerPage($event)">
           </app-rows-per-page>
