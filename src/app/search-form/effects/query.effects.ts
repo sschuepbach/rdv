@@ -6,7 +6,7 @@ import * as fromResultActions from '../actions/result.actions';
 import * as fromFacetActions from '../actions/facet.actions';
 import * as fromBasketResultActions from '../actions/basket-result.actions';
 import * as fromDetailedBasketResultActions from '../actions/detailed-result.actions';
-import {catchError, debounceTime, distinctUntilChanged, filter, flatMap, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, flatMap, map, switchMap, tap} from 'rxjs/operators';
 import {BackendSearchService} from '../../shared/services/backend-search.service';
 import {of} from "rxjs";
 import {BasketResult} from "../models/basket-result.model";
@@ -18,8 +18,6 @@ export class QueryEffects {
   @Effect()
   makeSearchRequest$ = this.actions$.pipe(
     ofType(fromQueryActions.QueryActionTypes.MakeSearchRequest),
-    debounceTime(750),
-    distinctUntilChanged(),
     map((action: fromQueryActions.MakeSearchRequest) => action.payload),
     switchMap(query =>
       this.backendSearchService.getBackendDataComplex(query).pipe(

@@ -231,52 +231,43 @@ export const getAllResults = createSelector(
 );
 
 
-const _getQueryParams = createSelector(
+export const getQueryParams = createSelector(
   _getSearch,
   (search) => search.query,
 );
 
 export const getResultOffset = createSelector(
-  _getQueryParams,
+  getQueryParams,
   (queryParams) => queryParams.offset,
 );
 
 export const getResultRows = createSelector(
-  _getQueryParams,
+  getQueryParams,
   (queryParams) => queryParams.rows,
 );
 
 export const getResultSortField = createSelector(
-  _getQueryParams,
+  getQueryParams,
   (queryParams) => queryParams.sortField,
 );
 
 export const getResultSortOrder = createSelector(
-  _getQueryParams,
+  getQueryParams,
   (queryParams) => queryParams.sortOrder,
 );
 
-export const getCombinedQuery = createSelector(
+
+export const getCombinedSearchQueries = createSelector(
   getFacetValues,
   getRangeValues,
   getSearchValues,
   _getFilterValues,
-  getResultOffset,
-  getResultRows,
-  getResultSortField,
-  getResultSortOrder,
-  (facets, ranges, searchFields, filters, offset, rows, sortField, sortOrder) => {
+  (facets, ranges, searchFields, filters) => {
     return {
       facetFields: facets,
       rangeFields: ranges,
       searchFields: searchFields,
       filterFields: filters,
-      queryParams: {
-        rows: rows,
-        start: offset,
-        sortField: sortField,
-        sortDir: sortOrder,
-      }
     }
   }
 );

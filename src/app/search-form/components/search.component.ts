@@ -13,7 +13,8 @@ import * as fromBasketResultActions from '../actions/basket-result.actions'
 import * as fromSavedQueryActions from '../actions/saved-query.actions';
 import {environment} from '../../../environments/environment';
 import {randomHashCode} from '../../shared/utils';
-import {filter} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, filter, map} from "rxjs/operators";
+import {combineLatest} from "rxjs";
 
 declare var LZString: any;
 
@@ -47,7 +48,28 @@ export class SearchComponent implements OnInit, OnDestroy {
               private _rootStore: Store<fromRoot.State>,
               private _searchStore: Store<fromSearch.State>) {
 
-    _searchStore.pipe(select(fromSearch.getCombinedQuery))
+    combineLatest(
+      _searchStore.pipe(
+        select(fromSearch.getQueryParams),
+        map(val => {
+            return {
+              queryParams: {
+                rows: val.rows,
+                sortDir: val.sortOrder,
+                sortField: val.sortField,
+                start: val.offset
+              }
+            };
+          }
+        ),
+      ),
+      _searchStore.pipe(
+        select(fromSearch.getCombinedSearchQueries),
+        debounceTime(750),
+        distinctUntilChanged(),
+      )
+    )
+      .map(val => Object.assign(val[0], val[1]))
       .subscribe(vals => {
         this._combinedQuery = vals;
         this._searchStore.dispatch(new fromQueryActions.MakeSearchRequest(vals));
