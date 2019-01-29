@@ -37,6 +37,7 @@ import {CachingInterceptor} from "../shared/services/caching-interceptor.service
 import {ResultRowComponent} from './components/result-row.component';
 import {ResultPagingComponent} from './components/result-paging.component';
 import {ResultHeaderComponent} from './components/result-header.component';
+import {RowsPerPageComponent} from './components/rows-per-page.component';
 
 @NgModule({
   imports: [
@@ -75,6 +76,7 @@ import {ResultHeaderComponent} from './components/result-header.component';
     ResultRowComponent,
     ResultPagingComponent,
     ResultHeaderComponent,
+    RowsPerPageComponent,
   ],
   providers: [
     {

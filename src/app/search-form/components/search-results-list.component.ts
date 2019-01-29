@@ -22,23 +22,11 @@ import {Observable} from "rxjs";
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
 
           <app-export-results-list *ngIf="showExportList"></app-export-results-list>
-
-          <!-- Select Treffer pro Seite -->
-          <div class="form-inline mr-2 mb-2 mb-md-0">
-
-            <!-- Select: Rows -->
-            <select class="form-control form-control-sm" id="rows">
-              <option *ngFor="let rowOpt of rowOpts"
-                      [value]="rowOpt">{{rowOpt}}
-              </option>
-            </select>
-
-            <!-- Label: Treffer pro Seite -->
-            <label class="form-label ml-2 d-flex justify-content-center"
-                   for="rows">Treffer pro Seite</label>
-          </div>
+          <app-rows-per-page [rowsPerPage]="rowsPerPage$ | async"
+                             (changeRowsPerPage)="changeRowsPerPage($event)">
+          </app-rows-per-page>
           <app-result-paging [numberOfRows]="count$ | async"
-                             [rowsPerPage]="rowsPerPage"
+                             [rowsPerPage]="rowsPerPage$ | async"
                              (offset)="setSearchOffset($event)">
           </app-result-paging>
         </div>
@@ -121,18 +109,18 @@ export class SearchResultsListComponent {
   currentBasket$: Observable<any>;
   docs$: Observable<any>;
   offset$: Observable<number>;
+  rowsPerPage$: Observable<number>;
   sortedBy$: Observable<string>;
   sortOrder$: Observable<string>;
 
-  readonly rowOpts = environment.rowOpts;
   readonly showExportList = environment.showExportList.table;
   readonly tableFields = environment.tableFields;
-  readonly rowsPerPage = environment.queryParams.rows;
 
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.docs$ = _searchStore.pipe(select(fromSearch.getAllResults));
     this.count$ = _searchStore.pipe(select(fromSearch.getTotalResultsCount));
     this.offset$ = _searchStore.pipe(select(fromSearch.getResultOffset));
+    this.rowsPerPage$ = _searchStore.pipe(select(fromSearch.getResultRows));
     this.sortedBy$ = _searchStore.pipe(select(fromSearch.getResultSortField));
     this.sortOrder$ = _searchStore.pipe(select(fromSearch.getResultSortOrder));
     this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
@@ -150,5 +138,9 @@ export class SearchResultsListComponent {
       this._searchStore.dispatch(new fromQueryActions.SetSortOrder('asc'));
     }
     this._searchStore.dispatch(new fromQueryActions.SetOffset(0));
+  }
+
+  changeRowsPerPage(no: number) {
+    this._searchStore.dispatch(new fromQueryActions.SetRows(no));
   }
 }

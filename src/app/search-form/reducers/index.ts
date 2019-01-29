@@ -138,6 +138,11 @@ export const getCurrentBasket = createSelector(
   (entities, id) => entities[id],
 );
 
+export const getCurrentBasketsDisplayedRows = createSelector(
+  getCurrentBasket,
+  (curBasket) => curBasket.queryParams.rows,
+);
+
 export const getCurrentBasketElementsCount = createSelector(
   getCurrentBasket,
   (basket) => basket.ids.length,
@@ -236,6 +241,11 @@ export const getResultOffset = createSelector(
   (queryParams) => queryParams.offset,
 );
 
+export const getResultRows = createSelector(
+  _getQueryParams,
+  (queryParams) => queryParams.rows,
+);
+
 export const getResultSortField = createSelector(
   _getQueryParams,
   (queryParams) => queryParams.sortField,
@@ -252,19 +262,20 @@ export const getCombinedQuery = createSelector(
   getSearchValues,
   _getFilterValues,
   getResultOffset,
+  getResultRows,
   getResultSortField,
   getResultSortOrder,
-  (facets, ranges, searchFields, filters, offset, sortField, sortOrder) => {
+  (facets, ranges, searchFields, filters, offset, rows, sortField, sortOrder) => {
     return {
       facetFields: facets,
       rangeFields: ranges,
       searchFields: searchFields,
       filterFields: filters,
       queryParams: {
+        rows: rows,
         start: offset,
         sortField: sortField,
         sortDir: sortOrder,
-        rows: environment.queryParams.rows,
       }
     }
   }

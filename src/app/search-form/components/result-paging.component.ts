@@ -53,23 +53,24 @@ export class ResultPagingComponent {
   }
 
   get currentPage(): number {
-    return Math.floor(this._currentOffset / this.rowsPerPage) + 1;
+    return this._currentOffset % this.rowsPerPage > 1 ?
+      Math.ceil(this._currentOffset / this.rowsPerPage) + 1 :
+      Math.floor(this._currentOffset / this.rowsPerPage) + 1;
   }
 
   private set _offset(offset: number) {
-    this._currentOffset = offset;
-    this.offsetEmitter.emit(offset);
+    this._currentOffset = offset < 0 ? 0 : offset;
+    this.offsetEmitter.emit(this._currentOffset);
   }
 
   private get _offset() {
     return this._currentOffset;
   }
 
-  private _currentOffset = 1;
+  private _currentOffset = 0;
 
   goToNextPage() {
     this._offset += this.rowsPerPage;
-    console.log(this._currentOffset);
   }
 
   goToPreviousPage() {
@@ -77,7 +78,7 @@ export class ResultPagingComponent {
   }
 
   goToFirstPage() {
-    this._offset = 1;
+    this._offset = 0;
   }
 
   goToLastPage() {

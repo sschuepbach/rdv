@@ -21,7 +21,10 @@ import * as fromSearch from '../reducers';
         <div *ngIf="(numberOfBaskets$ | async) && (currentBasket$ | async).ids.length"
              class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
           <app-export-results-list *ngIf="showExportList"></app-export-results-list>
-          <app-result-paging [rowsPerPage]="rowsPerPage"
+          <app-rows-per-page [rowsPerPage]="rowsPerPage$ | async"
+                             (changeRowsPerPage)="changeRowsPerPage($event)">
+          </app-rows-per-page>
+          <app-result-paging [rowsPerPage]="rowsPerPage$ | async"
                              [numberOfRows]="numberOfBasketResults$ | async"
                              (offset)="setBasketOffset($event)">
           </app-result-paging>
@@ -140,16 +143,17 @@ export class BasketResultsListComponent {
   currentBasketResults: any;
   numberOfBaskets$: Observable<number>;
   numberOfBasketResults$: Observable<number>;
+  rowsPerPage$: Observable<number>;
 
   readonly showExportList = environment.showExportList.basket;
   readonly tableFields = environment.tableFields;
-  readonly rowsPerPage = environment.basketConfig.queryParams.rows;
 
   private _currentBasket: any;
 
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.numberOfBaskets$ = _searchStore.pipe(select(fromSearch.getBasketCount));
     this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
+    this.rowsPerPage$ = _searchStore.pipe(select(fromSearch.getCurrentBasketsDisplayedRows));
     this.currentBasket$.subscribe(basket => {
       this._currentBasket = basket;
     });
@@ -177,7 +181,6 @@ export class BasketResultsListComponent {
           ...this._currentBasket,
           queryParams: {
             ...this._currentBasket.queryParams,
-            sortField: this._currentBasket.queryParams.sortField,
             sortDir: sortBy,
           }
         }
@@ -194,5 +197,17 @@ export class BasketResultsListComponent {
         }
       }));
     }
+  }
+
+  changeRowsPerPage(no: number) {
+    this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
+      basket: {
+        ...this._currentBasket,
+        queryParams: {
+          ...this._currentBasket.queryParams,
+          rows: no,
+        }
+      }
+    }));
   }
 }

@@ -8,6 +8,7 @@ export enum QueryActionTypes {
   MakeDetailedSearchRequest = '[Query] Make detailed search request',
   MakeBasketSearchRequest = '[Query] Make basket request',
   SetOffset = '[Query] Set offset of result view',
+  SetRows = '[Query] Set number of results per page',
   SetSortField = '[Query] Set sort field',
   SetSortOrder = '[Query] Set sort order',
   SearchSuccess = '[Query] Search successful',
@@ -41,6 +42,13 @@ export class MakeBasketSearchRequest implements Action {
 
 export class SetOffset implements Action {
   readonly type = QueryActionTypes.SetOffset;
+
+  constructor(public payload: number) {
+  }
+}
+
+export class SetRows implements Action {
+  readonly type = QueryActionTypes.SetRows;
 
   constructor(public payload: number) {
   }
@@ -106,6 +114,7 @@ export type QueryActions
   = MakeSearchRequest
   | MakeBasketSearchRequest
   | SetOffset
+  | SetRows
   | SetSortField
   | SetSortOrder
   | SearchSuccess
