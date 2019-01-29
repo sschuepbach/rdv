@@ -3,7 +3,6 @@ import {select, Store} from "@ngrx/store";
 
 import * as fromSearch from '../reducers';
 import * as fromQueryActions from '../actions/query.actions';
-import * as fromDetailedResultActions from '../actions/detailed-result.actions';
 import {environment} from "../../../environments/environment";
 import {Observable} from "rxjs";
 
@@ -32,27 +31,17 @@ export class SearchResultsListComponent {
   currentBasket$: Observable<any>;
   docs$: Observable<any>;
   offset$: Observable<number>;
-  detailedView$: Observable<any>;
-  detailedViewIds$: Observable<any>;
 
-  readonly extraInfos = environment.extraInfos;
   readonly rowOpts = environment.rowOpts;
   readonly showExportList = environment.showExportList.table;
   sortColumn = 0;
   readonly tableFields = environment.tableFields;
-  readonly tableFieldsDisplayLandingpage = environment.tableFields.reduce((agg, field) =>
-    !agg && field.hasOwnProperty('landingpage') && field['landingpage'],
-    false);
-  readonly tableFieldsDisplayExtraInfo = environment.tableFields.reduce((agg, field) =>
-    !agg && field.hasOwnProperty('extraInfo') && field['extraInfo']
-    , false);
 
   private _count: number;
   private _offset: number;
   private readonly _numberOfRows = environment.queryParams.rows;
   private _sortField: string;
   private _sortOrder: string;
-  private _detailedViewIds: any;
 
 
   constructor(private _searchStore: Store<fromSearch.State>) {
@@ -75,9 +64,6 @@ export class SearchResultsListComponent {
 
     this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
 
-    this.detailedView$ = _searchStore.pipe(select(fromSearch.getAllDetailedResults));
-    this.detailedViewIds$ = _searchStore.pipe(select(fromSearch.getDetailedResultsIds));
-    this.detailedViewIds$.subscribe(ids => this._detailedViewIds = ids);
   }
 
   // TODO: Used by search
@@ -117,35 +103,6 @@ export class SearchResultsListComponent {
     return field === this._sortField ?
       this._sortOrder === "asc" ? "fa-sort-asc" : "fa-sort-desc" :
       'fa-sort';
-  }
-
-  // TODO: Used by both
-  //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
-  // noinspection JSMethodCanBeStatic
-  getType(obj) {
-
-    //Wert ist nicht gesetzt
-    if (!obj) {
-      return 'unset';
-    } else if (obj.constructor === Array) {
-      return "multi";
-    } else {
-      return "single";
-    }
-  }
-
-  // TODO: Used by both
-  //Detailinfo holen und Ansicht toggeln
-  getFullData(id: string) {
-    if (!this.hasDetailedViewOpen(id)) {
-      this._searchStore.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
-    } else {
-      this._searchStore.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
-    }
-  }
-
-  hasDetailedViewOpen(id: string) {
-    return this._detailedViewIds.indexOf(id) > -1;
   }
 
   // TODO: Used by search

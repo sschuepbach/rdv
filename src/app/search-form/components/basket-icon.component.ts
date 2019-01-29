@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Store} from "@ngrx/store";
+import {select, Store} from "@ngrx/store";
 
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSearch from '../reducers';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-basket-icon',
@@ -16,7 +17,7 @@ import * as fromSearch from '../reducers';
       <!-- Star-Symbol  -->
       <div class="col text-sm-center">
                     <span class="fa"
-                          [ngClass]="basket.ids.includes(basketElement) ?
+                          [ngClass]="(currentBasket$ | async).ids.includes(basketElement) ?
                           'fa-star text-warning' :
                           'fa-star-o'">
                     </span>
@@ -26,23 +27,30 @@ import * as fromSearch from '../reducers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketIconComponent {
-  @Input() basket: any;
   @Input() basketElement: string;
 
+  currentBasket$: Observable<any>;
+
+  private _currentBasket: any;
+
   constructor(private _searchStore: Store<fromSearch.State>) {
+    this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
+    this.currentBasket$.subscribe(basket => {
+      this._currentBasket = basket;
+    });
   }
 
   addOrRemoveRecordInBasket() {
     this._searchStore.dispatch(new fromBasketActions.UpdateBasket(
       {
         basket: {
-          id: this.basket.id,
+          id: this._currentBasket.id,
           changes: {
-            ...this.basket,
+            ...this._currentBasket,
             ids:
-              this.basket.ids.includes(this.basketElement) ?
-                this.basket.ids.filter(rec => rec !== this.basketElement) :
-                this.basket.ids.concat(this.basketElement)
+              this._currentBasket.ids.includes(this.basketElement) ?
+                this._currentBasket.ids.filter(rec => rec !== this.basketElement) :
+                this._currentBasket.ids.concat(this.basketElement)
           }
         }
       }

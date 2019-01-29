@@ -2,10 +2,6 @@
   flex: auto;
 }
 
-.mh-flex-1 {
-  flex: 1;
-}
-
 .row-count {
   border-top: 1px solid #868e96;
   border-bottom: 1px solid #868e96;
@@ -19,10 +15,6 @@
 
 select {
   width: auto;
-}
-
-label {
-  margin-bottom: 0;
 }
 
 .mh-table-row:nth-child(2n - 1) {
