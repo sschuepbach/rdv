@@ -8,8 +8,130 @@ import * as fromSearch from '../reducers';
 
 @Component({
   selector: 'app-basket-results-list',
-  templateUrl: './basket-results-list.component.html',
-  styleUrls: ['./basket-results-list.component.css'],
+  template: `
+    <div class="tab-pane list-group"
+         id="results-pills-basket"
+         role="tabpanel"
+         aria-labelledby="facet-pills-basket-tab">
+
+      <!-- Zeile aus Treffer-Anzahl und Pagination der Merkliste -->
+      <div class="d-flex justify-content-start flex-wrap">
+
+        <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
+        <div *ngIf="(numberOfBaskets$ | async) && (currentBasket$ | async).ids.length"
+             class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
+          <app-export-results-list *ngIf="showExportList"></app-export-results-list>
+          <app-result-paging [rowsPerPage]="rowsPerPage"
+                             [numberOfRows]="numberOfBasketResults$ | async"
+                             (offset)="setBasketOffset($event)">
+          </app-result-paging>
+        </div>
+      </div>
+
+      <!-- Merklisten-Treffertabelle -->
+      <div *ngIf="numberOfBaskets$ | async"
+           class="mt-2 mh-table-view">
+        <app-result-header [tableFields]="tableFields"
+                           [sortedBy]="(currentBasket$ | async)?.queryParams.sortField"
+                           [sortOrder]="(currentBasket$ | async)?.queryParams.sortDir"
+                           (sortByField)="sortBasketTable($event)">
+        </app-result-header>
+
+        <!-- Tabellenzeilen -->
+        <div class="mh-table-row d-flex flex-column"
+             *ngFor="let doc of currentBasketResults$ | async">
+          <app-result-row [doc]="doc"></app-result-row>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .flex-auto {
+      flex: auto;
+    }
+
+    select {
+      width: auto;
+    }
+
+    .mh-table-row:nth-child(2n - 1) {
+      background: #f2f2f2;
+    }
+
+    @media (min-width: 576px) {
+
+      .mh-table-view {
+        border: 1px solid grey;
+        border-radius: 3px;
+      }
+
+      .mh-sort-by-column {
+        background-color: rgba(0, 255, 255, 0.05);
+      }
+
+      .mh-table-header > div {
+        word-break: break-word;
+        border-left: 1px solid grey;
+      }
+
+      .mh-table-row > .mh-table-row-main > div {
+        word-break: break-word;
+        border-top: 1px solid grey;
+        border-left: 1px solid grey;
+      }
+
+      .mh-table-row > .mh-table-row-main > div:first-of-type, .mh-table-header > div:first-of-type {
+        border-left: 0;
+      }
+
+      .mh-table-row > .mh-table-row-info {
+        border-top: 1px solid grey;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .mh-table-header > div {
+        border-top: 1px solid grey;
+        border-bottom: 1px solid grey;
+        border-left: 1px solid grey;
+      }
+
+      .mh-table-header > div:first-child {
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+
+      .mh-table-header > div:last-child {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+        border-right: 1px solid grey;
+      }
+
+      .mh-table-row {
+        border: 1px solid grey;
+        border-radius: 3px;
+        margin-top: 20px;
+      }
+    }
+
+    .mh-table-row > div > div > label {
+      width: 140px;
+    }
+
+    .mh-table-row > div > div > label:after {
+      content: ''
+    }
+
+    .mh-sort {
+      position: absolute;
+      right: 3px;
+      top: 4px;
+    }
+
+    .mh-table-header {
+      background: #ddd;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketResultsListComponent {
@@ -20,16 +142,13 @@ export class BasketResultsListComponent {
   numberOfBasketResults$: Observable<number>;
 
   readonly showExportList = environment.showExportList.basket;
-  sortColumn = 0;
   readonly tableFields = environment.tableFields;
   readonly rowsPerPage = environment.basketConfig.queryParams.rows;
 
   private _currentBasket: any;
-  private _numberOfBaskets: number;
 
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.numberOfBaskets$ = _searchStore.pipe(select(fromSearch.getBasketCount));
-    this.numberOfBaskets$.subscribe(no => this._numberOfBaskets = no);
     this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
     this.currentBasket$.subscribe(basket => {
       this._currentBasket = basket;
@@ -51,17 +170,15 @@ export class BasketResultsListComponent {
     }));
   }
 
-  // TODO: Used by basket
-  sortBasketTable(sortField: string) {
-    //wenn bereits nach diesem Feld sortiert wird
-    if (sortField === this._currentBasket.queryParams.sortField) {
+  sortBasketTable(sortBy: string) {
+    if (sortBy === 'asc' || sortBy === 'desc') {
       this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
         basket: {
           ...this._currentBasket,
           queryParams: {
             ...this._currentBasket.queryParams,
-            sortField: sortField,
-            sortDir: this._currentBasket.queryParams.sortDir === 'desc' ? 'asc' : 'desc',
+            sortField: this._currentBasket.queryParams.sortField,
+            sortDir: sortBy,
           }
         }
       }));
@@ -71,7 +188,7 @@ export class BasketResultsListComponent {
           ...this._currentBasket,
           queryParams: {
             ...this._currentBasket.queryParams,
-            sortField: sortField,
+            sortField: sortBy,
             sortDir: 'asc',
           }
         }

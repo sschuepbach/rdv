@@ -36,6 +36,7 @@ import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {CachingInterceptor} from "../shared/services/caching-interceptor.service";
 import {ResultRowComponent} from './components/result-row.component';
 import {ResultPagingComponent} from './components/result-paging.component';
+import {ResultHeaderComponent} from './components/result-header.component';
 
 @NgModule({
   imports: [
@@ -73,6 +74,7 @@ import {ResultPagingComponent} from './components/result-paging.component';
     DisplayLinkDirective,
     ResultRowComponent,
     ResultPagingComponent,
+    ResultHeaderComponent,
   ],
   providers: [
     {
