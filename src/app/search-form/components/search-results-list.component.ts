@@ -13,20 +13,6 @@ import {Observable} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchResultsListComponent {
-  //Anzahl der Seiten gesamt
-  get pages(): number {
-
-    //Anzahl der Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this._count / this._numberOfRows);
-  }
-
-  //aktuelle Seite beim Blaettern
-  get page(): number {
-
-    //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-    return Math.floor(this._offset / this._numberOfRows) + 1;
-  }
-
   count$: Observable<number>;
   currentBasket$: Observable<any>;
   docs$: Observable<any>;
@@ -36,10 +22,10 @@ export class SearchResultsListComponent {
   readonly showExportList = environment.showExportList.table;
   sortColumn = 0;
   readonly tableFields = environment.tableFields;
+  readonly rowsPerPage = environment.queryParams.rows;
 
   private _count: number;
   private _offset: number;
-  private readonly _numberOfRows = environment.queryParams.rows;
   private _sortField: string;
   private _sortOrder: string;
 
@@ -66,23 +52,8 @@ export class SearchResultsListComponent {
 
   }
 
-  // TODO: Used by search
-  //Blaettern in Trefferliste / Merkliste
   setSearchOffset(offset) {
-    //neuen Startwert berechnen
-    let newStart: number;
-
-    //auf letzte Seite springen
-    if (offset === 'last') {
-      newStart = (this._numberOfRows * (this.pages - 1));
-    } else if (offset === 'first') {
-      newStart = 0;
-    } else {
-      newStart = this._offset +
-        (offset * this._numberOfRows);
-    }
-
-    this._searchStore.dispatch(new fromQueryActions.SetOffset(newStart));
+    this._searchStore.dispatch(new fromQueryActions.SetOffset(offset));
   }
 
   // TODO: Used by search

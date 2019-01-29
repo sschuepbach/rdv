@@ -2,17 +2,6 @@
   flex: auto;
 }
 
-.row-count {
-  border-top: 1px solid #868e96;
-  border-bottom: 1px solid #868e96;
-  width: 80px;
-  vertical-align: middle;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 select {
   width: auto;
 }

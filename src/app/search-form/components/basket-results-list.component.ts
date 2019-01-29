@@ -13,33 +13,19 @@ import * as fromSearch from '../reducers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketResultsListComponent {
-  //Anzahl der Merklisten-Seiten gesamt
-  get basketPages(): number {
-    //Anzahl der Merklisten-Seiten gesamt = (Wie viele Treffer gibt es / Wie viele Zeilen pro Einheit)
-    return Math.ceil(this._currentBasket.ids.length / this._numberOfDisplayedRows);
-  }
-
-
-  //aktuelle Merklisten-Seite beim Blaettern
-  get basketPage(): number {
-    return this._numberOfBaskets ?
-      //aktuelle Seite = (Wo bin ich / Wie viele Zeilen pro Einheit)
-      Math.floor(this._currentBasket.queryParams.start / this._numberOfDisplayedRows) + 1 :
-      0;
-  }
-
   currentBasket$: Observable<any>;
   currentBasketResults$: Observable<any>;
   currentBasketResults: any;
   numberOfBaskets$: Observable<number>;
+  numberOfBasketResults$: Observable<number>;
 
   readonly showExportList = environment.showExportList.basket;
   sortColumn = 0;
   readonly tableFields = environment.tableFields;
+  readonly rowsPerPage = environment.basketConfig.queryParams.rows;
 
   private _currentBasket: any;
   private _numberOfBaskets: number;
-  private readonly _numberOfDisplayedRows = environment.basketConfig.queryParams.rows;
 
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.numberOfBaskets$ = _searchStore.pipe(select(fromSearch.getBasketCount));
@@ -50,31 +36,19 @@ export class BasketResultsListComponent {
     });
     this.currentBasketResults$ = _searchStore.pipe(select(fromSearch.getAllBasketResults));
     this.currentBasketResults$.subscribe(res => this.currentBasketResults = res);
+    this.numberOfBasketResults$ = _searchStore.pipe(select(fromSearch.getCurrentBasketElementsCount));
   }
 
-  // TODO: Used by basket
-  setBasketOffset(page) {
-    let newOffset: number;
-    //auf letzte Seite springen
-    if (page === 'last') {
-      newOffset = (this._numberOfDisplayedRows * (this.basketPages - 1));
-    } else if (page === 'first') {
-      newOffset = 0;
-    } else {
-      newOffset = this._currentBasket.queryParams.start + (page * this._numberOfDisplayedRows);
-    }
-
-    //Start anpassen
+  setBasketOffset(offset) {
     this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
         ...this._currentBasket,
         queryParams: {
           ...this._currentBasket.queryParams,
-          start: newOffset,
+          start: offset,
         }
       }
     }));
-
   }
 
   // TODO: Used by basket

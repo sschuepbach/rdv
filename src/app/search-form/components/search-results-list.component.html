@@ -26,37 +26,8 @@
         <label class="form-label ml-2 d-flex justify-content-center"
                for="rows">Treffer pro Seite</label>
       </div>
-
-      <!-- Paging fuer Treffertabelle -->
-      <div class="btn-group btn-group-sm mb-2 mb-md-0"
-           role="group"
-           aria-label="Small button group">
-
-        <!-- 1. Seite -->
-        <button class="btn btn-primary fa fa-angle-double-left"
-                (click)="setSearchOffset('first')"
-                [disabled]="(offset$ | async) == 0">
-        </button>
-
-        <!-- nach links blaettern -->
-        <button class="btn btn-primary fa fa-angle-left"
-                (click)="setSearchOffset(-1)"
-                [disabled]="(offset$ | async) == 0">
-        </button>
-
-        <!-- aktuelle Seite von insgesamt x Seiten -->
-        <div class="row-count">{{ page}} / {{pages}}</div>
-
-        <!-- nach rechts blaettern -->
-        <button class="btn btn-primary fa fa-angle-right"
-                (click)="setSearchOffset(1)"
-                [disabled]="page == pages"></button>
-
-        <!-- letztes Seite -->
-        <button class="btn btn-primary fa fa-angle-double-right"
-                (click)="setSearchOffset('last')"
-                [disabled]="page == pages"></button>
-      </div>
+      <app-result-paging [numberOfRows]="count$ | async" [rowsPerPage]="rowsPerPage"
+                         (offset)="setSearchOffset($event)"></app-result-paging>
     </div>
   </div>
 

@@ -9,40 +9,11 @@
     <!-- Block: Pagination fuer Merlisten-Treffertabelle (keine Auswahlmoeglichkeit wie viele Treffer pro Seite) -->
     <div *ngIf="(numberOfBaskets$ | async) && (currentBasket$ | async).ids.length"
          class="d-flex flex-wrap align-items-center justify-content-between justify-content-md-end flex-auto">
-
       <app-export-results-list *ngIf="showExportList"></app-export-results-list>
-      <!-- TODO: Extract paging -->
-
-      <!-- Paging fuer Merklisten-Treffertabelle -->
-      <div class="btn-group btn-group-sm mb-2 mb-md-0"
-           role="group"
-           aria-label="Small button group">
-
-        <!-- 1. Seite -->
-        <button class="btn btn-primary fa fa-angle-double-left"
-                (click)="setBasketOffset('first')"
-                [disabled]="basketPage == 1">
-        </button>
-
-        <!-- nach links blaettern -->
-        <button class="btn btn-primary fa fa-angle-left"
-                (click)="setBasketOffset(-1)"
-                [disabled]="basketPage == 1">
-        </button>
-
-        <!-- aktuelle Seite von insgesamt x Seiten -->
-        <div class="row-count">{{ basketPage}} / {{basketPages}}</div>
-
-        <!-- nach rechts blaettern -->
-        <button class="btn btn-primary fa fa-angle-right"
-                (click)="setBasketOffset(1)"
-                [disabled]="basketPage == basketPages"></button>
-
-        <!-- letztes Seite -->
-        <button class="btn btn-primary fa fa-angle-double-right"
-                (click)="setBasketOffset('last')"
-                [disabled]="basketPage == basketPages"></button>
-      </div>
+      <app-result-paging [rowsPerPage]="rowsPerPage"
+                         [numberOfRows]="numberOfBasketResults$ | async"
+                         (offset)="setBasketOffset($event)">
+      </app-result-paging>
     </div>
   </div>
 
