@@ -138,7 +138,30 @@ import {Observable} from "rxjs";
       .mh-sort-by-column {
         background-color: rgba(0, 255, 255, 0.05);
       }
+
+      .mh-table-row-main > div {
+        word-break: break-word;
+        border-top: 1px solid grey;
+        border-left: 1px solid grey;
+      }
+
+      .mh-table-row-main > div:first-of-type, .mh-table-header > div:first-of-type {
+        border-left: 0;
+      }
+
+      .mh-table-row-info {
+        border-top: 1px solid grey;
+      }
     }
+
+    div > div > label {
+      width: 140px;
+    }
+
+    div > div > label:after {
+      content: ''
+    }
+
 
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
