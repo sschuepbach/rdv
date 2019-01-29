@@ -23,8 +23,6 @@ declare var LZString: any;
   selector: 'app-search',
   template: `
     <div class="container mt-2">
-      <!-- <pre style="position: fixed; right: 10px; top: 10px">{{updateQueryService.queryFormat | json}}</pre> -->
-      <!-- <pre style="position: fixed; right: 10px; top: 10px">{{savedBaskets | json}}</pre> -->
       <app-manage-search></app-manage-search>
       <app-search-params></app-search-params>
       <app-result-lists></app-result-lists>
@@ -35,118 +33,131 @@ declare var LZString: any;
 
 export class SearchComponent implements OnInit, OnDestroy {
 
-  private baskets: any;
-  private savedQueries: any;
-  private combinedQuery: any;
+  private _baskets: any;
+  private _savedQueries: any;
+  private _combinedQuery: any;
 
-
-  private static loadQueryFromUrl(params: any) {
+  private static _loadQueryFromUrl(params: any) {
     return JSON.parse(LZString.decompressFromEncodedURIComponent(params.get("search")));
   }
 
-  private static loadQueryFromLocalStorage() {
+  private static _loadQueryFromLocalStorage() {
     return JSON.parse(localStorage.getItem("userQuery"));
   }
 
-  constructor(private route: ActivatedRoute,
-              private rootStore: Store<fromRoot.State>,
-              private searchStore: Store<fromSearch.State>) {
+  constructor(private _route: ActivatedRoute,
+              private _rootStore: Store<fromRoot.State>,
+              private _searchStore: Store<fromSearch.State>) {
 
-    searchStore.pipe(select(fromSearch.getCombinedQuery))
+    _searchStore.pipe(select(fromSearch.getCombinedQuery))
       .subscribe(vals => {
-        this.combinedQuery = vals;
-        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(vals));
+        this._combinedQuery = vals;
+        this._searchStore.dispatch(new fromQueryActions.MakeSearchRequest(vals));
       });
-    searchStore.pipe(select(fromSearch.getCurrentBasket),
+    _searchStore.pipe(select(fromSearch.getCurrentBasket),
       filter(x => !!x))
       .subscribe(basket => {
-        this.searchStore.dispatch(new fromBasketResultActions.ClearBasketResults());
-        this.searchStore.dispatch(new fromQueryActions.MakeBasketSearchRequest(basket));
+        this._searchStore.dispatch(new fromBasketResultActions.ClearBasketResults());
+        this._searchStore.dispatch(new fromQueryActions.MakeBasketSearchRequest(basket));
       });
-    searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this.baskets = baskets);
-    searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);
+    _searchStore.pipe(select(fromSearch.getAllBaskets)).subscribe(baskets => this._baskets = baskets);
+    _searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this._savedQueries = savedQueries);
   }
 
   //Bevor die Seite verlassen wird (z.B. F5 druecken)
   @HostListener('window:beforeunload', ['$event'])
   beforeUnloadHandler() {
-    this.writeToLocalStorage();
-  }
-
-  ngOnDestroy(): void {
-    this.writeToLocalStorage();
+    this._writeToLocalStorage();
   }
 
   ngOnInit() {
-
-    let initialBasketsExist = false;
-
-    this.route.queryParamMap.subscribe(params => {
+    this._route.queryParamMap.subscribe(params => {
       if (params.get("search")) {
-        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent.loadQueryFromUrl(params)));
+        this._searchRequestFromUrl(params);
       } else if (localStorage.getItem("userQuery")) {
-        this.searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent.loadQueryFromLocalStorage()));
+        this._searchRequestFromLocalStorage();
       }
 
       if (params.get("basket")) {
-        const compressedBasket = params.get("basket");
-        const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
-        const hash = randomHashCode();
-        this.searchStore.dispatch(new fromBasketActions.AddBasket({basket: {...basketFromLink, id: hash}}));
-
-        this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
-        initialBasketsExist = true;
+        this._loadBasketFromUrl(params);
+      } else if (localStorage.getItem("savedBaskets") && JSON.parse(localStorage.getItem("savedBaskets")).length) {
+        this._loadBasketFromLocalStorage();
+      } else {
+        this._generateInitialBasket();
       }
     });
 
-    //gespeicherte Suchanfragen aus localstorage laden -> vor Form-Erstellung, damit diese queries fuer den Validator genutzt werden koennen
+    this._loadSavedSearchQueries();
+  }
+
+  ngOnDestroy(): void {
+    this._writeToLocalStorage();
+  }
+
+
+  private _searchRequestFromUrl(params) {
+    this._searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent._loadQueryFromUrl(params)));
+  }
+
+  private _searchRequestFromLocalStorage() {
+    this._searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent._loadQueryFromLocalStorage()));
+  }
+
+  private _loadBasketFromUrl(params) {
+    const compressedBasket = params.get("basket");
+    const basketFromLink = JSON.parse(LZString.decompressFromEncodedURIComponent(compressedBasket));
+    const hash = randomHashCode();
+    this._searchStore.dispatch(new fromBasketActions.ClearBaskets());
+    this._searchStore.dispatch(new fromBasketActions.AddBasket({basket: {...basketFromLink, id: hash}}));
+
+    this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
+  }
+
+  private _loadSavedSearchQueries() {
     const localStorageSavedUserQueries = localStorage.getItem("savedUserQueries");
     if (localStorageSavedUserQueries) {
-      this.searchStore.dispatch(new fromSavedQueryActions.AddSavedQueries({savedQueries: JSON.parse(localStorageSavedUserQueries)}));
+      this._searchStore.dispatch(new fromSavedQueryActions.AddSavedQueries({savedQueries: JSON.parse(localStorageSavedUserQueries)}));
     }
+  }
 
-    //versuchen gespeicherte Merklisten aus localstorage zu laden -> nach Form-Erstellung
-    const localStorageSavedUserBaskets = localStorage.getItem("savedBaskets");
-    if (localStorageSavedUserBaskets && JSON.parse(localStorageSavedUserBaskets).length) {
-      const parsedBaskets = JSON.parse(localStorageSavedUserBaskets).map((x: any) => {
-        return {...x, id: randomHashCode()}
-      });
-      this.searchStore.dispatch(new fromBasketActions.ClearBaskets());
-      this.searchStore.dispatch(new fromBasketActions.AddBaskets({baskets: parsedBaskets}));
-      this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: parsedBaskets[0].id}));
-      initialBasketsExist = true;
-    }
+  private _loadBasketFromLocalStorage() {
+    const parsedBaskets = JSON.parse(localStorage.getItem("savedBaskets")).map((x: any) => {
+      return {...x, id: randomHashCode()}
+    });
+    this._searchStore.dispatch(new fromBasketActions.ClearBaskets());
+    this._searchStore.dispatch(new fromBasketActions.AddBaskets({baskets: parsedBaskets}));
+    this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: parsedBaskets[0].id}));
+  }
 
-    if (!initialBasketsExist) {
-      const hash = randomHashCode();
-      this.searchStore.dispatch(new fromBasketActions.AddBasket({
-        basket: {
-          id: hash,
-          name: 'Meine Merkliste 1',
-          ids: [],
-          queryParams: {
-            rows: environment.queryParams.rows,
-            start: environment.queryParams.start,
-            sortField: environment.queryParams.sortField,
-            sortDir: environment.queryParams.sortDir,
-          }
+  private _generateInitialBasket() {
+    const hash = randomHashCode();
+    this._searchStore.dispatch(new fromBasketActions.AddBasket({
+      basket: {
+        id: hash,
+        name: 'Meine Merkliste 1',
+        ids: [],
+        queryParams: {
+          rows: environment.queryParams.rows,
+          start: environment.queryParams.start,
+          sortField: environment.queryParams.sortField,
+          sortDir: environment.queryParams.sortDir,
         }
-      }));
-      this.searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
-    }
+      }
+    }));
+    this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
   }
 
 
   //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
-  private writeToLocalStorage() {
+  private _writeToLocalStorage() {
     //aktuelle UserQuery speichern
-    localStorage.setItem("userQuery", JSON.stringify(this.combinedQuery));
+    localStorage.setItem("userQuery", JSON.stringify(this._combinedQuery));
 
     //Array der gespeicherten UserQueries speichern
-    localStorage.setItem("savedUserQueries", JSON.stringify(this.savedQueries));
+    localStorage.setItem("savedUserQueries", JSON.stringify(this._savedQueries));
 
     //Array der Merklisten speichern
-    localStorage.setItem("savedBaskets", JSON.stringify(this.baskets));
+    localStorage.setItem("savedBaskets", JSON.stringify(this._baskets));
   }
 
 }
