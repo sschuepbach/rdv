@@ -63,38 +63,38 @@ import {randomHashCode} from '../../shared/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketListComponent {
-
   basketEntities$: Observable<any>;
-  private basketEntities: any;
   basketIds$: Observable<any>;
   currentBasketId$: Observable<any>;
-  private nextId: number;
-  private currentBasketId: string;
-  private basketIds: string[];
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.basketEntities$ = this.searchState.pipe(select(fromSearch.getBasketEntities));
-    this.basketEntities$.subscribe(entities => this.basketEntities = entities);
-    this.basketIds$ = this.searchState.pipe(select(fromSearch.getBasketIds));
+  private _basketEntities: any;
+  private _nextId: number;
+  private _currentBasketId: string;
+  private _basketIds: string[];
+
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.basketEntities$ = this._searchStore.pipe(select(fromSearch.getBasketEntities));
+    this.basketEntities$.subscribe(entities => this._basketEntities = entities);
+    this.basketIds$ = this._searchStore.pipe(select(fromSearch.getBasketIds));
     this.basketIds$.subscribe((ids: string[]) => {
-      this.basketIds = ids;
-      this.nextId = ids.length;
+      this._basketIds = ids;
+      this._nextId = ids.length;
     });
-    this.currentBasketId$ = this.searchState.pipe(select(fromSearch.getCurrentBasketId));
-    this.currentBasketId$.subscribe(id => this.currentBasketId = id)
+    this.currentBasketId$ = this._searchStore.pipe(select(fromSearch.getCurrentBasketId));
+    this.currentBasketId$.subscribe(id => this._currentBasketId = id)
   }
 
   loadBasket(index: string) {
-    this.searchState.dispatch(new fromBasketActions.SelectBasket({id: index}));
+    this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: index}));
   }
 
   createBasket() {
     const hash = randomHashCode();
-    this.searchState.dispatch(new fromBasketActions.AddBasket(
+    this._searchStore.dispatch(new fromBasketActions.AddBasket(
       {
         basket: {
           id: hash,
-          name: 'Meine Merkliste ' + this.nextId,
+          name: 'Meine Merkliste ' + this._nextId,
           ids: [],
           queryParams: {
             rows: environment.queryParams.rows,
@@ -105,27 +105,27 @@ export class BasketListComponent {
         }
       }
     ));
-    this.searchState.dispatch(new fromBasketActions.SelectBasket({id: hash}));
+    this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
     // this.basketsService.createBasket();
   }
 
   deleteBasket(index: string) {
-    if (index === this.currentBasketId) {
-      if (this.basketIds.length <= 1) {
+    if (index === this._currentBasketId) {
+      if (this._basketIds.length <= 1) {
         this.createBasket();
       } else {
-        this.searchState.dispatch(new fromBasketActions.SelectBasket({
-          id: this.basketIds.filter(id => id !== index)[0]
+        this._searchStore.dispatch(new fromBasketActions.SelectBasket({
+          id: this._basketIds.filter(id => id !== index)[0]
         }))
       }
     }
-    this.searchState.dispatch(new fromBasketActions.DeleteBasket({id: index}));
+    this._searchStore.dispatch(new fromBasketActions.DeleteBasket({id: index}));
   }
 
   updateBasketName(index: number, name: string) {
-    this.searchState.dispatch(new fromBasketActions.UpsertBasket({
+    this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
-        ...this.basketEntities[index],
+        ...this._basketEntities[index],
         name: name,
       }
     }));

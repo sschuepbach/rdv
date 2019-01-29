@@ -107,7 +107,6 @@ import * as fromSearch from "../reducers";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParamsSetComponent {
-
   //speichert den Zustand, ob mind. 1 Textsuchfeld nicht leer ist
   searchFieldsAreEmpty = true;
 
@@ -122,7 +121,7 @@ export class ParamsSetComponent {
   facetFields$: Observable<any>;
   facetFieldByKey$: Observable<any>;
 
-  private static checkIfSearchFieldsAreEmpty(fields: any) {
+  private static _checkIfSearchFieldsAreEmpty(fields: any) {
     for (const field of fields) {
       if (field.value) {
         return false;
@@ -131,36 +130,35 @@ export class ParamsSetComponent {
     return true;
   }
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
 
-    this.searchFields$ = searchState.pipe(select(fromSearch.getSearchValues));
-    this.searchFields$.subscribe(fields => this.searchFieldsAreEmpty = ParamsSetComponent.checkIfSearchFieldsAreEmpty(fields));
-    this.searchFieldByKey$ = searchState.pipe(select(fromSearch.getSearchValuesByKey));
-    this.rangeFields$ = searchState.pipe(select(fromSearch.getRangeValues));
-    this.rangeFieldByKey$ = searchState.pipe(select(fromSearch.getRangeValuesByKey));
-    this.facetFields$ = searchState.pipe(select(fromSearch.getFacetValues));
-    this.facetFieldByKey$ = searchState.pipe(select(fromSearch.getFacetValuesByKey));
+    this.searchFields$ = _searchStore.pipe(select(fromSearch.getSearchValues));
+    this.searchFields$.subscribe(fields => this.searchFieldsAreEmpty = ParamsSetComponent._checkIfSearchFieldsAreEmpty(fields));
+    this.searchFieldByKey$ = _searchStore.pipe(select(fromSearch.getSearchValuesByKey));
+    this.rangeFields$ = _searchStore.pipe(select(fromSearch.getRangeValues));
+    this.rangeFieldByKey$ = _searchStore.pipe(select(fromSearch.getRangeValuesByKey));
+    this.facetFields$ = _searchStore.pipe(select(fromSearch.getFacetValues));
+    this.facetFieldByKey$ = _searchStore.pipe(select(fromSearch.getFacetValuesByKey));
 
     this.facetFieldsConfig = environment.facetFields;
     this.rangeFieldsConfig = environment.rangeFields;
     this.searchFieldsConfig = environment.searchFields;
   }
 
-  //Facette entfernen
   removeFacet(field, value) {
-    this.searchState.dispatch(new fromFormActions.RemoveFacetValue({facet: field, value: value}));
+    this._searchStore.dispatch(new fromFormActions.RemoveFacetValue({facet: field, value: value}));
     //TODO an Start der Trefferliste springen?
   }
 
   resetRange(key) {
-    this.searchState.dispatch(new fromFormActions.ResetRange(key));
+    this._searchStore.dispatch(new fromFormActions.ResetRange(key));
   }
 
   resetTerm(key) {
-    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldValue({field: key, value: ''}));
+    this._searchStore.dispatch(new fromFormActions.UpdateSearchFieldValue({field: key, value: ''}));
   }
 
   toggleShowMissingValues(key) {
-    this.searchState.dispatch(new fromFormActions.ShowMissingValuesInRange(key));
+    this._searchStore.dispatch(new fromFormActions.ShowMissingValuesInRange(key));
   }
 }

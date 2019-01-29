@@ -15,9 +15,6 @@ import * as fromDetailedResultActions from '../actions/detailed-result.actions';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketResultsListComponent {
-  private _detailedViewIds: any;
-
-
   //Anzahl der Merklisten-Seiten gesamt
   get basketPages(): number {
 
@@ -36,8 +33,8 @@ export class BasketResultsListComponent {
   }
 
   currentBasket$: Observable<any>;
-  currentBasketResults: any;
   currentBasketResults$: Observable<any>;
+  currentBasketResults: any;
   numberOfBaskets$: Observable<number>;
   detailedView$: Observable<any>;
 
@@ -52,22 +49,23 @@ export class BasketResultsListComponent {
     !agg && field.hasOwnProperty('extraInfo') && field['extraInfo']
     , false);
 
+  private _detailedViewIds: any;
   private _currentBasket: any;
   private _numberOfBaskets: number;
   private readonly _numberOfDisplayedRows = environment.basketConfig.queryParams.rows;
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.numberOfBaskets$ = searchState.pipe(select(fromSearch.getBasketCount));
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.numberOfBaskets$ = _searchStore.pipe(select(fromSearch.getBasketCount));
     this.numberOfBaskets$.subscribe(no => this._numberOfBaskets = no);
-    this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
+    this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
     this.currentBasket$.subscribe(basket => {
       this._currentBasket = basket;
     });
-    this.currentBasketResults$ = searchState.pipe(select(fromSearch.getAllBasketResults));
+    this.currentBasketResults$ = _searchStore.pipe(select(fromSearch.getAllBasketResults));
     this.currentBasketResults$.subscribe(res => this.currentBasketResults = res);
 
-    this.detailedView$ = searchState.pipe(select(fromSearch.getAllDetailedResults));
-    searchState.pipe(select(fromSearch.getDetailedResultsIds))
+    this.detailedView$ = _searchStore.pipe(select(fromSearch.getAllDetailedResults));
+    _searchStore.pipe(select(fromSearch.getDetailedResultsIds))
       .subscribe(ids => this._detailedViewIds = ids);
 
   }
@@ -85,7 +83,7 @@ export class BasketResultsListComponent {
     }
 
     //Start anpassen
-    this.searchState.dispatch(new fromBasketActions.UpsertBasket({
+    this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
         ...this._currentBasket,
         queryParams: {
@@ -98,24 +96,10 @@ export class BasketResultsListComponent {
   }
 
   // TODO: Used by basket
-  private setSortColumnIndexForBasket() {
-    //Ueber Felder der Tabelle gehen
-    this.tableFields.forEach((item, index) => {
-
-      //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
-      if (item.sort === this._currentBasket.queryParams.sortField) {
-
-        //diesen Index merken
-        this.sortColumn = index;
-      }
-    });
-  }
-
-  // TODO: Used by basket
   sortBasketTable(sortField: string) {
     //wenn bereits nach diesem Feld sortiert wird
     if (sortField === this._currentBasket.queryParams.sortField) {
-      this.searchState.dispatch(new fromBasketActions.UpsertBasket({
+      this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
         basket: {
           ...this._currentBasket,
           queryParams: {
@@ -126,7 +110,7 @@ export class BasketResultsListComponent {
         }
       }));
     } else {
-      this.searchState.dispatch(new fromBasketActions.UpsertBasket({
+      this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
         basket: {
           ...this._currentBasket,
           queryParams: {
@@ -158,9 +142,9 @@ export class BasketResultsListComponent {
   //Detailinfo holen und Ansicht toggeln
   getFullData(id: string) {
     if (!this.hasDetailedViewOpen(id)) {
-      this.searchState.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
+      this._searchStore.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
     } else {
-      this.searchState.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
+      this._searchStore.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
     }
   }
 
@@ -168,4 +152,17 @@ export class BasketResultsListComponent {
     return this._detailedViewIds.indexOf(id) > -1;
   }
 
+  // TODO: Used by basket
+  private _setSortColumnIndexForBasket() {
+    //Ueber Felder der Tabelle gehen
+    this.tableFields.forEach((item, index) => {
+
+      //Wenn das aktuelle Feld das ist nach dem die Merkliste gerade sortiert wird
+      if (item.sort === this._currentBasket.queryParams.sortField) {
+
+        //diesen Index merken
+        this.sortColumn = index;
+      }
+    });
+  }
 }

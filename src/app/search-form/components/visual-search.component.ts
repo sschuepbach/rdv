@@ -51,17 +51,15 @@ import * as fromLayoutActions from "../actions/layout.actions";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisualSearchComponent {
-
   rangeFieldsConfig: any;
   facetFieldsConfig: any;
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
     this.rangeFieldsConfig = environment.rangeFields;
     this.facetFieldsConfig = environment.facetFields;
   }
 
   changeView(view: string) {
-    this.searchState.dispatch(new fromLayoutActions.ShowFacetOrRange(view));
+    this._searchStore.dispatch(new fromLayoutActions.ShowFacetOrRange(view));
   }
-
 }

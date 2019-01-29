@@ -15,7 +15,6 @@ import {environment} from '../../../environments/environment';
 import {randomHashCode} from '../../shared/utils';
 import {filter} from "rxjs/operators";
 
-//Komprimierung von Link-Anfragen (Suchanfragen, Merklisten)
 declare var LZString: any;
 
 
@@ -32,7 +31,6 @@ declare var LZString: any;
 })
 
 export class SearchComponent implements OnInit, OnDestroy {
-
   private _baskets: any;
   private _savedQueries: any;
   private _combinedQuery: any;
@@ -64,7 +62,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     _searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this._savedQueries = savedQueries);
   }
 
-  //Bevor die Seite verlassen wird (z.B. F5 druecken)
   @HostListener('window:beforeunload', ['$event'])
   beforeUnloadHandler() {
     this._writeToLocalStorage();
@@ -93,7 +90,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._writeToLocalStorage();
   }
-
 
   private _searchRequestFromUrl(params) {
     this._searchStore.dispatch(new fromQueryActions.MakeSearchRequest(SearchComponent._loadQueryFromUrl(params)));
@@ -147,19 +143,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: hash}));
   }
 
-
-  //Werte wie aktuelle Anfrage oder gespeicherte Anfragen in den localstroage schreiben (z.B. wenn Seite verlassen wird)
   private _writeToLocalStorage() {
-    //aktuelle UserQuery speichern
     localStorage.setItem("userQuery", JSON.stringify(this._combinedQuery));
-
-    //Array der gespeicherten UserQueries speichern
     localStorage.setItem("savedUserQueries", JSON.stringify(this._savedQueries));
-
-    //Array der Merklisten speichern
     localStorage.setItem("savedBaskets", JSON.stringify(this._baskets));
   }
-
 }
 
 //Bug: Enter in Suchfeld

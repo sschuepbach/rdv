@@ -67,19 +67,18 @@ export class FacetsComponent {
   facetFieldCountByKey$: Observable<any>;
   shownFacetOrRange$: Observable<string>;
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
     this.facetFieldsConfig = environment.facetFields;
-    this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
-    this.facetFieldByKey$ = searchState.pipe(select(fromSearch.getFacetValuesByKey));
-    this.facetFieldCountByKey$ = searchState.pipe(select(fromSearch.getFacetFieldCountByKey));
+    this.shownFacetOrRange$ = _searchStore.pipe(select(fromSearch.getShownFacetOrRange));
+    this.facetFieldByKey$ = _searchStore.pipe(select(fromSearch.getFacetValuesByKey));
+    this.facetFieldCountByKey$ = _searchStore.pipe(select(fromSearch.getFacetFieldCountByKey));
   }
 
   selectFacet(field, value) {
-    this.searchState.dispatch(new fromFormActions.AddFacetValue({facet: field, value: value}));
+    this._searchStore.dispatch(new fromFormActions.AddFacetValue({facet: field, value: value}));
   }
 
   changeOperator(facet: string, value: string) {
-    this.searchState.dispatch(new fromFormActions.UpdateFacetOperator({facet: facet, value: value}));
+    this._searchStore.dispatch(new fromFormActions.UpdateFacetOperator({facet: facet, value: value}));
   }
-
 }

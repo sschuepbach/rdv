@@ -55,28 +55,28 @@ export class SearchResultsListComponent {
   private _detailedViewIds: any;
 
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.docs$ = searchState.pipe(select(fromSearch.getAllResults));
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.docs$ = _searchStore.pipe(select(fromSearch.getAllResults));
 
-    this.count$ = searchState.pipe(select(fromSearch.getTotalResultsCount));
+    this.count$ = _searchStore.pipe(select(fromSearch.getTotalResultsCount));
     this.count$.subscribe(count => {
       this._count = count;
     });
 
-    this.offset$ = searchState.pipe(select(fromSearch.getResultOffset));
+    this.offset$ = _searchStore.pipe(select(fromSearch.getResultOffset));
     this.offset$.subscribe(offset => this._offset = offset);
 
-    searchState.pipe(select(fromSearch.getResultSortField)).subscribe(x => {
+    _searchStore.pipe(select(fromSearch.getResultSortField)).subscribe(x => {
       this._sortField = x;
-      this.setSortColumnIndex(x);
+      this._setSortColumnIndex(x);
     });
 
-    searchState.pipe(select(fromSearch.getResultSortOrder)).subscribe(x => this._sortOrder = x);
+    _searchStore.pipe(select(fromSearch.getResultSortOrder)).subscribe(x => this._sortOrder = x);
 
-    this.currentBasket$ = searchState.pipe(select(fromSearch.getCurrentBasket));
+    this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
 
-    this.detailedView$ = searchState.pipe(select(fromSearch.getAllDetailedResults));
-    this.detailedViewIds$ = searchState.pipe(select(fromSearch.getDetailedResultsIds));
+    this.detailedView$ = _searchStore.pipe(select(fromSearch.getAllDetailedResults));
+    this.detailedViewIds$ = _searchStore.pipe(select(fromSearch.getDetailedResultsIds));
     this.detailedViewIds$.subscribe(ids => this._detailedViewIds = ids);
   }
 
@@ -96,7 +96,7 @@ export class SearchResultsListComponent {
         (offset * this._numberOfRows);
     }
 
-    this.searchState.dispatch(new fromQueryActions.SetOffset(newStart));
+    this._searchStore.dispatch(new fromQueryActions.SetOffset(newStart));
   }
 
   // TODO: Used by search
@@ -104,27 +104,12 @@ export class SearchResultsListComponent {
   sortSearchTable(sortField: string) {
     //wenn bereits nach diesem Feld sortiert wird
     if (sortField === this._sortField) {
-      this.searchState.dispatch(new fromQueryActions.SetSortOrder(this._sortOrder === "desc" ? "asc" : "desc"));
+      this._searchStore.dispatch(new fromQueryActions.SetSortOrder(this._sortOrder === "desc" ? "asc" : "desc"));
     } else {
-      this.searchState.dispatch(new fromQueryActions.SetSortField(sortField));
-      this.searchState.dispatch(new fromQueryActions.SetSortOrder('asc'));
+      this._searchStore.dispatch(new fromQueryActions.SetSortField(sortField));
+      this._searchStore.dispatch(new fromQueryActions.SetSortOrder('asc'));
     }
-    this.searchState.dispatch(new fromQueryActions.SetOffset(0));
-  }
-
-  // TODO: Used by search
-  //Spalte herausfinden nach welcher gerade sortiert wird fuer farbliche Hinterlegung der Trefferliste / Merkliste
-  private setSortColumnIndex(sortField: string) {
-    //Ueber Felder der Tabelle gehen
-    this.tableFields.forEach((item, index) => {
-
-      //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
-      if (item.sort === sortField) {
-
-        //diesen Index merken
-        this.sortColumn = index;
-      }
-    });
+    this._searchStore.dispatch(new fromQueryActions.SetOffset(0));
   }
 
   // TODO: Used by search
@@ -153,9 +138,9 @@ export class SearchResultsListComponent {
   //Detailinfo holen und Ansicht toggeln
   getFullData(id: string) {
     if (!this.hasDetailedViewOpen(id)) {
-      this.searchState.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
+      this._searchStore.dispatch(new fromQueryActions.MakeDetailedSearchRequest(id));
     } else {
-      this.searchState.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
+      this._searchStore.dispatch(new fromDetailedResultActions.DeleteDetailedResult({id: id}));
     }
   }
 
@@ -163,4 +148,18 @@ export class SearchResultsListComponent {
     return this._detailedViewIds.indexOf(id) > -1;
   }
 
+  // TODO: Used by search
+  //Spalte herausfinden nach welcher gerade sortiert wird fuer farbliche Hinterlegung der Trefferliste / Merkliste
+  private _setSortColumnIndex(sortField: string) {
+    //Ueber Felder der Tabelle gehen
+    this.tableFields.forEach((item, index) => {
+
+      //Wenn das aktuelle Feld das ist nach dem die Trefferliste gerade sortiert wird
+      if (item.sort === sortField) {
+
+        //diesen Index merken
+        this.sortColumn = index;
+      }
+    });
+  }
 }

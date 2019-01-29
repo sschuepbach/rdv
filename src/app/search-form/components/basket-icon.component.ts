@@ -26,15 +26,14 @@ import * as fromSearch from '../reducers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketIconComponent {
-
   @Input() basket: any;
   @Input() basketElement: string;
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
   }
 
   addOrRemoveRecordInBasket() {
-    this.searchState.dispatch(new fromBasketActions.UpdateBasket(
+    this._searchStore.dispatch(new fromBasketActions.UpdateBasket(
       {
         basket: {
           id: this.basket.id,
@@ -49,5 +48,4 @@ export class BasketIconComponent {
       }
     ));
   }
-
 }

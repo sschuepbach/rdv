@@ -58,14 +58,13 @@ import * as fromFormActions from '../actions/form.actions';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageSearchComponent {
-
   query$: Observable<any>;
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.query$ = searchState.pipe(select(fromSearch.getFormValues));
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.query$ = _searchStore.pipe(select(fromSearch.getFormValues));
   }
 
   resetSearch() {
-    this.searchState.dispatch(new fromFormActions.ResetAll());
+    this._searchStore.dispatch(new fromFormActions.ResetAll());
   }
 }

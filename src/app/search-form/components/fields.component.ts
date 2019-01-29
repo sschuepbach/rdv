@@ -53,19 +53,17 @@ export class FieldsComponent {
   searchFields$: Observable<any>;
   searchFieldByKey$: Observable<any>;
 
-  constructor(
-    private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
     this.searchFieldsConfig = environment.searchFields;
-    this.searchFields$ = searchState.pipe(select(fromSearch.getSearchValues));
-    this.searchFieldByKey$ = searchState.pipe(select(fromSearch.getSearchValuesByKey));
+    this.searchFields$ = _searchStore.pipe(select(fromSearch.getSearchValues));
+    this.searchFieldByKey$ = _searchStore.pipe(select(fromSearch.getSearchValuesByKey));
   }
 
   updateSearchType(fieldName: string, typeName: string) {
-    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldType({field: fieldName, type: typeName}));
+    this._searchStore.dispatch(new fromFormActions.UpdateSearchFieldType({field: fieldName, type: typeName}));
   }
 
   updateSearchValue(fieldName: string, value: string) {
-    this.searchState.dispatch(new fromFormActions.UpdateSearchFieldValue({field: fieldName, value: value}));
+    this._searchStore.dispatch(new fromFormActions.UpdateSearchFieldValue({field: fieldName, value: value}));
   }
-
 }

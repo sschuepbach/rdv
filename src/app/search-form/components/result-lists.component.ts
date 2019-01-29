@@ -56,18 +56,16 @@ import {Observable} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultListsComponent {
-
   basketCount$: Observable<number>;
   searchCount$: Observable<number>;
   showSearchResults = true;
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.basketCount$ = searchState.pipe(select(fromSearch.getCurrentBasketElementsCount));
-    this.searchCount$ = searchState.pipe(select(fromSearch.getTotalResultsCount));
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.basketCount$ = _searchStore.pipe(select(fromSearch.getCurrentBasketElementsCount));
+    this.searchCount$ = _searchStore.pipe(select(fromSearch.getTotalResultsCount));
   }
 
   changeView(view: string) {
     this.showSearchResults = view === 'search';
   }
-
 }

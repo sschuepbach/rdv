@@ -14,28 +14,27 @@ import {environment} from "../../../environments/environment";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportResultsListComponent {
-
   @Input() results: any;
 
   exportListData;
-  private readonly tableFields = environment.tableFields;
 
-  constructor(private sanitizer: DomSanitizer) {
+  private readonly _tableFields = environment.tableFields;
+
+  constructor(private _sanitizer: DomSanitizer) {
   }
 
-  // TODO: Used by both
   exportList(docs) {
     let dataString = "data:application/octet-stream,";
 
     // Header hinzufügen
-    for (const field of this.tableFields) {
+    for (const field of this._tableFields) {
       dataString += encodeURIComponent(field.label) + "%09";
     }
     dataString += "%0A";
 
     // Daten hinzufügen
     for (const doc of docs) {
-      for (const field of this.tableFields) {
+      for (const field of this._tableFields) {
         switch (this.getType(doc[field.field])) {
           case 'unset':
             dataString += "ohne%09";
@@ -51,10 +50,9 @@ export class ExportResultsListComponent {
       dataString += "%0A";
     }
 
-    this.exportListData = this.sanitizer.bypassSecurityTrustUrl(dataString);
+    this.exportListData = this._sanitizer.bypassSecurityTrustUrl(dataString);
   }
 
-  // TODO: Used by both
   //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
   // noinspection JSMethodCanBeStatic
   private getType(obj) {
@@ -68,6 +66,4 @@ export class ExportResultsListComponent {
       return "single";
     }
   }
-
-
 }

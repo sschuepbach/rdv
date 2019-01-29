@@ -39,14 +39,14 @@ export class FiltersComponent {
   filterFields: any;
   filterFieldsByKey$: Observable<any>;
 
-  constructor(private formBuilder: FormBuilder,
-              private rootState: Store<fromRoot.State>,
-              private searchState: Store<fromSearch.State>) {
+  constructor(private _formBuilder: FormBuilder,
+              private _rootStore: Store<fromRoot.State>,
+              private _searchStore: Store<fromSearch.State>) {
     this.filterFields = environment.filterFields;
-    this.filterFieldsByKey$ = searchState.pipe(select(fromSearch.getFilterValuesByKey))
+    this.filterFieldsByKey$ = _searchStore.pipe(select(fromSearch.getFilterValuesByKey))
   }
 
   toggleChecked(filter: string, value: string) {
-    this.searchState.dispatch(new fromFormActions.ToggleFilterValue({filter: filter, value: value}));
+    this._searchStore.dispatch(new fromFormActions.ToggleFilterValue({filter: filter, value: value}));
   }
 }

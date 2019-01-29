@@ -14,7 +14,6 @@ declare var LZString: any;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CopyLinkComponent {
-
   @Input() data;
   @Input() mode = 'search';
   @Input() small = false;
@@ -25,5 +24,4 @@ export class CopyLinkComponent {
     const lzString = LZString.compressToEncodedURIComponent(jsonString);
     return environment.baseUrl + "/search?" + mode + "=" + lzString;
   }
-
 }

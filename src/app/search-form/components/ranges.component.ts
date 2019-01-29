@@ -14,7 +14,7 @@ import {filter} from 'rxjs/operators';
   template: `
     <ng-container *ngFor="let key of rangeFieldConfig | objectKeys">
       <!-- DIV pro Range (Jahr, Anzahl Seiten,...) mit Histogramm und Slider -->
-      <div *ngIf="(shownFacetOrRange$ | async) === 'facet-pills-' + key"
+      <div *ngIf="(_shownFacetOrRange$ | async) === 'facet-pills-' + key"
            class="tab-pane list-group"
            [class.active]="rangeFieldConfig[key].order == 1"
            [id]="'facet-pills-' + key"
@@ -23,12 +23,12 @@ import {filter} from 'rxjs/operators';
 
         <!-- Button "x Eintraege ohne Merkmal y" anzeigen (z.B. Titel ohne Jahr) -->
         <label class="btn btn-sm btn-outline-primary px-2 py-1 mb-3"
-               [class.active]="(rangeValuesByKey$ | async)(key).showMissingValues" (click)="toggleMissingValues(key)">
+               [class.active]="(_rangeValuesByKey$ | async)(key).showMissingValues" (click)="toggleMissingValues(key)">
 
           <!-- Anhak-Symbol -->
           <span class="fa"
-                [class.fa-check-circle]="(rangeValuesByKey$ | async)(key).showMissingValues"
-                [class.fa-circle-thin]="!(rangeValuesByKey$ | async)(key).showMissingValues"></span>
+                [class.fa-check-circle]="(_rangeValuesByKey$ | async)(key).showMissingValues"
+                [class.fa-circle-thin]="!(_rangeValuesByKey$ | async)(key).showMissingValues"></span>
 
           <!-- Text "x Titel ohne Jahr anzeigen" -->
           <span>Zeige {{(facetQueryCountByKey$ | async)(key)}} Titel ohne {{rangeFieldConfig[key].label}}</span>
@@ -64,8 +64,8 @@ import {filter} from 'rxjs/operators';
                             [id]="key"
                             type="double"
                             [min]="rangeFieldConfig[key].min"
-                            [from]="(rangeValuesByKey$ | async)(key).from"
-                            [to]="(rangeValuesByKey$ | async)(key).to"
+                            [from]="(_rangeValuesByKey$ | async)(key).from"
+                            [to]="(_rangeValuesByKey$ | async)(key).to"
                             [max]="rangeFieldConfig[key].max"
                             [grid]="true"
                             [grid_num]="10"
@@ -113,7 +113,6 @@ import {filter} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RangesComponent implements OnInit {
-
   //Variable fuer SliderElemente -> bei Reset zuruecksetzen
   @ViewChildren('sliderElement') sliderElement: QueryList<IonRangeSliderComponent>;
 
@@ -123,35 +122,53 @@ export class RangesComponent implements OnInit {
   rangeFieldConfig: any;
   facetQueryCountByKey$: Observable<any>;
 
-  private shownFacetOrRange$: Observable<string>;
-  private rangeValuesByKey$: Observable<any>;
+  private _shownFacetOrRange$: Observable<string>;
+  private _rangeValuesByKey$: Observable<any>;
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  constructor(private _searchStore: Store<fromSearch.State>) {
     this.rangeFieldConfig = environment.rangeFields;
-    this.rangeValuesByKey$ = searchState.pipe(
+    this._rangeValuesByKey$ = _searchStore.pipe(
       select(fromSearch.getRangeValuesByKey));
-    this.shownFacetOrRange$ = searchState.pipe(select(fromSearch.getShownFacetOrRange));
+    this._shownFacetOrRange$ = _searchStore.pipe(select(fromSearch.getShownFacetOrRange));
 
     //Facetten-Ranges Werte
-    searchState.pipe(
+    _searchStore.pipe(
       select(fromSearch.getFacetRangeCount),
       filter(x => x.length > 0),
     )
-      .subscribe(x => this.createCharts(x));
+      .subscribe(x => this._createCharts(x));
     //Werte fuer nicht existirende Range-Werte (z.B. Eintraege ohne Jahr)
-    this.facetQueryCountByKey$ = searchState.pipe(select(fromSearch.getFacetQueryCountByKey));
+    this.facetQueryCountByKey$ = _searchStore.pipe(select(fromSearch.getFacetQueryCountByKey));
   }
 
   ngOnInit() {
-    this.setRangeData();
+    this._setRangeData();
   }
 
   toggleMissingValues(k: string) {
-    this.searchState.dispatch(new fromFormActions.ShowMissingValuesInRange(k))
+    this._searchStore.dispatch(new fromFormActions.ShowMissingValuesInRange(k))
+  }
+
+  //Beim Ziehen des Sliders
+  updateSlider($event, key) {
+
+    //Vorhangswerte setzen
+    this.rangeData[key].curtainLeft = $event.from_percent + '%';
+    this.rangeData[key].curtainRight = (100 - $event.to_percent) + '%';
+
+    // const query = JSON.parse(JSON.stringify(this.query));
+    this._searchStore.dispatch(new fromFormActions.RangeBoundariesChanged({
+      key: key,
+      from: $event.from,
+      to: $event.to,
+    }));
+
+    // TODO: Reactivate later probably
+    // query.queryParams.start = 0;
   }
 
   //min- / max-Werte fuer Ranges setzen
-  private setRangeData() {
+  private _setRangeData() {
 
     //Ueber Felder des Abfrage-Formats gehen
     for (const key of Object.keys(this.rangeFieldConfig)) {
@@ -212,7 +229,7 @@ export class RangesComponent implements OnInit {
   }
 
   //Chart erstellen
-  private createCharts(ranges: any) {
+  private _createCharts(ranges: any) {
 
     //Chartdata erstellen
     for (const key of Object.keys(this.rangeFieldConfig)) {
@@ -234,7 +251,7 @@ export class RangesComponent implements OnInit {
   }
 
   //Slider initialisieren
-  private sliderInit(key?) {
+  private _sliderInit(key?) {
 
     if (this.sliderElement) {
       this.sliderElement.toArray().forEach(value => value.reset());
@@ -255,23 +272,4 @@ export class RangesComponent implements OnInit {
     }
 
   }
-
-  //Beim Ziehen des Sliders
-  updateSlider($event, key) {
-
-    //Vorhangswerte setzen
-    this.rangeData[key].curtainLeft = $event.from_percent + '%';
-    this.rangeData[key].curtainRight = (100 - $event.to_percent) + '%';
-
-    // const query = JSON.parse(JSON.stringify(this.query));
-    this.searchState.dispatch(new fromFormActions.RangeBoundariesChanged({
-      key: key,
-      from: $event.from,
-      to: $event.to,
-    }));
-
-    // TODO: Reactivate later probably
-    // query.queryParams.start = 0;
-  }
-
 }

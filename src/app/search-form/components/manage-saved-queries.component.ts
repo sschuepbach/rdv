@@ -49,23 +49,23 @@ import * as fromFormActions from '../actions/form.actions';
 })
 export class ManageSavedQueriesComponent {
   savedQueries$: Observable<any>;
-  private savedQueryEntities: any;
   numberOfSavedQueries$: Observable<number>;
 
-  constructor(private searchState: Store<fromSearch.State>) {
-    this.savedQueries$ = searchState.pipe(select(fromSearch.getAllSavedQueries));
-    searchState.pipe(select(fromSearch.getSavedQueryEntities)).subscribe(entities => this.savedQueryEntities = entities);
-    this.numberOfSavedQueries$ = searchState.pipe(select(fromSearch.getSavedQueriesCount));
+  private _savedQueryEntities: any;
+
+  constructor(private _searchStore: Store<fromSearch.State>) {
+    this.savedQueries$ = _searchStore.pipe(select(fromSearch.getAllSavedQueries));
+    _searchStore.pipe(select(fromSearch.getSavedQueryEntities)).subscribe(entities => this._savedQueryEntities = entities);
+    this.numberOfSavedQueries$ = _searchStore.pipe(select(fromSearch.getSavedQueriesCount));
   }
 
   loadUserQuery(index: string) {
     const key = 'queryParams';
-    const {[key]: value, ...formValues} = this.savedQueryEntities[index].query;
-    this.searchState.dispatch(new fromFormActions.UpdateEntireForm(formValues));
+    const {[key]: value, ...formValues} = this._savedQueryEntities[index].query;
+    this._searchStore.dispatch(new fromFormActions.UpdateEntireForm(formValues));
   }
 
   deleteUserQuery(index: string) {
-    this.searchState.dispatch(new fromSavedQueryActions.DeleteSavedQuery({id: index}));
+    this._searchStore.dispatch(new fromSavedQueryActions.DeleteSavedQuery({id: index}));
   }
-
 }

@@ -63,26 +63,25 @@ import {BehaviorSubject, Subject} from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveQueryComponent {
-
-  private formValues: any;
-  private savedQueries: any[];
-
   saveQueryName$: Subject<string>;
   saveQueryName: string;
 
-  constructor(private searchState: Store<fromSearch.State>) {
+  private _formValues: any;
+  private _savedQueries: any[];
+
+  constructor(private _searchStore: Store<fromSearch.State>) {
     this.saveQueryName$ = new BehaviorSubject<string>("");
     this.saveQueryName$.subscribe(x => this.saveQueryName = x);
-    searchState.pipe(select(fromSearch.getFormValues)).subscribe(formValues => this.formValues = formValues);
-    searchState.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this.savedQueries = savedQueries);
+    _searchStore.pipe(select(fromSearch.getFormValues)).subscribe(formValues => this._formValues = formValues);
+    _searchStore.pipe(select(fromSearch.getAllSavedQueries)).subscribe(savedQueries => this._savedQueries = savedQueries);
   }
 
   saveUserQuery() {
-    this.searchState.dispatch(new fromSavedQueryActions.AddSavedQuery({
+    this._searchStore.dispatch(new fromSavedQueryActions.AddSavedQuery({
       savedQuery: {
         id: randomHashCode(),
         name: this.saveQueryName,
-        query: {...this.formValues, queryParams: environment.queryParams},
+        query: {...this._formValues, queryParams: environment.queryParams},
       }
     }));
   }
@@ -92,7 +91,6 @@ export class SaveQueryComponent {
   }
 
   isAmbiguous(name: string) {
-    return this.savedQueries.filter(x => x.name === name).length > 0
+    return this._savedQueries.filter(x => x.name === name).length > 0
   }
-
 }
