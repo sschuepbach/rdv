@@ -219,7 +219,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
       .post(this.proxyUrl, JSON.stringify(detailQueryFormat), {
         headers: {
           'Content-Type': 'application/json',
-          'X-Request-Type': 'get-detailed'
+          'X-Request-Type': 'detailed'
         }
       })
 
@@ -250,7 +250,7 @@ export class ElasticBackendSearchService extends BackendSearchService {
       .post(this.proxyUrl, JSON.stringify(basketQueryFormat), {
         headers: {
           'Content-Type': 'application/json',
-          'X-Request-Type': 'get-basket'
+          'X-Request-Type': 'basket'
         }
       })
 

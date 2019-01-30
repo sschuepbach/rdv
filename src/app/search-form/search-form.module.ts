@@ -33,11 +33,13 @@ import {BasketIconComponent} from './components/basket-icon.component';
 import {ExportResultsListComponent} from './components/export-results-list.component';
 import {DisplayLinkDirective} from "./shared/directives/display-link.directive";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {CachingInterceptor} from "../shared/services/caching-interceptor.service";
+import {DetailedRequestInterceptor} from "../shared/services/detailed-request-interceptor.service";
 import {ResultRowComponent} from './components/result-row.component';
 import {ResultPagingComponent} from './components/result-paging.component';
 import {ResultHeaderComponent} from './components/result-header.component';
 import {RowsPerPageComponent} from './components/rows-per-page.component';
+import {BasketRequestInterceptor} from "../shared/services/basket-request-interceptor.service";
+import {SearchRequestInterceptor} from "../shared/services/search-request-interceptor.service";
 
 @NgModule({
   imports: [
@@ -81,9 +83,19 @@ import {RowsPerPageComponent} from './components/rows-per-page.component';
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: CachingInterceptor,
+      useClass: SearchRequestInterceptor,
       multi: true,
-    }
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: DetailedRequestInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: BasketRequestInterceptor,
+      multi: true,
+    },
   ],
   exports: [
     SearchComponent
