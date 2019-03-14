@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 
 import { environment } from '../../../environments/environment';
 import * as fromRoot from '../../reducers';
-import * as fromActions from '../actions/user-config.actions';
+import * as fromActions from '../actions/remote-filter-configs.actions';
 
 /**
  * Main entry point to the application.

@@ -1,11 +1,9 @@
 import { Action } from '@ngrx/store';
 
 /**
- * Action types for configuration changes at runtime
+ * Action types for filter configuration changes at runtime
  */
-export enum UserConfigActionTypes {
-  SetTableFieldsDisplayExtraInfo = '[UserConfig] Set Field TableFieldsDisplayExtraInfo',
-  SetTableFieldsDisplayLandingpage = '[UserConfig] Set Field TableFieldsDisplayLandingpage',
+export enum RemoteFilterConfigsActionTypes {
   GetRemoteFilterFieldOptions = '[UserConfig] Get Remote Filter Field Options',
   SetRemoteFilterFieldOptions = '[UserConfig] Set Remote Filter Field Options',
   OptionRetrieveError = '[UserConfig] Option Retrieve Error',
@@ -19,7 +17,7 @@ export class GetRemoteFilterFieldOptions implements Action {
   /**
    * @ignore
    */
-  readonly type = UserConfigActionTypes.GetRemoteFilterFieldOptions;
+  readonly type = RemoteFilterConfigsActionTypes.GetRemoteFilterFieldOptions;
 
   /**
    * Contains filter name and URL pointing to remote value
@@ -36,7 +34,7 @@ export class SetRemoteFilterFieldOptions implements Action {
   /**
    * @ignore
    */
-  readonly type = UserConfigActionTypes.SetRemoteFilterFieldOptions;
+  readonly type = RemoteFilterConfigsActionTypes.SetRemoteFilterFieldOptions;
 
   /**
    * Contains fetched value for filter
@@ -53,7 +51,7 @@ export class OptionRetrieveError implements Action {
   /**
    * @ignore
    */
-  readonly type = UserConfigActionTypes.OptionRetrieveError;
+  readonly type = RemoteFilterConfigsActionTypes.OptionRetrieveError;
 
   /**
    * Contains error
@@ -67,7 +65,7 @@ export class OptionRetrieveError implements Action {
 /**
  * @ignore
  */
-export type UserConfigActions
+export type RemoteFilterConfigsActions
   = GetRemoteFilterFieldOptions
   | SetRemoteFilterFieldOptions
   | OptionRetrieveError;

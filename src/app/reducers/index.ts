@@ -1,73 +1,23 @@
 import { ActionReducerMap, createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
 import { environment } from '../../environments/environment';
-import * as fromUserConfig from '../core/reducers/user-config.reducer';
+import * as fromRemoteFilterConfigs from '../core/reducers/remote-filter-configs.reducer';
 import { memoize } from '../shared/utils';
 
 
 export interface State {
-  userConfig: fromUserConfig.State;
+  userConfig: fromRemoteFilterConfigs.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
-  userConfig: fromUserConfig.reducer,
+  userConfig: fromRemoteFilterConfigs.reducer,
 };
 
 
 export const metaReducers: MetaReducer<State>[] = !environment.production ? [] : [];
 
 
-export const getUserConfigState = createFeatureSelector<State, fromUserConfig.State>(
+export const getUserConfigState = createFeatureSelector<State, fromRemoteFilterConfigs.State>(
   'userConfig'
-);
-
-export const getBasketConfig = createSelector(
-  getUserConfigState,
-  (userConfig) => userConfig.basketConfig,
-);
-
-export const getBasketQueryParams = createSelector(
-  getBasketConfig,
-  (basketConfig) => basketConfig.queryParams,
-);
-
-export const getBasketQueryParamsSortField = createSelector(
-  getBasketQueryParams,
-  (queryParams) => queryParams.sortField
-);
-
-export const getBasketQueryParamsSortDir = createSelector(
-  getBasketQueryParams,
-  (queryParams) => queryParams.sortDir,
-);
-
-export const getBasketQueryParamsRows = createSelector(
-  getBasketQueryParams,
-  (queryParams) => queryParams.rows,
-);
-
-export const getBaseUrl = createSelector(
-  getUserConfigState,
-  (userConfig) => userConfig.baseUrl,
-);
-
-export const getQueryParams = createSelector(
-  getUserConfigState,
-  (userConfig) => userConfig.queryParams,
-);
-
-export const getQueryParamsRows = createSelector(
-  getQueryParams,
-  (queryParams) => queryParams.rows,
-);
-
-export const getFacetFields = createSelector(
-  getUserConfigState,
-  (userConfig) => userConfig.facetFields,
-);
-
-export const getFacetFieldsByKey = createSelector(
-  getFacetFields,
-  (facetFields) => memoize((key: string) => facetFields[key]),
 );
 
 export const getFilterFields = createSelector(
