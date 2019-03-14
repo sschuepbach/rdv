@@ -1,14 +1,14 @@
-import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
+import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromForm from './form.reducer';
 import * as fromLayout from './layout.reducer';
 import * as fromRoot from '../../reducers';
-import {memoize} from '../../shared/utils';
+import { memoize } from '../../shared/utils';
 import * as fromBasket from './basket.reducer';
 import * as fromSavedQuery from './saved-query.reducer';
 import * as fromFacet from './facet.reducer';
 import * as fromResult from './result.reducer';
 import * as fromQuery from './query.reducer';
-import {environment} from '../../../environments/environment';
+import { environment } from '../../../environments/environment';
 import * as fromBasketResult from './basket-result.reducer';
 import * as fromDetailedResult from './detailed-basket-result.reducer';
 
@@ -231,6 +231,9 @@ export const getAllResults = createSelector(
 );
 
 
+/**
+ * Selector for query parameters
+ */
 export const getQueryParams = createSelector(
   _getSearch,
   (search) => search.query,

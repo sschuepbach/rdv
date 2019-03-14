@@ -1,12 +1,15 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {select, Store} from '@ngrx/store';
-import {Observable} from 'rxjs/Rx';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Rx';
 
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSearch from '../reducers';
-import {environment} from '../../../environments/environment';
-import {randomHashCode} from '../../shared/utils';
+import { environment } from '../../../environments/environment';
+import { randomHashCode } from '../../shared/utils';
 
+/**
+ * Lists currently available baskets
+ */
 @Component({
   selector: 'app-basket-list',
   template: `
@@ -63,15 +66,39 @@ import {randomHashCode} from '../../shared/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketListComponent {
+  /**
+   * Object of available baskets
+   */
   basketEntities$: Observable<any>;
+  /**
+   * Ids of all baskets
+   */
   basketIds$: Observable<any>;
+  /**
+   * Id of selected basket
+   */
   currentBasketId$: Observable<any>;
 
+  /**
+   * @ignore
+   */
   private _basketEntities: any;
+  /**
+   * @ignore
+   */
   private _nextId: number;
+  /**
+   * @ignore
+   */
   private _currentBasketId: string;
+  /**
+   * @ignore
+   */
   private _basketIds: string[];
 
+  /**
+   * @ignore
+   */
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.basketEntities$ = this._searchStore.pipe(select(fromSearch.getBasketEntities));
     this.basketEntities$.subscribe(entities => this._basketEntities = entities);
@@ -84,10 +111,18 @@ export class BasketListComponent {
     this.currentBasketId$.subscribe(id => this._currentBasketId = id)
   }
 
+  /**
+   * Loads another basket by id
+   *
+   * @param index
+   */
   loadBasket(index: string) {
     this._searchStore.dispatch(new fromBasketActions.SelectBasket({id: index}));
   }
 
+  /**
+   * Creates a new basket
+   */
   createBasket() {
     const hash = randomHashCode();
     this._searchStore.dispatch(new fromBasketActions.AddBasket(
@@ -109,6 +144,11 @@ export class BasketListComponent {
     // this.basketsService.createBasket();
   }
 
+  /**
+   * Removes a basket by id
+   *
+   * @param {string} index Basket id
+   */
   deleteBasket(index: string) {
     if (index === this._currentBasketId) {
       if (this._basketIds.length <= 1) {
@@ -122,6 +162,11 @@ export class BasketListComponent {
     this._searchStore.dispatch(new fromBasketActions.DeleteBasket({id: index}));
   }
 
+  /**
+   * Update name of basket
+   * @param {number} index Index of basket in baskets' list
+   * @param {string} name New name of basket
+   */
   updateBasketName(index: number, name: string) {
     this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {

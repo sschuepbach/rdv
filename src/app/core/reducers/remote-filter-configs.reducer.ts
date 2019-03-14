@@ -7,7 +7,13 @@ import { mergeDeep } from '../../shared/utils';
  * State slice containing remotely fetched filter fields and probably fetching errors
  */
 export interface State {
+  /**
+   * Object of filter fields
+   */
   filterFields: any;
+  /**
+   * Fetching errors (if any)
+   */
   error: any;
 }
 

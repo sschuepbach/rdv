@@ -1,7 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {DomSanitizer} from "@angular/platform-browser";
-import {environment} from "../../../environments/environment";
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { DomSanitizer } from "@angular/platform-browser";
+import { environment } from "../../../environments/environment";
 
+/**
+ * Provides button to download list of results
+ */
 @Component({
   selector: 'app-export-results-list',
   template: `
@@ -13,25 +16,39 @@ import {environment} from "../../../environments/environment";
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportResultsListComponent {
+  /**
+   * Object containing results
+   */
   @Input() results: any;
 
+  /**
+   * Data as csv file
+   */
   exportListData;
 
+  /**
+   * @ignore
+   */
   private readonly _tableFields = environment.tableFields;
 
+  /**
+   * @ignore
+   */
   constructor(private _sanitizer: DomSanitizer) {
   }
 
-  exportList(docs) {
+  /**
+   * Generates and sanitizes file of documents
+   * @param {Object} docs List of documents
+   */
+  exportList(docs: any) {
     let dataString = "data:application/octet-stream,";
 
-    // Header hinzufügen
     for (const field of this._tableFields) {
       dataString += encodeURIComponent(field.label) + "%09";
     }
     dataString += "%0A";
 
-    // Daten hinzufügen
     for (const doc of docs) {
       for (const field of this._tableFields) {
         switch (this.getType(doc[field.field])) {
@@ -52,9 +69,14 @@ export class ExportResultsListComponent {
     this.exportListData = this._sanitizer.bypassSecurityTrustUrl(dataString);
   }
 
-  //in Treffertabelle / Merkliste pruefen, ob Wert in Ergebnis-Liste ein Einzelwert, ein Multi-Wert (=Array) oder gar nicht gesetzt ist
   // noinspection JSMethodCanBeStatic
-  private getType(obj) {
+  /**
+   * Checks if respective field value is null, a string or an array
+   *
+   * @param {Object} obj Field value
+   * @returns `unset`, `multi` or `single`
+   */
+  private getType(obj: any): string {
 
     //Wert ist nicht gesetzt
     if (!obj) {

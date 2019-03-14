@@ -1,11 +1,14 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Observable} from "rxjs";
-import {select, Store} from "@ngrx/store";
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Observable } from "rxjs";
+import { select, Store } from "@ngrx/store";
 
-import {environment} from "../../../environments/environment";
+import { environment } from "../../../environments/environment";
 import * as fromBasketActions from '../actions/basket.actions';
 import * as fromSearch from '../reducers';
 
+/**
+ * Lists documents saved in selected basket
+ */
 @Component({
   selector: 'app-basket-results-list',
   template: `
@@ -138,18 +141,48 @@ import * as fromSearch from '../reducers';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BasketResultsListComponent {
+  /**
+   * Selected basket
+   */
   currentBasket$: Observable<any>;
+  /**
+   * Documents in selected basket (as Observable)
+   */
   currentBasketResults$: Observable<any>;
+  /**
+   * Documents in selected basket
+   */
   currentBasketResults: any;
+  /**
+   * Number of baskets
+   */
   numberOfBaskets$: Observable<number>;
+  /**
+   * Total number of elements in selected basket
+   */
   numberOfBasketResults$: Observable<number>;
+  /**
+   * Shown rows per page
+   */
   rowsPerPage$: Observable<number>;
 
+  /**
+   * @ignore
+   */
   readonly showExportList = environment.showExportList.basket;
+  /**
+   * @ignore
+   */
   readonly tableFields = environment.tableFields;
 
+  /**
+   * @ignore
+   */
   private _currentBasket: any;
 
+  /**
+   * @ignore
+   */
   constructor(private _searchStore: Store<fromSearch.State>) {
     this.numberOfBaskets$ = _searchStore.pipe(select(fromSearch.getBasketCount));
     this.currentBasket$ = _searchStore.pipe(select(fromSearch.getCurrentBasket));
@@ -162,6 +195,11 @@ export class BasketResultsListComponent {
     this.numberOfBasketResults$ = _searchStore.pipe(select(fromSearch.getCurrentBasketElementsCount));
   }
 
+  /**
+   * Reset list offset (starts new search query)
+   *
+   * @param {Object} offset New list offset
+   */
   setBasketOffset(offset) {
     this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
@@ -174,6 +212,11 @@ export class BasketResultsListComponent {
     }));
   }
 
+  /**
+   * Sort list by category and/or ascending / descending (starts new search query since whole list is reordered)
+   *
+   * @param {string} sortBy Either `asc`, `desc` or name of category
+   */
   sortBasketTable(sortBy: string) {
     if (sortBy === 'asc' || sortBy === 'desc') {
       this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
@@ -199,6 +242,11 @@ export class BasketResultsListComponent {
     }
   }
 
+  /**
+   * Changes number of shown rows per page (starts new search query)
+   *
+   * @param {number} no Number of rows
+   */
   changeRowsPerPage(no: number) {
     this._searchStore.dispatch(new fromBasketActions.UpsertBasket({
       basket: {
