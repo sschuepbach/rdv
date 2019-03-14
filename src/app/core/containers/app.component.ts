@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { Store } from '@ngrx/store';
 
 import { environment } from '../../../environments/environment';
@@ -15,6 +15,7 @@ import * as fromActions from '../actions/remote-filter-configs.actions';
     <router-outlet class="no-gutters"></router-outlet>
     <app-footer></app-footer>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class AppComponent {

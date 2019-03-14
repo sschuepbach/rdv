@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Main navigation container
@@ -18,6 +18,7 @@ import { Component } from '@angular/core';
       </nav>
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
 }

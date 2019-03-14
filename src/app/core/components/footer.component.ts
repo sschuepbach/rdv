@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * Application footer component
@@ -12,6 +12,7 @@ import { Component } from '@angular/core';
       </div>
     </footer>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
 }

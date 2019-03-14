@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BackendSearchService } from '../../shared/services/backend-search.service';
 
@@ -31,7 +31,8 @@ import { BackendSearchService } from '../../shared/services/backend-search.servi
         </ul>
       </div>
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailedViewComponent implements OnInit {
   /**
