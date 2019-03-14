@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 
+/**
+ * Application footer component
+ */
 @Component({
   selector: 'app-footer',
   template: `

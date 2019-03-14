@@ -5,18 +5,27 @@ import { map } from 'rxjs/operators';
 
 import * as fromActions from '../actions/user-config.actions';
 
+/**
+ * Effects for configuration changes at runtime
+ */
 @Injectable()
 export class UserConfigEffects {
 
+  /**
+   * Requests document data from backend on action {@link GetRemoteFilterFieldOptions}
+   */
   @Effect()
-  remoteFilterFieldOptions$ = this.actions$.pipe(
+  remoteFilterFieldOptions$ = this._actions$.pipe(
     ofType(fromActions.UserConfigActionTypes.GetRemoteFilterFieldOptions),
     map((action: fromActions.GetRemoteFilterFieldOptions) =>
-      this.http.get(action.payload.url)
+      this._http.get(action.payload.url)
         .subscribe(
-          (res: string) => new fromActions.SetRemoteFilterFieldOptions({filterFieldKey: action.payload.filterFieldKey, option: res}),
+          (res: string) => new fromActions.SetRemoteFilterFieldOptions({key: action.payload.key, value: res}),
           (err) => new fromActions.OptionRetrieveError(err))));
 
-  constructor(private actions$: Actions, private http: HttpClient) {
+  /**
+   * @ignore
+   */
+  constructor(private _actions$: Actions, private _http: HttpClient) {
   }
 }

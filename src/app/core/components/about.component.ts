@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 
+/**
+ * Information about the application
+ */
 @Component({
   selector: 'app-about',
   template: `

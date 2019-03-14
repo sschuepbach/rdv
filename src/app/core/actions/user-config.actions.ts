@@ -1,5 +1,8 @@
 import { Action } from '@ngrx/store';
 
+/**
+ * Action types for configuration changes at runtime
+ */
 export enum UserConfigActionTypes {
   SetTableFieldsDisplayExtraInfo = '[UserConfig] Set Field TableFieldsDisplayExtraInfo',
   SetTableFieldsDisplayLandingpage = '[UserConfig] Set Field TableFieldsDisplayLandingpage',
@@ -9,28 +12,61 @@ export enum UserConfigActionTypes {
 }
 
 
+/**
+ * Action triggered when remote filter field options are required
+ */
 export class GetRemoteFilterFieldOptions implements Action {
+  /**
+   * @ignore
+   */
   readonly type = UserConfigActionTypes.GetRemoteFilterFieldOptions;
 
-  constructor(public payload: { filterFieldKey: string, url: string }) {
+  /**
+   * Contains filter name and URL pointing to remote value
+   * @param {Object} payload Object with key and URL
+   */
+  constructor(public payload: { key: string, url: string }) {
   }
 }
 
+/**
+ * Action triggered when remote filter field options were received
+ */
 export class SetRemoteFilterFieldOptions implements Action {
+  /**
+   * @ignore
+   */
   readonly type = UserConfigActionTypes.SetRemoteFilterFieldOptions;
 
-  constructor(public payload: { filterFieldKey: string, option: string }) {
+  /**
+   * Contains fetched value for filter
+   * @param {Object} payload Object with key and fetched value
+   */
+  constructor(public payload: { key: string, value: string }) {
   }
 }
 
+/**
+ * Action triggered when remote filter field options request was unsuccessful
+ */
 export class OptionRetrieveError implements Action {
+  /**
+   * @ignore
+   */
   readonly type = UserConfigActionTypes.OptionRetrieveError;
 
+  /**
+   * Contains error
+   * @param {Object} payload Error
+   */
   constructor(public payload: any) {
   }
 }
 
 
+/**
+ * @ignore
+ */
 export type UserConfigActions
   = GetRemoteFilterFieldOptions
   | SetRemoteFilterFieldOptions

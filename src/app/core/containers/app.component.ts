@@ -5,6 +5,9 @@ import { environment } from '../../../environments/environment';
 import * as fromRoot from '../../reducers';
 import * as fromActions from '../actions/user-config.actions';
 
+/**
+ * Main entry point to the application.
+ */
 @Component({
   selector: 'app-root',
   template: `
@@ -16,19 +19,21 @@ import * as fromActions from '../actions/user-config.actions';
 
 export class AppComponent {
 
-  constructor(private rootState: Store<fromRoot.State>) {
-    this.initializeUserConfig();
+  /**
+   * @ignore
+   */
+  constructor(private _rootStore: Store<fromRoot.State>) {
+    this._fetchRemoteFilterConfigs();
   }
 
-  private initializeUserConfig() {
-
-    //vorhandene Filter dynamisch laden
+  /**
+   * Triggers remote fetching of filter options if respective filter value is an URL
+   */
+  private _fetchRemoteFilterConfigs() {
     for (const key of Object.keys(environment.filterFields)) {
-      //Wenn bei Filter eine URL hinterlegt ist, muessen Optionen dynamisch geholt werden
       if (environment.filterFields[key].url) {
-        //Optionen per URL holen
-        this.rootState.dispatch(
-          new fromActions.GetRemoteFilterFieldOptions({filterFieldKey: key, url: environment.filterFields[key].url})
+        this._rootStore.dispatch(
+          new fromActions.GetRemoteFilterFieldOptions({key: key, url: environment.filterFields[key].url})
         );
       }
     }
