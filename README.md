@@ -68,3 +68,11 @@ a settings block for a configuration from another target definition:
 ```
 
 __Beware__: If you adjust the index and/or the type of the Elasticsearch cluster, you have to change also the respective settings in `angularx_elasticsearch_proxy_unibas.php`.
+
+
+## Building documentation
+
+You can build documentation locally with [compodoc](https://compodoc.github.io/compodoc/):
+
+1. Install: `yarn global add @compodoc/compodoc` or `npm -g install @compodoc/compodoc`
+2. Run in application root folder: `compodoc -swp src/tsconfig.app.json`
